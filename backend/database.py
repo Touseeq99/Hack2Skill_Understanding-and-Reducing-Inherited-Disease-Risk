@@ -3,11 +3,8 @@ Provides explicit Row-Level Security (RLS) enforcement and data repository metho
 """
 
 import os
-import json
 import sqlite3
-import datetime
-from typing import Any, Dict, List, Optional, Tuple
-from backend.encryptor import default_encryptor
+from typing import Optional
 
 DATABASE_URL = os.environ.get("DATABASE_URL", "sqlite:///inheritance_platform.db")
 

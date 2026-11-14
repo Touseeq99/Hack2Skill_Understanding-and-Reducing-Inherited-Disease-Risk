@@ -1,0 +1,382 @@
+version: "v1"
+clinical_signoff: "DRAFT - requires clinical sign-off"
+effective_date: "2026-11-14"
+panel_sensitivity_default: 0.95
+
+individual_rules:
+  - id: "IND-001"
+    name: "Screen Negative"
+    category: "screen_negative"
+    default_tier: "T0"
+    clinical_signoff: "pending"
+    condition: "No pathogenic or likely pathogenic variants found on screening panel"
+    core_message_en: "No carrier changes found for the conditions tested. This lowers but does not remove risk."
+    core_message_ar: "لم يتم العثور على تغيرات جينية مسببة للأمراض في الفحص الحالي. هذا يقلل من احتمالية الخطر ولكنه لا ينفيه تماماً."
+    natural_frequency: "Lower than average population risk"
+    icon_array:
+      total: 100
+      categories:
+        - label_en: "Expected healthy"
+          label_ar: "سليم متوقع"
+          count: 98
+          color: "green"
+        - label_en: "Residual risk"
+          label_ar: "احتمالية متبقية"
+          count: 2
+          color: "gray"
+
+  - id: "IND-002"
+    name: "Autosomal Recessive Single Carrier"
+    category: "carrier"
+    default_tier: "T1"  # T1 if partner untested/unlinked, T0 if partner negative or diff gene, T2 if partner same gene
+    clinical_signoff: "pending"
+    condition: "Exactly one pathogenic or likely pathogenic variant in an autosomal recessive (AR) gene"
+    core_message_en: "You carry one changed copy of a gene. Carriers are usually healthy. It matters if a partner carries the same gene."
+    core_message_ar: "أنت حامل لنسخة متغيرة واحدة من الجين. حاملو التغير الجيني يتمتعون بصحة طبيعية عادةً، ولكن الأهمية تكمن في حال كان شريك الحياة حاملاً لنفس الجين."
+    natural_frequency: "1 in 1 carrier status (individual is healthy carrier)"
+    icon_array:
+      total: 2
+      categories:
+        - label_en: "Standard copy"
+          label_ar: "نسخة طبيعية"
+          count: 1
+          color: "blue"
+        - label_en: "Changed copy"
+          label_ar: "نسخة متغيرة"
+          count: 1
+          color: "orange"
+
+  - id: "IND-003"
+    name: "X-Linked Female Carrier"
+    category: "xlinked_carrier"
+    default_tier: "T2"
+    clinical_signoff: "pending"
+    condition: "One pathogenic or likely pathogenic variant in an X-linked (XL) gene in a female"
+    core_message_en: "You carry an X-linked gene variant. Each son has a 1 in 2 chance of being affected; each daughter has a 1 in 2 chance of being a carrier."
+    core_message_ar: "تحملين تغيراً في جين مرتبط بالصبغي X. لكل حمل بذكر: احتمال 1 من 2 أن يكون مصاباً؛ ولكل حمل بأنثى: احتمال 1 من 2 أن تكون حاملة للصفة."
+    natural_frequency: "Sons: 1 in 2 affected; Daughters: 1 in 2 carrier"
+    icon_array:
+      total: 4
+      categories:
+        - label_en: "Affected son (1 in 2 boys)"
+          label_ar: "ذكر مصاب (1 من 2)"
+          count: 1
+          color: "red"
+        - label_en: "Unaffected son (1 in 2 boys)"
+          label_ar: "ذكر سليم (1 من 2)"
+          count: 1
+          color: "green"
+        - label_en: "Carrier daughter (1 in 2 girls)"
+          label_ar: "أنثى حاملة (1 من 2)"
+          count: 1
+          color: "orange"
+        - label_en: "Non-carrier daughter (1 in 2 girls)"
+          label_ar: "أنثى غير حاملة (1 من 2)"
+          count: 1
+          color: "green"
+
+  - id: "IND-004"
+    name: "X-Linked Hemizygous Male"
+    category: "xlinked_male"
+    default_tier: "T2"
+    clinical_signoff: "pending"
+    condition: "Pathogenic or likely pathogenic variant in an X-linked (XL) gene in a male (hemizygous)"
+    core_message_en: "You have an X-linked gene variant on your single X chromosome. All daughters will be carriers; sons will not inherit this variant."
+    core_message_ar: "لديك تغير جيني على الصبغي X الوحيد لديك. جميع بناتك ستكن حاملات للصفة الوراثية، بينما لن يرث الأبناء الذكور هذا التغير."
+    natural_frequency: "Daughters: 1 in 1 carrier; Sons: 0 in 1 unaffected"
+    icon_array:
+      total: 2
+      categories:
+        - label_en: "Daughters (all carriers)"
+          label_ar: "الإناث (حاملات)"
+          count: 1
+          color: "orange"
+        - label_en: "Sons (all unaffected)"
+          label_ar: "الذكور (سليمون)"
+          count: 1
+          color: "green"
+
+  - id: "IND-005"
+    name: "Possible Affected (Two AR Variants)"
+    category: "possible_affected"
+    default_tier: "T2" # T2 by default; T3 if pregnant, distress fired, or symptoms reported
+    clinical_signoff: "pending"
+    condition: "Two pathogenic or likely pathogenic variants in the same AR gene (homozygous or compound heterozygous)"
+    core_message_en: "Two genetic changes were found in the same gene. This is not a carrier result and needs clinical review."
+    core_message_ar: "تم العثور على تغيرين جينيين في نفس الجين. هذه ليست مجرد نتيجة حامل للجين، وتتطلب مراجعة سريرية متخصصة."
+    natural_frequency: "Clinical review required"
+    icon_array:
+      total: 2
+      categories:
+        - label_en: "Changed copy A"
+          label_ar: "نسخة متغيرة أ"
+          count: 1
+          color: "red"
+        - label_en: "Changed copy B"
+          label_ar: "نسخة متغيرة ب"
+          count: 1
+          color: "red"
+
+  - id: "IND-006"
+    name: "Uncertain Significance (VUS Only)"
+    category: "uncertain"
+    default_tier: "T0" # T2 if partner has P/LP in the same gene
+    clinical_signoff: "pending"
+    condition: "Only variant(s) of uncertain significance (VUS) found, no pathogenic/likely pathogenic variants"
+    core_message_en: "A change of unknown meaning was found. It is not treated as a carrier result."
+    core_message_ar: "تم العثور على تغير غير محدد الأهمية السريرية حالياً. لا يُعامل كنتيجة حامل لمرض وراثي."
+    natural_frequency: "Uncertain clinical meaning"
+    icon_array:
+      total: 100
+      categories:
+        - label_en: "Unclassified variation"
+          label_ar: "تغير غير محدد"
+          count: 1
+          color: "purple"
+        - label_en: "Standard background"
+          label_ar: "خلفية عامة"
+          count: 99
+          color: "gray"
+
+couple_rules:
+  - id: "CPL-001"
+    name: "Both Carriers Same AR Gene"
+    outcome: "same_gene_match"
+    tier: "T2"
+    clinical_signoff: "pending"
+    condition: "Both partners carry a pathogenic or likely pathogenic variant in the same autosomal recessive gene"
+    core_message_en: "Both partners carry a change in the same gene. In each pregnancy, there is a 1 in 4 chance of an affected child, 1 in 2 chance of a carrier child, and 1 in 4 chance of neither."
+    core_message_ar: "كلا الشريكين يحملان تغيراً في نفس الجين. في كل حمل، يكون هناك احتمال 1 من 4 أن يولد طفل مصاب، و1 من 2 أن يكون حاملاً، و1 من 4 ألا يرث التغير الجيني."
+    natural_frequencies:
+      affected: "1 in 4"
+      carrier: "1 in 2"
+      unaffected_non_carrier: "1 in 4"
+    icon_array:
+      total: 4
+      categories:
+        - label_en: "Affected (1 in 4)"
+          label_ar: "مصاب (1 من 4)"
+          count: 1
+          color: "red"
+        - label_en: "Carrier (2 in 4 = 1 in 2)"
+          label_ar: "حامل للصفة (2 من 4)"
+          count: 2
+          color: "orange"
+        - label_en: "Neither (1 in 4)"
+          label_ar: "سليم غير حامل (1 من 4)"
+          count: 1
+          color: "green"
+
+  - id: "CPL-002"
+    name: "Affected Plus Carrier Same AR Gene"
+    outcome: "same_gene_match"
+    tier: "T2"
+    clinical_signoff: "pending"
+    condition: "One partner possible affected (2 P/LP variants) and other partner carrier in the same AR gene"
+    core_message_en: "One partner has two changes and the other carries one change in the same gene. In each pregnancy, there is a 1 in 2 chance of an affected child and 1 in 2 chance of a carrier child."
+    core_message_ar: "أحد الشريكين لديه نسختان متغیرتان والآخر حامل لنفس الجين. في كل حمل: احتمال 1 من 2 أن يولد طفل مصاب، واحتمال 1 من 2 أن يكون حاملاً."
+    natural_frequencies:
+      affected: "1 in 2"
+      carrier: "1 in 2"
+      unaffected_non_carrier: "0 in 4"
+    icon_array:
+      total: 4
+      categories:
+        - label_en: "Affected (2 in 4 = 1 in 2)"
+          label_ar: "مصاب (2 من 4)"
+          count: 2
+          color: "red"
+        - label_en: "Carrier (2 in 4 = 1 in 2)"
+          label_ar: "حامل للصفة (2 من 4)"
+          count: 2
+          color: "orange"
+
+  - id: "CPL-003"
+    name: "Both Affected Same AR Gene"
+    outcome: "same_gene_match"
+    tier: "T2"
+    clinical_signoff: "pending"
+    condition: "Both partners have two P/LP variants in the same AR gene"
+    core_message_en: "Both partners carry two changes in the same gene. All children are expected to be affected."
+    core_message_ar: "كلا الشريكين لديهما نسختان متغیرتان في نفس الجين. من المتوقع أن يرث جميع الأطفال هذه الحالة."
+    natural_frequencies:
+      affected: "4 in 4 (all children)"
+      carrier: "0 in 4"
+      unaffected_non_carrier: "0 in 4"
+    icon_array:
+      total: 4
+      categories:
+        - label_en: "Affected (all pregnancies)"
+          label_ar: "مصاب (جميع الحالات)"
+          count: 4
+          color: "red"
+
+  - id: "CPL-004"
+    name: "Different AR Genes Carried"
+    outcome: "no_shared_gene"
+    tier: "T0"
+    clinical_signoff: "pending"
+    condition: "Partner A and Partner B carry P/LP variants in different genes (no shared gene)"
+    core_message_en: "No shared carrier gene found among conditions screened. Residual risk remains as with any screening."
+    core_message_ar: "لم يتم العثور على جين مشترك بين الحالات التي تم فحصها. تبقى هناك احتمالية متبقية عامة كما هو الحال في أي فحص."
+    natural_frequencies:
+      affected_screened: "0 in 4 for screened conditions"
+      residual_risk: "Approximately 1 in 100 to 1 in 200 based on panel sensitivity"
+    icon_array:
+      total: 100
+      categories:
+        - label_en: "Expected healthy for screened conditions"
+          label_ar: "سليم متوقع للحالات المفحوصة"
+          count: 99
+          color: "green"
+        - label_en: "Residual population risk"
+          label_ar: "احتمالية متبقية عامة"
+          count: 1
+          color: "gray"
+
+  - id: "CPL-005"
+    name: "Carrier Plus Negative Partner"
+    outcome: "no_shared_gene"
+    tier: "T0" # T1 if partner not fully tested
+    clinical_signoff: "pending"
+    condition: "One partner is carrier of an AR gene; the other partner screened negative for all panel genes"
+    core_message_en: "No shared gene found. Residual risk is calculated from panel sensitivity."
+    core_message_ar: "لم يتم العثور على جين مشترك. الاحتمالية المتبقية تُحسب بناءً على دقة وحساسية الفحص."
+    natural_frequencies:
+      affected_screened: "Near zero for screened conditions"
+      residual_risk: "Estimated 1 in 400 to 1 in 800 based on 95% panel sensitivity"
+    icon_array:
+      total: 100
+      categories:
+        - label_en: "Screened clear"
+          label_ar: "سليم بالفحص"
+          count: 99
+          color: "green"
+        - label_en: "Residual risk"
+          label_ar: "احتمالية متبقية"
+          count: 1
+          color: "gray"
+
+  - id: "CPL-006"
+    name: "Carrier Gene X Plus VUS Gene X"
+    outcome: "uncertain_match"
+    tier: "T2"
+    clinical_signoff: "pending"
+    condition: "One partner carries P/LP variant in gene X; other partner has VUS in gene X"
+    core_message_en: "An uncertain combination was identified in the same gene. No numeric probability is given because the meaning of the variant is not yet known."
+    core_message_ar: "تم تحديد تغير غير مؤكد الأهمية في نفس الجين لدى الشريك الآخر. لا يمكن تقديم نسبة رقمية محددة لعدم التأكد من الطبيعة الدقيقة للتغير."
+    natural_frequencies:
+      note: "NO number shown - explained as uncertain"
+    icon_array:
+      total: 100
+      categories:
+        - label_en: "Uncertain clinical interpretation"
+          label_ar: "احتمالية غير محددة سريرياً"
+          count: 100
+          color: "purple"
+
+  - id: "CPL-007"
+    name: "Partner Not Tested / Incomplete"
+    outcome: "incomplete"
+    tier: "T1"
+    clinical_signoff: "pending"
+    condition: "One partner has a screening result, but the partner has not been tested or results are unlinked"
+    core_message_en: "Couple compatibility check is incomplete because partner results are not available. Inviting a partner requires your explicit permission."
+    core_message_ar: "فحص التوافق غير مكتمل لعدم توفر نتائج الشريك. دعوة الشريك تتطلب موافقتك الصريحة."
+    natural_frequencies:
+      note: "Cannot compute couple risk without partner data"
+    icon_array:
+      total: 1
+      categories:
+        - label_en: "Partner data pending"
+          label_ar: "في انتظار نتائج الشريك"
+          count: 1
+          color: "gray"
+
+  - id: "CPL-008"
+    name: "X-Linked Female Carrier With Partner"
+    outcome: "xlinked_risk"
+    tier: "T2"
+    clinical_signoff: "pending"
+    condition: "Female partner carries an X-linked P/LP variant"
+    core_message_en: "Mother carries an X-linked variant. Risk is determined by the sex of the child: each son has a 1 in 2 chance of being affected; each daughter has a 1 in 2 chance of being a carrier."
+    core_message_ar: "الأم تحمل تغيراً مرتبطاً بالصبغي X. الخطر يُحدد حسب جنس الجنين: لكل حمل بذكر: احتمال 1 من 2 أن يكون مصاباً؛ ولكل حمل بأنثى: احتمال 1 من 2 أن تكون حاملة."
+    natural_frequencies:
+      sons_affected: "1 in 2 sons"
+      daughters_carrier: "1 in 2 daughters"
+    icon_array:
+      total: 4
+      categories:
+        - label_en: "Affected son (1 in 2 boys)"
+          label_ar: "ذكر مصاب (1 من 2)"
+          count: 1
+          color: "red"
+        - label_en: "Unaffected son (1 in 2 boys)"
+          label_ar: "ذكر سليم (1 من 2)"
+          count: 1
+          color: "green"
+        - label_en: "Carrier daughter (1 in 2 girls)"
+          label_ar: "أنثى حاملة (1 من 2)"
+          count: 1
+          color: "orange"
+        - label_en: "Non-carrier daughter (1 in 2 girls)"
+          label_ar: "أنثى غير حاملة (1 من 2)"
+          count: 1
+          color: "green"
+
+  - id: "CPL-009"
+    name: "X-Linked Male With Partner"
+    outcome: "xlinked_risk"
+    tier: "T2"
+    clinical_signoff: "pending"
+    condition: "Male partner has an X-linked P/LP variant"
+    core_message_en: "Father carries an X-linked variant on his X chromosome. All daughters will be carriers; sons do not inherit this variant."
+    core_message_ar: "الأب لديه تغير على صبغيه X الوحيد. جميع البنات سيصبحن حاملات للصفة الوراثية، بينما لا يرث الأبناء الذكور هذا التغير."
+    natural_frequencies:
+      sons_affected: "0 (none affected)"
+      daughters_carrier: "All daughters (1 in 1)"
+    icon_array:
+      total: 2
+      categories:
+        - label_en: "Daughters (all carriers)"
+          label_ar: "الإناث (حاملات)"
+          count: 1
+          color: "orange"
+        - label_en: "Sons (all unaffected)"
+          label_ar: "الذكور (سليمون)"
+          count: 1
+          color: "green"
+
+  - id: "CPL-010"
+    name: "Both Negative Screened"
+    outcome: "no_shared_gene"
+    tier: "T0"
+    clinical_signoff: "pending"
+    condition: "Neither partner has any pathogenic, likely pathogenic, or VUS variants"
+    core_message_en: "No carrier changes found in either partner for screened conditions. Both have standard low residual risk."
+    core_message_ar: "لم يتم العثور على تغيرات جينية لدى كلا الشريكين للحالات المفحوصة. كلاهما لديهما احتمال متبقي منخفض طبيعي."
+    natural_frequencies:
+      affected_screened: "Lowest population risk"
+      residual_risk: "Standard population residual risk"
+    icon_array:
+      total: 100
+      categories:
+        - label_en: "Expected healthy"
+          label_ar: "سليم متوقع"
+          count: 98
+          color: "green"
+        - label_en: "General background risk"
+          label_ar: "احتمالية متبقية عامة"
+          count: 2
+          color: "gray"
+
+consanguinity_statement:
+  rule_id: "CNS-001"
+  clinical_signoff: "pending"
+  title_en: "Background Information on Family Relatedness"
+  title_ar: "معلومات عامة حول صلة القرابة الأسرية"
+  body_en: "Marriage between relatives, such as first cousins, is a common and valued practice in many communities. Published medical studies (Bennett et al., NSGC 2002) show that in the general population, about 96 to 97 in 100 children are born without any major health condition (a baseline chance of 3-4%). For first cousins, the chance is modestly different: about 94 to 96 in 100 children are born without any major health condition (roughly 1.7 to 2.8 percentage points above baseline). This relates to birth conditions in general, not solely recessive genetic conditions. Genetic screening helps clarify your specific family risks."
+  body_ar: "يعد زواج الأقارب (مثل أبناء العمومة) ممارسة شائعة ومقدرة في العديد من المجتمعات. تشير الدراسات الطبية المنشورة (بينيت وزملاؤه، الجمعية الوطنية للمستشارين الوراثيين 2002) إلى أنه في عموم السكان، يولد نحو 96 إلى 97 طفلاً من كل 100 طفل دون أي حالة صحية كبرى (احتمال عام 3-4٪). أما بالنسبة لأبناء العمومة من الدرجة الأولى، فإن النسبة تختلف اختلافاً طفيفاً: يولد نحو 94 إلى 96 طفلاً من كل 100 طفل دون أي حالة صحية كبرى (زيادة طفيفة تتراوح بين 1.7 إلى 2.8 نقطة مئوية عن المعدل العام). وهذا يخص الحالات الصحية الخلقية العامة ولا يقتصر على الأمراض المتنحية. ويساعد الفحص الجيني الحالي في توضيح الصورة الخاصة بكما بدقة."
+  side_by_side:
+    general_population: "About 96-97 in 100 have no major birth condition"
+    first_cousins: "About 94-96 in 100 have no major birth condition"

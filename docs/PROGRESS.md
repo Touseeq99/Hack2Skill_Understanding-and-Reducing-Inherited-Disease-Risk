@@ -1,16 +1,16 @@
 # Inherited Disease Risk Platform - Project Progress & Checklist
 
 ## Current Status
-- **Current Phase**: Phase 1 - Engine and Vault
-- **Current Task**: 1.1 YAML rule tables exactly as above, with versioning
-- **Next Step**: Implement YAML rule tables and deterministic risk engine (classify & couple)
+- **Current Phase**: Phase 2 - Explanation and App
+- **Current Task**: 2.1 Clinician-approved template library in English and Arabic
+- **Next Step**: Build template library, validator, LangGraph flow, and user web app with RTL Arabic and icon arrays
 
 ---
 
 ## Test & Execution Guide
 - **Run Python Engine & Backend Tests**:
   ```powershell
-  python -m pytest backend/tests/ data/test_cohort_and_panel.py -v
+  python -m pytest engine/tests/ backend/tests/ data/test_cohort_and_panel.py -v
   ```
 - **Run Hypothesis Symmetry & Engine Property Tests**:
   ```powershell
@@ -19,7 +19,6 @@
 - **Run Linting & Type Checking**:
   ```powershell
   ruff check engine/ backend/ explain/
-  mypy engine/ backend/
   ```
 - **Start All Services in Docker**:
   ```powershell
@@ -38,13 +37,13 @@
 - **GATE**: Seeded DB, RLS tests pass. [x]
 
 ### Phase 1 - Engine and Vault
-- [ ] 1.1 YAML rule tables (`engine/rules/v1.yaml`) with versioning and clinical sign-off status.
-- [ ] 1.2 `classify(person)` and `couple(a, b)` pure deterministic functions with natural-frequency output and icon-array data.
-- [ ] 1.3 Engine tests: every individual and couple rule covered, 100% branch coverage on `engine/`, Hypothesis symmetry property test `couple(a, b) == couple(b, a)`.
-- [ ] 1.4 Consent grants (grantor, grantee, scope, purpose, expiry, revoked_at), role-based access, revocation hides derived results immediately.
-- [ ] 1.5 Hash-chained audit log with tamper-evident `verify_chain()` function and verification tests.
-- [ ] 1.6 FastAPI endpoints for individual results, couple matching, consent grants, and audit log inspection.
-- **GATE**: Couple result invisible unless BOTH grants active; audit chain verifies; 100% engine coverage. [ ]
+- [x] 1.1 YAML rule tables (`engine/rules/v1.yaml`) with versioning and clinical sign-off status.
+- [x] 1.2 `classify(person)` and `couple(a, b)` pure deterministic functions with natural-frequency output and icon-array data.
+- [x] 1.3 Engine tests: every individual and couple rule covered, 100% branch coverage on `engine/`, Hypothesis symmetry property test `couple(a, b) == couple(b, a)`.
+- [x] 1.4 Consent grants (grantor, grantee, scope, purpose, expiry, revoked_at), role-based access, revocation hides derived results immediately.
+- [x] 1.5 Hash-chained audit log with tamper-evident `verify_chain()` function and verification tests.
+- [x] 1.6 FastAPI endpoints for individual results, couple matching, consent grants, and audit log inspection.
+- **GATE**: Couple result invisible unless BOTH grants active; audit chain verifies; 100% engine coverage. [x]
 
 ### Phase 2 - Explanation and App
 - [ ] 2.1 Clinician-approved template library in English and Arabic (MSA/Gulf), simple & standard reading levels, keyed by template ID.
