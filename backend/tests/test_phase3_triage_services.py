@@ -231,3 +231,4 @@ def test_anonymous_family_notice_flow(p3_ctx):
     opened = fns.open_notice(res["token"])
     assert opened["status"] == "valid"
     assert opened["condition_name"] == "Beta-thalassemia"
+

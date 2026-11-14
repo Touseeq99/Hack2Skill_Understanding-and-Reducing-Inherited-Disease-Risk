@@ -40,3 +40,4 @@ def test_encryptor_tamper_detection():
     
     with pytest.raises(InvalidTag):
         enc.decrypt(tampered_b64, record_id)
+

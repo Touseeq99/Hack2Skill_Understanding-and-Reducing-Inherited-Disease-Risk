@@ -17,3 +17,4 @@ COPY . .
 # Run DB seeding on startup if not already seeded, then start uvicorn
 EXPOSE 8000
 CMD ["sh", "-c", "python -m data.generate_seed && uvicorn backend.main:app --host 0.0.0.0 --port 8000"]
+

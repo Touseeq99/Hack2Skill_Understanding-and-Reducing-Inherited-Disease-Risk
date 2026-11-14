@@ -8,3 +8,4 @@ Respond in {{language}} to the following query or template while adhering strict
 Input:
 {{user_query}}
 {{template}}
+

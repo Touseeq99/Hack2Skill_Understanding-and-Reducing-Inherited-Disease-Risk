@@ -63,3 +63,4 @@ tests:
         value: "جين تالف"
       - type: not-icontains
         value: "دم ملوث"
+

@@ -78,3 +78,4 @@ class Encryptor:
 
 # Default singleton instance
 default_encryptor = Encryptor()
+

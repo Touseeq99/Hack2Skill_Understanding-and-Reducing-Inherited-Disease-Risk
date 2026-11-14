@@ -279,3 +279,4 @@ CREATE POLICY triage_case_access_policy ON triage_case
             AND (assigned_to = current_setting('app.current_user_id', true) OR state = 'created' OR state = 'offered')
         )
     );
+

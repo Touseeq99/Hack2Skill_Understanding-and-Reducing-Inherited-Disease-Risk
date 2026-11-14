@@ -48,3 +48,4 @@ All couple compatibility operations are strictly symmetric: `couple(a, b) == cou
   - General Population: **About 96 to 97 in 100** have no major birth condition (3-4% baseline defect risk).
   - First Cousins: **About 94 to 96 in 100** have no major birth condition (roughly 1.7 to 2.8 percentage points above baseline).
 - **Critical Clarification**: Explicitly presented as **general birth condition risk**, NOT recessive condition risk alone.
+

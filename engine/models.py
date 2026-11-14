@@ -68,3 +68,4 @@ class CoupleResult(BaseModel):
     consanguinity_statement: Optional[Dict[str, Any]] = None
     rule_version: str = "v1"
     clinical_signoff: str = "DRAFT - requires clinical sign-off"
+

@@ -175,3 +175,4 @@ Open your browser to:
 | `person_007` | Hessa Al Falasi | F | `CFTR` Carrier + Partner `HBB` Carrier | Different genes -> `CPL-004` (T0, no shared risk) |
 | `person_009` | Khawla Al Marzooqi| F | Panel Negative | Screen negative -> `IND-001` / `CPL-010` (T0) |
 | `person_012` | Mira Al Kaabi | F | Age 16 (Minor) | Minor safeguard -> `TRI-T3-005` (Blocks self-serve) |
+
