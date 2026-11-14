@@ -2,13 +2,19 @@
 
 from fastapi import FastAPI, Header, HTTPException, Query, Depends
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
-from typing import Optional, Dict
+from fastapi.responses import FileResponse
+from pydantic import BaseModel, Field
+from typing import Optional, Dict, Any
+from pathlib import Path
 
 from backend.database import db
 from backend.service import service
 from backend.audit_log import audit_logger
 from engine.models import PersonResult, CoupleResult
+from explain.graph_flow import graph, QUIZ_QUESTIONS, FlowState
+from explain.pipeline import pipeline
+
+APP_DIR = Path(__file__).resolve().parent.parent / "app"
 
 app = FastAPI(
     title="Inherited Disease Risk Platform API",
@@ -135,17 +141,78 @@ def verify_audit_log():
     }
 
 
-@app.get("/api/audit/events")
-def list_audit_events(
-    limit: int = 50,
+class QuizSubmitRequest(BaseModel):
+    quiz_id: str = "teach_back_v1"
+    answers: Dict[str, str]
+    language: str = "ar"
+    base_tier: str = "T0"
+    template_key: str = "CARRIER_AR_SUMMARY"
+    slots: Dict[str, Any] = Field(default_factory=dict)
+
+
+@app.get("/api/quiz/questions")
+def get_quiz_questions(lang: str = Query("ar", description="Language code: ar or en")):
+    questions = QUIZ_QUESTIONS.get(lang, QUIZ_QUESTIONS["ar"])
+    # Strip correct flag before sending to client
+    sanitized = []
+    for q in questions:
+        sanitized.append({
+            "id": q["id"],
+            "question": q["question"],
+            "options": [{"id": opt["id"], "text": opt["text"]} for opt in q["options"]],
+        })
+    return sanitized
+
+
+@app.post("/api/quiz/submit")
+def submit_quiz_answers(
+    req: QuizSubmitRequest,
     auth: Dict[str, str] = Depends(get_current_user),
 ):
-    conn = db.get_connection()
-    cur = conn.cursor()
-    if auth["role"] == "admin":
-        cur.execute("SELECT * FROM audit_event ORDER BY at DESC, rowid DESC LIMIT ?", (limit,))
-    else:
-        cur.execute("SELECT * FROM audit_event WHERE actor = ? ORDER BY at DESC, rowid DESC LIMIT ?", (auth["user_id"], limit))
-    rows = cur.fetchall()
-    conn.close()
-    return [dict(r) for r in rows]
+    state = FlowState(
+        person_id=auth["user_id"],
+        template_key=req.template_key,
+        slots=req.slots,
+        language=req.language,
+    )
+    # Step quiz
+    state = graph.step_quiz(state, req.answers)
+    # Step route
+    state = graph.step_route(state, base_tier=req.base_tier)
+
+    return {
+        "score": state.quiz_score,
+        "passed": state.teach_back_passed,
+        "attempts": state.quiz_attempts,
+        "failed_twice": state.teach_back_failed_twice,
+        "assigned_tier": state.assigned_tier,
+        "system_action": state.system_action,
+        "fired_rules": state.fired_rule_ids,
+    }
+
+
+@app.get("/api/explain/preview")
+def preview_explanation(
+    template_key: str = Query("CARRIER_AR_SUMMARY"),
+    gene: str = Query("HBB"),
+    condition: str = Query("Beta-thalassemia"),
+    lang: str = Query("ar"),
+    level: str = Query("standard"),
+    auth: Dict[str, str] = Depends(get_current_user),
+):
+    return pipeline.generate_explanation(
+        template_key=template_key,
+        slots={"gene": gene, "condition_name": condition},
+        person_id=auth["user_id"],
+        language=lang,
+        reading_level=level,
+    )
+
+
+@app.get("/")
+@app.get("/app")
+def serve_user_app():
+    index_file = APP_DIR / "index.html"
+    if not index_file.exists():
+        raise HTTPException(status_code=404, detail="App index file not found.")
+    return FileResponse(index_file)

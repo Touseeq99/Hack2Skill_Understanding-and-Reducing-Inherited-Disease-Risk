@@ -1,16 +1,16 @@
 # Inherited Disease Risk Platform - Project Progress & Checklist
 
 ## Current Status
-- **Current Phase**: Phase 2 - Explanation and App
-- **Current Task**: 2.1 Clinician-approved template library in English and Arabic
-- **Next Step**: Build template library, validator, LangGraph flow, and user web app with RTL Arabic and icon arrays
+- **Current Phase**: Phase 3 - Triage and Services
+- **Current Task**: 3.1 Triage router rules (T0-T3), storing fired rule IDs, never auto-downgrades
+- **Next Step**: Implement triage router rules, intent classifier, referral state machine, counsellor portal, internal booking scheduler, ReportLab PDF, anonymous family notice
 
 ---
 
 ## Test & Execution Guide
 - **Run Python Engine & Backend Tests**:
   ```powershell
-  python -m pytest engine/tests/ backend/tests/ data/test_cohort_and_panel.py -v
+  python -m pytest engine/tests/ backend/tests/ explain/tests/ data/test_cohort_and_panel.py -v
   ```
 - **Run Hypothesis Symmetry & Engine Property Tests**:
   ```powershell
@@ -46,12 +46,12 @@
 - **GATE**: Couple result invisible unless BOTH grants active; audit chain verifies; 100% engine coverage. [x]
 
 ### Phase 2 - Explanation and App
-- [ ] 2.1 Clinician-approved template library in English and Arabic (MSA/Gulf), simple & standard reading levels, keyed by template ID.
-- [ ] 2.2 Explanation pipeline: select -> fill (slots from structured data only, no LLM numbers) -> adapt -> validate -> log.
-- [ ] 2.3 Strict validator with tests: number drift, missing disclaimer, banned phrases (directive, stigmatising, deterministic), reading level; fallback verification with bad LLM injection.
-- [ ] 2.4 LangGraph flow: explain -> teach-back quiz (3-5 items, fail twice -> counsellor offered) -> triage route.
-- [ ] 2.5 User app screens: language & format picker (text, audio, illustrated), layered explanation, icon arrays, RTL Arabic, audio playback (Web Speech/TTS/pre-recorded), persistent "Talk to a person" action.
-- **GATE**: User can open result in Arabic, hear it, pass the teach-back quiz. [ ]
+- [x] 2.1 Clinician-approved template library in English and Arabic (MSA/Gulf), simple & standard reading levels, keyed by template ID.
+- [x] 2.2 Explanation pipeline: select -> fill (slots from structured data only, no LLM numbers) -> adapt -> validate -> log.
+- [x] 2.3 Strict validator with tests: number drift, missing disclaimer, banned phrases (directive, stigmatising, deterministic), reading level; fallback verification with bad LLM injection.
+- [x] 2.4 LangGraph flow: explain -> teach-back quiz (3-5 items, fail twice -> counsellor offered) -> triage route.
+- [x] 2.5 User app screens: language & format picker (text, audio, illustrated), layered explanation, icon arrays, RTL Arabic, audio playback (Web Speech/TTS/pre-recorded), persistent "Talk to a person" action.
+- **GATE**: User can open result in Arabic, hear it, pass the quiz. [x]
 
 ### Phase 3 - Triage and Services
 - [ ] 3.1 Triage router rules (T0-T3), storing fired rule IDs, never auto-downgrades existing case tier; tests for each rule.

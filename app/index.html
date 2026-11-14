@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>منصة التوافق الوراثي | Inherited Disease Risk Platform</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #0d9488;
+      --primary-dark: #0f766e;
+      --primary-light: #ccfbf1;
+      --secondary: #0284c7;
+      --accent: #f59e0b;
+      --danger: #ef4444;
+      --success: #10b981;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Cairo', 'Inter', -apple-system, sans-serif;
+      background-color: var(--bg);
+      color: var(--text-main);
+      line-height: 1.6;
+      padding-bottom: 90px;
+    }
+
+    body[dir="ltr"] { font-family: 'Inter', sans-serif; }
+
+    header {
+      background: white;
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 1.5rem;
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .brand-logo {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 800;
+      font-size: 1.25rem;
+    }
+
+    .brand-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .brand-subtitle {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .top-controls {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .pill-btn {
+      background: #f1f5f9;
+      border: 1px solid var(--border);
+      padding: 0.4rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .pill-btn:hover, .pill-btn.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 1.5rem auto;
+      padding: 0 1rem;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 1.5rem;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      margin-bottom: 1.5rem;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .card-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #1e293b;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .tier-badge {
+      display: inline-block;
+      padding: 0.25rem 0.65rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+    .tier-T0 { background: #dcfce7; color: #166534; }
+    .tier-T1 { background: #fef9c3; color: #854d0e; }
+    .tier-T2 { background: #ffedd5; color: #9a3412; }
+    .tier-T3 { background: #fee2e2; color: #991b1b; }
+
+    /* Format picker bar */
+    .format-bar {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1.25rem;
+      background: #f1f5f9;
+      padding: 0.35rem;
+      border-radius: 12px;
+    }
+    .format-btn {
+      flex: 1;
+      border: none;
+      background: transparent;
+      padding: 0.6rem;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      transition: all 0.2s;
+    }
+    .format-btn.active {
+      background: white;
+      color: var(--primary-dark);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    /* Audio Player */
+    .audio-player-box {
+      background: #f0fdfa;
+      border: 1px solid #99f6e4;
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .play-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: white;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 1.2rem;
+      box-shadow: 0 2px 4px rgba(13,148,136,0.3);
+    }
+    .play-btn:hover { background: var(--primary-dark); }
+    .audio-text { font-size: 0.9rem; color: #115e59; font-weight: 600; }
+
+    /* Layered Explanation Accordion */
+    .layer-item {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      margin-bottom: 0.75rem;
+      overflow: hidden;
+    }
+    .layer-header {
+      background: #f8fafc;
+      padding: 0.9rem 1.2rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      user-select: none;
+    }
+    .layer-header:hover { background: #f1f5f9; }
+    .layer-content {
+      padding: 1.2rem;
+      font-size: 0.95rem;
+      background: white;
+      display: none;
+      border-top: 1px solid var(--border);
+    }
+    .layer-item.open .layer-content { display: block; }
+    .layer-item.open .layer-header { color: var(--primary-dark); background: #f0fdfa; }
+
+    /* Icon Array Grid */
+    .icon-array-container {
+      margin: 1.25rem 0;
+      padding: 1.25rem;
+      background: #f8fafc;
+      border-radius: 12px;
+      border: 1px dashed #cbd5e1;
+      text-align: center;
+    }
+    .icon-array-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(28px, 1fr));
+      gap: 8px;
+      max-width: 480px;
+      margin: 1rem auto;
+    }
+    .icon-dot {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: white;
+    }
+    .dot-green { background: #10b981; }
+    .dot-orange { background: #f97316; }
+    .dot-red { background: #ef4444; }
+    .dot-purple { background: #a855f7; }
+    .dot-gray { background: #94a3b8; }
+
+    .icon-legend {
+      display: flex;
+      justify-content: center;
+      gap: 1.2rem;
+      flex-wrap: wrap;
+      margin-top: 0.75rem;
+      font-size: 0.85rem;
+    }
+    .legend-item { display: flex; align-items: center; gap: 0.4rem; }
+    .legend-box { width: 12px; height: 12px; border-radius: 3px; }
+
+    /* Quiz Box */
+    .quiz-card {
+      background: #ffffff;
+      border: 2px solid #e0e7ff;
+      border-radius: 16px;
+      padding: 1.5rem;
+      margin-top: 1.5rem;
+    }
+    .question-block {
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    .question-title {
+      font-weight: 700;
+      font-size: 1rem;
+      margin-bottom: 0.75rem;
+      color: #1e1b4b;
+    }
+    .option-label {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.65rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      margin-bottom: 0.4rem;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+    }
+    .option-label:hover { background: #f8fafc; border-color: var(--primary); }
+    .option-label.selected { background: #f0fdfa; border-color: var(--primary); font-weight: 600; }
+
+    .submit-quiz-btn {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 0.8rem 1.75rem;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 0.5rem;
+    }
+    .submit-quiz-btn:hover { background: var(--primary-dark); }
+
+    /* Persistent Action Bar */
+    .bottom-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: white;
+      border-top: 1px solid var(--border);
+      padding: 0.85rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 50;
+      box-shadow: 0 -4px 6px -1px rgba(0,0,0,0.05);
+    }
+    .help-text { font-size: 0.85rem; color: var(--text-muted); }
+    .counsellor-cta {
+      background: linear-gradient(135deg, #0d9488, #0284c7);
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 9999px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      box-shadow: 0 4px 10px rgba(13,148,136,0.3);
+    }
+
+    /* Modal */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.6);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: white;
+      border-radius: 20px;
+      max-width: 500px;
+      width: 100%;
+      padding: 1.75rem;
+      box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2);
+    }
+
+    .clinical-notice {
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      color: #92400e;
+      padding: 0.6rem 0.9rem;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-top: 1rem;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="brand">
+      <div class="brand-logo">🧬</div>
+      <div>
+        <div class="brand-title" id="t-brand-title">منصة التوافق الوراثي</div>
+        <div class="brand-subtitle">Future Health Challenge 2026 · Abu Dhabi</div>
+      </div>
+    </div>
+    <div class="top-controls">
+      <button class="pill-btn active" id="btn-lang-ar" onclick="setLanguage('ar')">العربية</button>
+      <button class="pill-btn" id="btn-lang-en" onclick="setLanguage('en')">English</button>
+    </div>
+  </header>
+
+  <div class="container">
+
+    <!-- Pre-marital Screening Result Card -->
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title" id="t-result-header">
+            <span>تقرير الفحص الجيني الاستكشافي</span>
+          </div>
+          <div style="font-size: 0.85rem; color: var(--text-muted);" id="t-user-welcome">المستخدمة: فاطمة المنصوري (فحص ما قبل الزواج)</div>
+        </div>
+        <span class="tier-badge tier-T1" id="t-tier-badge">مستوى المتابعة: T1</span>
+      </div>
+
+      <!-- Format Selection -->
+      <div class="format-bar">
+        <button class="format-btn active" id="fmt-text" onclick="setFormat('text')">📄 <span id="t-fmt-text">قراءة نصية</span></button>
+        <button class="format-btn" id="fmt-audio" onclick="setFormat('audio')">🎧 <span id="t-fmt-audio">استماع صوتي</span></button>
+        <button class="format-btn" id="fmt-visual" onclick="setFormat('visual')">📊 <span id="t-fmt-visual">رسوم توضيحية</span></button>
+      </div>
+
+      <!-- Audio Player Bar -->
+      <div class="audio-player-box" id="audio-box" style="display: flex;">
+        <button class="play-btn" id="btn-play-audio" onclick="toggleAudio()">▶</button>
+        <div>
+          <div class="audio-text" id="t-audio-title">الاستماع الصوتي لشرح النتيجة بلهجة واضحة ومبسطة</div>
+          <div style="font-size: 0.8rem; color: #0f766e;" id="audio-status">جاهز للتشغيل (اللغة العربية)</div>
+        </div>
+      </div>
+
+      <!-- Visual Icon Array Box -->
+      <div class="icon-array-container" id="visual-box">
+        <div style="font-weight: 700; color: #1e293b; margin-bottom: 0.25rem;" id="t-icon-title">الرسم التوضيحي لحالة حامل الجين (حاملو الجين أصحاء)</div>
+        <div style="font-size: 0.85rem; color: var(--text-muted);" id="t-icon-subtitle">أنت تحملين نسخة سليمة ونسخة متغيرة في جين بيتا ثلاسيميا (HBB)</div>
+        <div class="icon-array-grid" style="grid-template-columns: repeat(2, 60px); justify-content: center;">
+          <div class="icon-dot dot-green" title="نسخة سليمة">✓</div>
+          <div class="icon-dot dot-orange" title="نسخة متغيرة">●</div>
+        </div>
+        <div class="icon-legend">
+          <div class="legend-item"><div class="legend-box" style="background: #10b981;"></div> <span id="t-leg-standard">نسخة طبيعية (تعمل بكفاءة)</span></div>
+          <div class="legend-item"><div class="legend-box" style="background: #f97316;"></div> <span id="t-leg-carrier">نسخة متغيرة (حامل للصفة فقط)</span></div>
+        </div>
+      </div>
+
+      <!-- Layered Explanation Accordion -->
+      <div id="layered-explanation">
+        <div class="layer-item open" onclick="toggleLayer(this)">
+          <div class="layer-header">
+            <span id="t-layer-1-title">1. الخلاصة بعبارة واحدة</span>
+            <span>▾</span>
+          </div>
+          <div class="layer-content" id="layer-1-text">
+            أنت تحملين نسخة متغيرة واحدة من جين HBB (بيتا ثلاسيميا). حاملو الجين أصحاء ولا تظهر عليهم أعراض.
+          </div>
+        </div>
+
+        <div class="layer-item" onclick="toggleLayer(this)">
+          <div class="layer-header">
+            <span id="t-layer-2-title">2. ماذا تعني هذه النتيجة؟</span>
+            <span>▾</span>
+          </div>
+          <div class="layer-content" id="layer-2-text">
+            صفة الحامل الوراثي تعني أن لديك نسخة سليمة تقوم بكامل وظائف الجسم، ولذلك تتمتعين بصحة طبيعية تماماً. الأهمية الطبية لصفة الحامل تكمن فقط عند التخطيط للإنجاب مع شريك حياة يحمل تغيراً في نفس الجين تماماً.
+          </div>
+        </div>
+
+        <div class="layer-item" onclick="toggleLayer(this)">
+          <div class="layer-header">
+            <span id="t-layer-3-title">3. ما الذي لا تعنيه هذه النتيجة؟</span>
+            <span>▾</span>
+          </div>
+          <div class="layer-content" id="layer-3-text">
+            هذه النتيجة فحص استكشافي وليست تشخيصاً طبياً بمرض. أنت لستِ مصابة بالثلاسيميا، ولن تصابي بها مستقبلاً. كما أنها لا تعني أي عائق صحي لممارسة حياتك الطبيعية.
+          </div>
+        </div>
+
+        <div class="layer-item" onclick="toggleLayer(this)">
+          <div class="layer-header">
+            <span id="t-layer-4-title">4. الاحتمالية المتبقية والشك السريري</span>
+            <span>▾</span>
+          </div>
+          <div class="layer-content" id="layer-4-text">
+            الفحص يفحص الطفرات الأكثر شيوعاً بدقة تفوق 95%. تبقى هناك نسبة عامة منخفضة جداً لا يمكن لأي فحص وراثي استبعادها كلياً.
+          </div>
+        </div>
+
+        <div class="layer-item" onclick="toggleLayer(this)">
+          <div class="layer-header">
+            <span id="t-layer-5-title">5. الخطوات القادمة وخيارات التوافق</span>
+            <span>▾</span>
+          </div>
+          <div class="layer-content" id="layer-5-text">
+            الخطوة المثالية هي دعوة خطيبك لإجراء الفحص الجيني ومقارنة النتيجتين داخل خزنة الخصوصية الآمنة للتأكد مما إذا كان يحمل نفس الجين أم لا.
+          </div>
+        </div>
+      </div>
+
+      <div class="clinical-notice">DRAFT - requires clinical sign-off · هذا المحتوى استكشافي ويخضع للمراجعة السريرية</div>
+    </div>
+
+    <!-- Couple Matching & Privacy Vault Card -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">
+          <span>🔒 خزنة خصوصية التوافق مع الشريك</span>
+        </div>
+        <span class="tier-badge tier-T2" id="couple-status-badge">موافقة متبادلة نشطة</span>
+      </div>
+
+      <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;" id="t-couple-desc">
+        تتم مطابقة النتائج داخل خزنة رقمية مشفرة. لا يرى أي طرف قائمة الجينات الخاصة بالطرف الآخر، وتظهر النتيجة المشتركة فقط عند موافقة كلا الطرفين معاً.
+      </p>
+
+      <div style="background: #f0fdfa; border: 1px solid #99f6e4; border-radius: 12px; padding: 1.25rem; margin-bottom: 1rem;">
+        <div style="font-weight: 700; color: #0f766e; margin-bottom: 0.5rem;" id="t-cpl-result-title">
+          نتيجة التوافق بين فاطمة وطارق: تطابق في نفس الجين (HBB)
+        </div>
+        <p style="font-size: 0.9rem; color: #134e4a; margin-bottom: 0.75rem;" id="t-cpl-result-body">
+          كلاكما يحمل تغيراً في جين بيتا ثلاسيميا. في كل حمل هناك: احتمال 1 من 4 لإنجاب طفل مصاب، و1 من 2 لطفل حامل للصفة، و1 من 4 لطفل سليم تماماً.
+        </p>
+
+        <!-- Couple 1 in 4 Icon Array -->
+        <div style="background: white; border-radius: 10px; padding: 1rem; text-align: center; border: 1px solid #ccfbf1;">
+          <div style="font-size: 0.85rem; font-weight: 700; margin-bottom: 0.5rem;">احتمالات كل حمل (1 من كل 4 أطفال مصاب)</div>
+          <div style="display: flex; justify-content: center; gap: 12px;">
+            <div class="icon-dot dot-red" title="مصاب (1 من 4)">1</div>
+            <div class="icon-dot dot-orange" title="حامل (1 من 2)">2</div>
+            <div class="icon-dot dot-orange" title="حامل (1 من 2)">3</div>
+            <div class="icon-dot dot-green" title="سليم غير حامل (1 من 4)">4</div>
+          </div>
+          <div class="icon-legend" style="margin-top: 0.5rem;">
+            <div class="legend-item"><div class="legend-box" style="background: #ef4444;"></div> مصاب (1 من 4)</div>
+            <div class="legend-item"><div class="legend-box" style="background: #f97316;"></div> حامل (1 من 2)</div>
+            <div class="legend-item"><div class="legend-box" style="background: #10b981;"></div> سليم (1 من 4)</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Revocation & Notice -->
+      <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 0.75rem; border-top: 1px solid var(--border);">
+        <div style="font-size: 0.8rem; color: var(--text-muted);">
+          إلغاء الموافقة يحجب النتيجة المشتركة عن كلا الطرفين فوراً وبشكل دائم.
+        </div>
+        <button class="pill-btn" style="color: var(--danger); border-color: var(--danger);" onclick="revokeConsentDemo()">
+          إلغاء مشاركة التوافق
+        </button>
+      </div>
+    </div>
+
+    <!-- Teach-Back Comprehension Quiz Card -->
+    <div class="quiz-card" id="quiz-section">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <div>
+          <div style="font-size: 1.15rem; font-weight: 700; color: #1e1b4b;" id="t-quiz-title">اختبار الفهم التفاعلي (Teach-Back)</div>
+          <div style="font-size: 0.85rem; color: var(--text-muted);" id="t-quiz-sub">أجيبي على 4 أسئلة للتأكد من وضوح كافة المعلومات لك</div>
+        </div>
+        <span class="pill-btn" style="background: #e0e7ff; color: #3730a3;" id="quiz-attempt-badge">المحاولة 1</span>
+      </div>
+
+      <div id="quiz-container">
+        <!-- Injected via JavaScript -->
+      </div>
+
+      <button class="submit-quiz-btn" onclick="submitQuiz()" id="btn-submit-quiz">إرسال الإجابات والتحقق من الفهم</button>
+      <div id="quiz-result-feedback" style="display: none; margin-top: 1rem; padding: 1rem; border-radius: 10px;"></div>
+    </div>
+
+  </div>
+
+  <!-- Persistent Bottom Action Bar: Talk to a Person -->
+  <div class="bottom-bar">
+    <div>
+      <div style="font-weight: 700; font-size: 0.95rem;" id="t-bot-cta-title">هل لديكِ أي استفسار أو مشاعر قلق؟</div>
+      <div class="help-text" id="t-bot-cta-sub">خدمة الاستشارة الوراثية متاحة دائماً بسرية تامة ومجاناً</div>
+    </div>
+    <button class="counsellor-cta" onclick="openBookingModal()">
+      <span>💬</span>
+      <span id="t-btn-counsellor">تحدث مع مختص وراثي</span>
+    </button>
+  </div>
+
+  <!-- Counsellor Booking Modal -->
+  <div class="modal-overlay" id="booking-modal">
+    <div class="modal">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+        <h3 style="font-size: 1.2rem; font-weight: 700;">حجز استشارة وراثية متخصصة</h3>
+        <button onclick="closeBookingModal()" style="border: none; background: none; font-size: 1.4rem; cursor: pointer;">✕</button>
+      </div>
+      <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;">
+        نوفر لك جلسة استشارية مع مرشد وراثي معتمد لمناقشة كافة الخيارات المتاحة بكل خصوصية وهدوء.
+      </p>
+
+      <div style="margin-bottom: 1rem;">
+        <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.35rem;">نوع الجلسة:</label>
+        <select id="book-modality" style="width: 100%; padding: 0.6rem; border-radius: 8px; border: 1px solid var(--border);">
+          <option value="video">مكالمة مرئية عن بُعد (خاصة وآمنة)</option>
+          <option value="in_person">حضور شخصي في مركز أبوظبي للجينوم</option>
+        </select>
+      </div>
+
+      <div style="margin-bottom: 1rem;">
+        <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.35rem;">تفضيل لغة المستشار:</label>
+        <select id="book-lang" style="width: 100%; padding: 0.6rem; border-radius: 8px; border: 1px solid var(--border);">
+          <option value="ar">اللغة العربية (لهجة خليجية متوفرة)</option>
+          <option value="en">English</option>
+        </select>
+      </div>
+
+      <button class="submit-quiz-btn" onclick="confirmBooking()">تأكيد حجز الموعد</button>
+    </div>
+  </div>
+
+  <script>
+    let currentLang = 'ar';
+    let currentFormat = 'text';
+    let quizQuestions = [];
+    let selectedAnswers = {};
+    let isPlayingAudio = false;
+
+    const TRANSLATIONS = {
+      ar: {
+        brandTitle: "منصة التوافق الوراثي",
+        resultHeader: "تقرير الفحص الجيني الاستكشافي",
+        userWelcome: "المستخدمة: فاطمة المنصوري (فحص ما قبل الزواج)",
+        fmtText: "قراءة نصية",
+        fmtAudio: "استماع صوتي",
+        fmtVisual: "رسوم توضيحية",
+        audioTitle: "الاستماع الصوتي لشرح النتيجة بلهجة واضحة ومبسطة",
+        iconTitle: "الرسم التوضيحي لحالة حامل الجين (حاملو الجين أصحاء)",
+        iconSubtitle: "أنت تحملين نسخة سليمة ونسخة متغيرة في جين بيتا ثلاسيميا (HBB)",
+        quizTitle: "اختبار الفهم التفاعلي (Teach-Back)",
+        quizSub: "أجيبي على 4 أسئلة للتأكد من وضوح كافة المعلومات لك",
+        btnSubmitQuiz: "إرسال الإجابات والتحقق من الفهم",
+        botCtaTitle: "هل لديكِ أي استفسار أو مشاعر قلق؟",
+        botCtaSub: "خدمة الاستشارة الوراثية متاحة دائماً بسرية تامة ومجاناً",
+        btnCounsellor: "تحدث مع مختص وراثي"
+      },
+      en: {
+        brandTitle: "Inherited Disease Risk Platform",
+        resultHeader: "Carrier Screening Educational Report",
+        userWelcome: "User: Fatima Al Mansoori (Pre-marital screening)",
+        fmtText: "Text View",
+        fmtAudio: "Audio Narration",
+        fmtVisual: "Icon Arrays",
+        audioTitle: "Listen to natural audio explanation",
+        iconTitle: "Carrier Visual Representation (Carriers are healthy)",
+        iconSubtitle: "You carry one working copy and one changed copy in HBB (Beta-thalassemia)",
+        quizTitle: "Teach-Back Comprehension Check",
+        quizSub: "Answer 4 quick questions to confirm understanding",
+        btnSubmitQuiz: "Submit Answers & Verify Understanding",
+        botCtaTitle: "Do you have any questions or concerns?",
+        botCtaSub: "Accredited genetic counselling is always available confidentially",
+        btnCounsellor: "Talk to a Genetic Counsellor"
+      }
+    };
+
+    function setLanguage(lang) {
+      currentLang = lang;
+      document.documentElement.lang = lang;
+      document.documentElement.dir = (lang === 'ar') ? 'rtl' : 'ltr';
+      document.body.dir = (lang === 'ar') ? 'rtl' : 'ltr';
+
+      document.getElementById('btn-lang-ar').classList.toggle('active', lang === 'ar');
+      document.getElementById('btn-lang-en').classList.toggle('active', lang === 'en');
+
+      const t = TRANSLATIONS[lang];
+      document.getElementById('t-brand-title').innerText = t.brandTitle;
+      document.getElementById('t-result-header').innerText = t.resultHeader;
+      document.getElementById('t-user-welcome').innerText = t.userWelcome;
+      document.getElementById('t-fmt-text').innerText = t.fmtText;
+      document.getElementById('t-fmt-audio').innerText = t.fmtAudio;
+      document.getElementById('t-fmt-visual').innerText = t.fmtVisual;
+      document.getElementById('t-audio-title').innerText = t.audioTitle;
+      document.getElementById('t-icon-title').innerText = t.iconTitle;
+      document.getElementById('t-icon-subtitle').innerText = t.iconSubtitle;
+      document.getElementById('t-quiz-title').innerText = t.quizTitle;
+      document.getElementById('t-quiz-sub').innerText = t.quizSub;
+      document.getElementById('btn-submit-quiz').innerText = t.btnSubmitQuiz;
+      document.getElementById('t-bot-cta-title').innerText = t.botCtaTitle;
+      document.getElementById('t-bot-cta-sub').innerText = t.botCtaSub;
+      document.getElementById('t-btn-counsellor').innerText = t.btnCounsellor;
+
+      loadQuizQuestions();
+    }
+
+    function setFormat(fmt) {
+      currentFormat = fmt;
+      document.getElementById('fmt-text').classList.toggle('active', fmt === 'text');
+      document.getElementById('fmt-audio').classList.toggle('active', fmt === 'audio');
+      document.getElementById('fmt-visual').classList.toggle('active', fmt === 'visual');
+
+      document.getElementById('audio-box').style.display = (fmt === 'audio') ? 'flex' : 'none';
+      document.getElementById('visual-box').style.display = (fmt === 'visual') ? 'block' : 'none';
+    }
+
+    function toggleLayer(el) {
+      el.classList.toggle('open');
+    }
+
+    function toggleAudio() {
+      const btn = document.getElementById('btn-play-audio');
+      const status = document.getElementById('audio-status');
+      if (!isPlayingAudio) {
+        isPlayingAudio = true;
+        btn.innerText = "⏸";
+        status.innerText = (currentLang === 'ar') ? "جاري تشغيل التسجيل الصوتي..." : "Playing audio explanation...";
+        
+        // HTML5 SpeechSynthesis
+        if ('speechSynthesis' in window) {
+          window.speechSynthesis.cancel();
+          const textToSpeak = (currentLang === 'ar') 
+            ? "أنت تحملين نسخة متغيرة واحدة من جين بيتا ثلاسيميا. حاملو الجين يتمتعون بصحة ممتازة ولا تظهر عليهم أي أعراض. هذا فحص استكشافي وليس تشخيصاً طبياً."
+            : "You carry one changed copy of the HBB gene for Beta-thalassemia. Carriers are healthy and do not experience symptoms. This is a screening result, not a diagnosis.";
+          
+          const utter = new SpeechSynthesisUtterance(textToSpeak);
+          utter.lang = (currentLang === 'ar') ? 'ar-SA' : 'en-US';
+          utter.onend = () => {
+            isPlayingAudio = false;
+            btn.innerText = "▶";
+            status.innerText = (currentLang === 'ar') ? "اكتمل التشغيل" : "Playback finished";
+          };
+          window.speechSynthesis.speak(utter);
+        } else {
+          setTimeout(() => {
+            isPlayingAudio = false;
+            btn.innerText = "▶";
+            status.innerText = "اكتمل التشغيل";
+          }, 4000);
+        }
+      } else {
+        isPlayingAudio = false;
+        btn.innerText = "▶";
+        if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+        status.innerText = (currentLang === 'ar') ? "تم الإيقاف المؤقت" : "Paused";
+      }
+    }
+
+    async function loadQuizQuestions() {
+      try {
+        const res = await fetch(`/api/quiz/questions?lang=${currentLang}`);
+        if (res.ok) {
+          quizQuestions = await res.json();
+          renderQuiz();
+        }
+      } catch (err) {
+        console.error("Failed to load quiz", err);
+      }
+    }
+
+    function renderQuiz() {
+      const c = document.getElementById('quiz-container');
+      c.innerHTML = '';
+      quizQuestions.forEach((q, idx) => {
+        const block = document.createElement('div');
+        block.className = 'question-block';
+        
+        const title = document.createElement('div');
+        title.className = 'question-title';
+        title.innerText = `${idx + 1}. ${q.question}`;
+        block.appendChild(title);
+
+        q.options.forEach(opt => {
+          const lbl = document.createElement('label');
+          lbl.className = 'option-label';
+          lbl.id = `lbl_${q.id}_${opt.id}`;
+          
+          const inp = document.createElement('input');
+          inp.type = 'radio';
+          inp.name = q.id;
+          inp.value = opt.id;
+          inp.onchange = () => {
+            selectedAnswers[q.id] = opt.id;
+            document.querySelectorAll(`[id^="lbl_${q.id}_"]`).forEach(l => l.classList.remove('selected'));
+            lbl.classList.add('selected');
+          };
+
+          lbl.appendChild(inp);
+          lbl.appendChild(document.createTextNode(opt.text));
+          block.appendChild(lbl);
+        });
+        c.appendChild(block);
+      });
+    }
+
+    async function submitQuiz() {
+      const feedback = document.getElementById('quiz-result-feedback');
+      try {
+        const res = await fetch('/api/quiz/submit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'X-User-Id': 'person_001' },
+          body: JSON.stringify({
+            answers: selectedAnswers,
+            language: currentLang,
+            base_tier: 'T0'
+          })
+        });
+        const data = await res.json();
+        feedback.style.display = 'block';
+
+        if (data.passed) {
+          feedback.style.background = '#dcfce7';
+          feedback.style.border = '1px solid #86efac';
+          feedback.style.color = '#14532d';
+          feedback.innerHTML = `<strong>✓ أحسنتِ! لقد اجتزتِ الاختبار بنجاح بنسبة ${data.score}%.</strong><br>تم تأكيد فهمكِ لكافة النقاط الجوهرية.`;
+        } else {
+          feedback.style.background = '#fee2e2';
+          feedback.style.border = '1px solid #fca5a5';
+          feedback.style.color = '#7f1d1d';
+          feedback.innerHTML = `<strong>نسبة الفهم: ${data.score}%.</strong><br>بعض الإجابات تحتاج لتوضيح أكثر. ننصحك بالتواصل مع المرشد الوراثي لشرحها بالتفصيل.`;
+          if (data.failed_twice) {
+            openBookingModal();
+          }
+        }
+      } catch (err) {
+        console.error("Quiz submission error", err);
+      }
+    }
+
+    function revokeConsentDemo() {
+      if (confirm("هل أنتِ متأكدة من إلغاء موافقة التوافق؟ سيتم حجب النتيجة المشتركة عن الطرفين فوراً.")) {
+        alert("تم إلغاء المشاركة بنجاح وحجب النتيجة فوراً داخل خزنة الخصوصية.");
+        document.getElementById('couple-status-badge').className = "tier-badge tier-T3";
+        document.getElementById('couple-status-badge').innerText = "تم إلغاء الموافقة (محجوبة)";
+      }
+    }
+
+    function openBookingModal() {
+      document.getElementById('booking-modal').classList.add('open');
+    }
+
+    function closeBookingModal() {
+      document.getElementById('booking-modal').classList.remove('open');
+    }
+
+    function confirmBooking() {
+      alert("تم تأكيد حجز موعد الاستشارة الوراثية بنجاح! تم ربط ملف الحالة بجدول المستشار.");
+      closeBookingModal();
+    }
+
+    // Initialize
+    window.addEventListener('DOMContentLoaded', () => {
+      setLanguage('ar');
+      setFormat('text');
+    });
+  </script>
+</body>
+</html>

@@ -94,3 +94,35 @@ def test_audit_verify_endpoint(api_ctx):
     res = main_mod.verify_audit_log()
     assert res["valid"] is True
     assert "intact" in res["message"]
+
+
+def test_quiz_and_app_endpoints(api_ctx):
+    # Test /api/quiz/questions
+    questions_ar = main_mod.get_quiz_questions(lang="ar")
+    assert len(questions_ar) == 4
+    assert "ماذا تعني" in questions_ar[0]["question"]
+
+    questions_en = main_mod.get_quiz_questions(lang="en")
+    assert len(questions_en) == 4
+    assert "What does" in questions_en[0]["question"]
+
+    # Test /api/quiz/submit
+    submit_req = main_mod.QuizSubmitRequest(
+        answers={
+            "q1_carrier_meaning": "b",
+            "q2_risk_vs_diagnosis": "a",
+            "q3_same_gene_probability": "a",
+            "q4_residual_risk": "b",
+        },
+        language="ar",
+        base_tier="T0",
+    )
+    auth_fatima = {"user_id": "person_001", "role": "patient"}
+    result = main_mod.submit_quiz_answers(submit_req, auth=auth_fatima)
+    assert result["score"] == 100.0
+    assert result["passed"] is True
+    assert result["assigned_tier"] == "T0"
+
+    # Test /app endpoint
+    app_resp = main_mod.serve_user_app()
+    assert str(app_resp.path).endswith("index.html")
