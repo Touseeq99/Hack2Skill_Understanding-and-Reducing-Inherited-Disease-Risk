@@ -13,8 +13,6 @@ Produces 200 diverse individuals and 80 couples across clinical edge cases:
 
 import json
 import random
-import uuid
-import datetime
 from pathlib import Path
 from typing import Dict, List, Any
 from backend.database import Database

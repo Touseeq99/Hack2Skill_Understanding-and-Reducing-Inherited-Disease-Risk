@@ -18,6 +18,7 @@ from backend.pdf_generator import generate_case_packet_pdf
 from backend.family_notice import family_notice_svc
 from backend.triage_router import router, TriageSignals
 from backend.referral_state_machine import referral_sm
+from backend.analytics import analytics_svc
 
 APP_DIR = Path(__file__).resolve().parent.parent / "app"
 PORTAL_DIR = Path(__file__).resolve().parent.parent / "portal"
@@ -395,3 +396,16 @@ def send_family_notice(
 @app.get("/api/family-notice/{token}")
 def open_family_notice(token: str):
     return family_notice_svc.open_notice(token)
+
+
+@app.get("/dashboard")
+def serve_outcomes_dashboard():
+    dashboard_file = PORTAL_DIR / "dashboard.html"
+    if not dashboard_file.exists():
+        raise HTTPException(status_code=404, detail="Dashboard file not found.")
+    return FileResponse(dashboard_file)
+
+
+@app.get("/api/analytics/metrics")
+def get_outcomes_metrics():
+    return analytics_svc.get_dashboard_metrics()
