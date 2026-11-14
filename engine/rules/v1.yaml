@@ -7,6 +7,7 @@ individual_rules:
   - id: "IND-001"
     name: "Screen Negative"
     category: "screen_negative"
+    tier: "T0"
     default_tier: "T0"
     clinical_signoff: "pending"
     condition: "No pathogenic or likely pathogenic variants found on screening panel"
@@ -28,6 +29,7 @@ individual_rules:
   - id: "IND-002"
     name: "Autosomal Recessive Single Carrier"
     category: "carrier"
+    tier: "T1"
     default_tier: "T1"  # T1 if partner untested/unlinked, T0 if partner negative or diff gene, T2 if partner same gene
     clinical_signoff: "pending"
     condition: "Exactly one pathogenic or likely pathogenic variant in an autosomal recessive (AR) gene"
@@ -49,6 +51,7 @@ individual_rules:
   - id: "IND-003"
     name: "X-Linked Female Carrier"
     category: "xlinked_carrier"
+    tier: "T2"
     default_tier: "T2"
     clinical_signoff: "pending"
     condition: "One pathogenic or likely pathogenic variant in an X-linked (XL) gene in a female"
@@ -78,6 +81,7 @@ individual_rules:
   - id: "IND-004"
     name: "X-Linked Hemizygous Male"
     category: "xlinked_male"
+    tier: "T2"
     default_tier: "T2"
     clinical_signoff: "pending"
     condition: "Pathogenic or likely pathogenic variant in an X-linked (XL) gene in a male (hemizygous)"
@@ -99,6 +103,7 @@ individual_rules:
   - id: "IND-005"
     name: "Possible Affected (Two AR Variants)"
     category: "possible_affected"
+    tier: "T2"
     default_tier: "T2" # T2 by default; T3 if pregnant, distress fired, or symptoms reported
     clinical_signoff: "pending"
     condition: "Two pathogenic or likely pathogenic variants in the same AR gene (homozygous or compound heterozygous)"
@@ -120,6 +125,7 @@ individual_rules:
   - id: "IND-006"
     name: "Uncertain Significance (VUS Only)"
     category: "uncertain"
+    tier: "T0"
     default_tier: "T0" # T2 if partner has P/LP in the same gene
     clinical_signoff: "pending"
     condition: "Only variant(s) of uncertain significance (VUS) found, no pathogenic/likely pathogenic variants"
@@ -373,10 +379,11 @@ couple_rules:
 consanguinity_statement:
   rule_id: "CNS-001"
   clinical_signoff: "pending"
+  clinical_review_flag: true
   title_en: "Background Information on Family Relatedness"
   title_ar: "معلومات عامة حول صلة القرابة الأسرية"
-  body_en: "Marriage between relatives, such as first cousins, is a common and valued practice in many communities. Published medical studies (Bennett et al., NSGC 2002) show that in the general population, about 96 to 97 in 100 children are born without any major health condition (a baseline chance of 3-4%). For first cousins, the chance is modestly different: about 94 to 96 in 100 children are born without any major health condition (roughly 1.7 to 2.8 percentage points above baseline). This relates to birth conditions in general, not solely recessive genetic conditions. Genetic screening helps clarify your specific family risks."
-  body_ar: "يعد زواج الأقارب (مثل أبناء العمومة) ممارسة شائعة ومقدرة في العديد من المجتمعات. تشير الدراسات الطبية المنشورة (بينيت وزملاؤه، الجمعية الوطنية للمستشارين الوراثيين 2002) إلى أنه في عموم السكان، يولد نحو 96 إلى 97 طفلاً من كل 100 طفل دون أي حالة صحية كبرى (احتمال عام 3-4٪). أما بالنسبة لأبناء العمومة من الدرجة الأولى، فإن النسبة تختلف اختلافاً طفيفاً: يولد نحو 94 إلى 96 طفلاً من كل 100 طفل دون أي حالة صحية كبرى (زيادة طفيفة تتراوح بين 1.7 إلى 2.8 نقطة مئوية عن المعدل العام). وهذا يخص الحالات الصحية الخلقية العامة ولا يقتصر على الأمراض المتنحية. ويساعد الفحص الجيني الحالي في توضيح الصورة الخاصة بكما بدقة."
+  body_en: "Marriage between relatives, such as first cousins, is a common and valued practice in many communities. Published medical estimates (Bennett et al., NSGC 2002) concern birth defects in general: about 3-4% baseline in the general population, and roughly 1.7 to 2.8 percentage points higher for first cousins. These figures describe birth defects in general across all causes. Both numbers show that the vast majority of pregnancies result in healthy children (about 96-97 in 100 vs about 94-96 in 100 have no major birth condition). Pre-marital genetic screening provides targeted clarity for specific family risks."
+  body_ar: "يعد زواج الأقارب (مثل أبناء العمومة) ممارسة شائعة ومقدرة في العديد من المجتمعات. تشير التقديرات الطبية المنشورة (بينيت وزملاؤه، الجمعية الوطنية للمستشارين الوراثيين 2002) إلى أن احتمالية العيوب الخلقية العامة تبلغ حوالي 3-4٪ كخط أساس عام، وترتفع بنحو 1.7 إلى 2.8 نقطة مئوية لأبناء العمومة من الدرجة الأولى. هذه التقديرات تصف العيوب الخلقية العامة عبر مختلف الأسباب الشاملة. كلا الرقمين يوضحان أن الأغلبية الساحقة يولدون دون أي حالة (حوالي 96-97 من 100 مقابل 94-96 من 100 لا يعانون من أي حالة). يساعد الفحص الحالي في تحديد التوافق الوراثي الخاص بكما بدقة وبلا أي لوم."
   side_by_side:
     general_population: "About 96-97 in 100 have no major birth condition"
     first_cousins: "About 94-96 in 100 have no major birth condition"

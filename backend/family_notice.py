@@ -107,5 +107,38 @@ class FamilyNoticeService:
             "info": "You were invited by a family relative to consider carrier screening. No personal details of the sender are shared.",
         }
 
+    def generate_shareable_card(self, condition_name: str, language: str = "ar") -> Dict[str, Any]:
+        """Generate an educational shareable explainer card (Option 1)."""
+        card_content_ar = {
+            "title": f"معلومات توعوية حول التوافق الوراثي: {condition_name}",
+            "headline": "الفحص الجيني الاستكشافي للأسرة والمقبلين على الزواج",
+            "body": (
+                f"تشارك عائلتنا هذه البطاقة التوعوية لتشجيع المقبلين على الزواج على إجراء فحص التوافق الوراثي الاستكشافي لـ {condition_name}. "
+                "كونك حاملاً للصفة الوراثية لا يعني إصابتك بأي مرض، بل يساعدك في التخطيط الإنجابي السليم. "
+                "الفحص متوفر بسرية تامة ومجاناً عبر المنظومة الصحية في أبوظبي."
+            ),
+            "cta": "احجز موعد استشارة جينية استكشافية",
+            "privacy_notice": "هذه البطاقة عامة ولا تتضمن أي بيانات شخصية أو نتائج خاصة بأي فرد.",
+            "disclaimer": "هذا فحص استكشافي وليس تشخيصاً طبياً. [DRAFT - requires clinical sign-off]",
+        }
+        card_content_en = {
+            "title": f"Family Health Education: {condition_name} Carrier Screening",
+            "headline": "Pre-marital and Preconception Genetic Compatibility",
+            "body": (
+                f"Our family is sharing this informational card to encourage relatives planning marriage or pregnancy to consider carrier screening for {condition_name}. "
+                "Being a carrier means having one changed copy of a gene—carriers are healthy. "
+                "Confidential screening and accredited genetic counselling are freely available in Abu Dhabi."
+            ),
+            "cta": "Book a Free Genetic Consultation",
+            "privacy_notice": "This informational card contains no names, personal data, or individual test results.",
+            "disclaimer": "This is a screening result, not a diagnosis. [DRAFT - requires clinical sign-off]",
+        }
+        return {
+            "option": "option_1_shareable_card",
+            "condition_name": condition_name,
+            "language": language,
+            "card": card_content_ar if language == "ar" else card_content_en,
+        }
+
 
 family_notice_svc = FamilyNoticeService()

@@ -3,7 +3,6 @@ Demonstrates the full end-to-end clinical workflow described in Section 12:
 - Fatima Al Mansoori & Tariq Al Nuaimi (Pre-marital screening, HBB same-gene match).
 """
 
-import json
 from backend.database import db
 from backend.service import service
 from backend.intent_classifier import intent_classifier
@@ -93,7 +92,7 @@ def run_demo():
         print(f"\nUser Asks ({label}): \"{query}\"")
         intent_res = intent_classifier.classify_intent(query)
         print(f"Intent Analysis: is_decision_question={intent_res['is_decision_question']}")
-        print(f"Automated Handoff Response (Strictly Non-Directive):")
+        print("Automated Handoff Response (Strictly Non-Directive):")
         print(f"  \"{intent_res['handoff_message']}\"")
 
     # Triage Escalation
@@ -184,7 +183,7 @@ def run_demo():
         condition_name="Beta-thalassemia",
     )
     print(f"Notice Status: Created | Token: {notice['token']}")
-    print(f"Sender Anonymity: Sender identity is omitted from notification body.")
+    print("Sender Anonymity: Sender identity is omitted from notification body.")
     print(f"Message Preview (AR): \"{notice['message_ar']}\"")
     print(f"Mandatory Sender Privacy Warning: \"{notice['warning'][:90]}...\"")
 
@@ -197,7 +196,7 @@ def run_demo():
     print(f"Ethical Non-Metric Policy: {dash['ethical_policy']['explicit_excluded_metric']}")
     print(f"Comprehension Uplift: +{dash['comprehension']['uplift_percentage_points']} percentage points (Baseline 52% -> Post 94%)")
     print(f"Counselling Uptake: {dash['counselling_uptake']['uptake_percentage']}% of at-risk couples booked & attended")
-    print(f"SLA Adherence: T3 Urgent 100%, T2 Priority 97.4%, T1 Routine 98.8%")
+    print("SLA Adherence: T3 Urgent 100%, T2 Priority 97.4%, T1 Routine 98.8%")
     print(f"Zero Unauthorized Reads: {dash['privacy_and_security']['unauthorized_access_breaches']} breaches, {dash['privacy_and_security']['revocations_honored_instantaneous_pct']}% revocations honored")
     print(f"Cryptographic Audit Chain Integrity: {'VERIFIED OK' if dash['privacy_and_security']['cryptographic_audit_chain_valid'] else 'COMPROMISED'}")
     print(f"Equity Parity Achieved: {dash['equity_breakdowns']['equity_parity_achieved']} (Max gap: {dash['equity_breakdowns']['maximum_equity_gap_points']} points across language, literacy, and age)")

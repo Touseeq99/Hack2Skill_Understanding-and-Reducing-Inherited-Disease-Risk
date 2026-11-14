@@ -81,6 +81,59 @@ class SchedulerService:
             "status": "booked",
         }
 
+    def list_available_slots(
+        self,
+        language: Optional[str] = None,
+        gender: Optional[str] = None,
+        modality: Optional[str] = None,
+    ) -> List[Dict[str, Any]]:
+        """Return available counsellor calendar slots with language and gender filters."""
+        counsellors = [
+            {
+                "counsellor_id": "counsellor_maryam",
+                "name": "Dr. Maryam Al Nuaimi",
+                "gender": "female",
+                "languages": ["ar", "en"],
+                "facility": "Sheikh Khalifa Medical City (SKMC), Abu Dhabi",
+                "slots": ["2026-11-18T09:00:00Z", "2026-11-18T11:00:00Z", "2026-11-19T14:00:00Z"],
+            },
+            {
+                "counsellor_id": "counsellor_ahmed",
+                "name": "Dr. Ahmed Al Mansoori",
+                "gender": "male",
+                "languages": ["ar", "en"],
+                "facility": "Cleveland Clinic Abu Dhabi",
+                "slots": ["2026-11-18T10:00:00Z", "2026-11-19T10:00:00Z", "2026-11-20T11:00:00Z"],
+            },
+            {
+                "counsellor_id": "counsellor_sarah",
+                "name": "Dr. Sarah Jenkins",
+                "gender": "female",
+                "languages": ["en"],
+                "facility": "Kanad Hospital Genetic Counseling Service",
+                "slots": ["2026-11-19T09:30:00Z", "2026-11-20T13:00:00Z"],
+            },
+        ]
+
+        filtered_results: List[Dict[str, Any]] = []
+        for c in counsellors:
+            if language and language not in c["languages"]:
+                continue
+            if gender and gender.lower() != c["gender"]:
+                continue
+            for s in c["slots"]:
+                filtered_results.append({
+                    "counsellor_id": c["counsellor_id"],
+                    "counsellor_name": c["name"],
+                    "gender": c["gender"],
+                    "languages": c["languages"],
+                    "facility": c["facility"],
+                    "slot_time": s,
+                    "modalities": ["video", "in_person"] if not modality else [modality],
+                })
+
+        return filtered_results
+
     def list_counsellor_queue(self, counsellor_id: Optional[str] = None) -> List[Dict[str, Any]]:
         """List triage cases sorted by tier priority (T3 -> T2 -> T1 -> T0) and SLA due date."""
         conn = self.db.get_connection()

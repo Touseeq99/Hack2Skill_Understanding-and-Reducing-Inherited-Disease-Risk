@@ -38,6 +38,11 @@ class PlatformService:
             conn.close()
             raise HTTPException(status_code=404, detail=f"Person '{person_id}' not found.")
 
+        # Check if screening result exists for person
+        cur.execute("SELECT id FROM screening_result WHERE person_id = ?", (person_id,))
+        sr_row = cur.fetchone()
+        is_tested = (sr_row is not None)
+
         # Get variants
         cur.execute("""
             SELECT vc.id, vc.gene, vc.hgvs, vc.zygosity, vc.classification, vc.inheritance, vc.encrypted_payload
@@ -64,7 +69,7 @@ class PlatformService:
             sex=p_row["sex"],
             pregnancy_status=bool(p_row["pregnancy_status"]),
             variants=variants,
-            is_tested=True,
+            is_tested=is_tested,
         )
 
     def get_individual_assessment(self, person_id: str, current_user_id: str, role: str = "patient") -> PersonResult:

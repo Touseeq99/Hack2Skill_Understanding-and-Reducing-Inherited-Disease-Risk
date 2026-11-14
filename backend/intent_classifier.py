@@ -6,7 +6,7 @@ Tuned for high recall to ensure patient safety and ethical non-directiveness:
 """
 
 import re
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Optional
 from explain.templates.catalog import TEMPLATES
 
 
@@ -23,6 +23,7 @@ INTENT_PATTERNS = {
         ],
         "ar": [
             r"هل نتزوج",
+            r"هل يجب (?:أن )?نتزوج",
             r"هل نستمر بالزواج",
             r"هل نلغي الزواج",
             r"ماذا تنصحنا",
@@ -31,6 +32,8 @@ INTENT_PATTERNS = {
             r"شو نسوي",
             r"هل ننفصل",
             r"هل تنصح بعدم الزواج",
+            r"تنصحنا نتزوج",
+            r"هل نتزوج ولا لا",
         ]
     },
     "reproductive_options": {
@@ -79,10 +82,15 @@ INTENT_PATTERNS = {
 class IntentClassifier:
     """Classifies user messages to detect triage triggers."""
 
-    def classify_intent(self, text: str, language: str = "ar") -> Dict[str, Any]:
+    def classify_intent(self, text: str, language: Optional[str] = None) -> Dict[str, Any]:
         """Detect intent and return matching flags, target tier, and non-directive message if applicable."""
         detected_intents: List[str] = []
         lower_text = text.lower()
+
+        # Auto-detect language if not explicitly provided
+        if not language or language not in ("ar", "en"):
+            has_arabic = bool(re.search(r"[\u0600-\u06FF]", text))
+            language = "ar" if has_arabic else "en"
 
         for intent, lang_map in INTENT_PATTERNS.items():
             patterns = lang_map.get("en", []) + lang_map.get("ar", [])

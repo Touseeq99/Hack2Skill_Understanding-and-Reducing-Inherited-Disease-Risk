@@ -280,3 +280,24 @@ CREATE POLICY triage_case_access_policy ON triage_case
         )
     );
 
+-- Accredited Service Directory Table
+CREATE TABLE IF NOT EXISTS service_directory (
+    id TEXT PRIMARY KEY,
+    name_en TEXT NOT NULL,
+    name_ar TEXT NOT NULL,
+    facility_type TEXT NOT NULL,
+    location TEXT NOT NULL,
+    contact_phone TEXT,
+    services_offered TEXT NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+INSERT INTO service_directory (id, name_en, name_ar, facility_type, location, contact_phone, services_offered)
+VALUES 
+    ('serv_skmc', 'Sheikh Khalifa Medical City - Medical Genetics', 'مدينة الشيخ خليفة الطبية - قسم الأمراض الجينية', 'hospital', 'Abu Dhabi Central', '+971-2-8190000', 'Clinical genetic counselling, confirmatory genomic sequencing, pediatric genetics'),
+    ('serv_ccad', 'Cleveland Clinic Abu Dhabi - Genomics Center', 'كليفلاند كلينك أبوظبي - مركز الجينوم الطبي', 'hospital', 'Al Maryah Island, Abu Dhabi', '+971-2-6590000', 'Adult genetic counselling, pre-conception risk assessment, cardiogenetics'),
+    ('serv_kanad', 'Kanad Hospital Genetic Counseling Department', 'مستشفى كندا - قسم الإرشاد الجيني', 'hospital', 'Al Ain', '+971-3-7131000', 'Pre-marital counselling, family cascade testing, maternal-fetal medicine'),
+    ('serv_fakih', 'Fakih IVF Fertility Center - PGT-M Lab', 'مركز فقيه للإخصاب - مختبر الفحص الجيني للأجنة', 'fertility_clinic', 'Abu Dhabi Corniche', '+971-2-4444107', 'In Vitro Fertilization (IVF), Pre-implantation Genetic Testing for Monogenic diseases (PGT-M)'),
+    ('serv_burjeel', 'Burjeel Medical City - Fetal Medicine & Genetics', 'مدينة برجيل الطبية - قسم طب الجنين والأمراض الوراثية', 'hospital', 'Mohammed Bin Zayed City', '+971-2-80055', 'Comprehensive prenatal diagnosis, amniocentesis, fetal anomaly counselling')
+ON CONFLICT (id) DO NOTHING;
+

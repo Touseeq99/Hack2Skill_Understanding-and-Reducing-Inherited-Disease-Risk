@@ -3,7 +3,7 @@ Supports 'standard' and 'simple' reading levels.
 Marked: 'DRAFT - requires clinical sign-off'.
 """
 
-from typing import Dict
+from typing import Dict, Any
 
 CLINICAL_SIGNOFF_TAG = "DRAFT - requires clinical sign-off"
 
@@ -272,3 +272,32 @@ TEMPLATES: Dict[str, Dict[str, Dict[str, str]]] = {
         },
     },
 }
+
+# Template metadata mapping with version and approved_by fields
+TEMPLATE_METADATA: Dict[str, Dict[str, Any]] = {
+    key: {
+        "id": key,
+        "version": "v1",
+        "approved_by": CLINICAL_SIGNOFF_TAG,
+        "languages": ["en", "ar"],
+        "reading_levels": ["standard", "simple"],
+    }
+    for key in TEMPLATES.keys()
+}
+
+
+def get_template_entry(key: str, language: str = "ar", reading_level: str = "standard") -> Dict[str, Any]:
+    """Retrieve template text alongside version and approved_by metadata."""
+    if key not in TEMPLATES:
+        raise KeyError(f"Template key '{key}' not found.")
+    meta = TEMPLATE_METADATA[key]
+    lang_dict = TEMPLATES[key].get(language, TEMPLATES[key]["en"])
+    text = lang_dict.get(reading_level, lang_dict["standard"])
+    return {
+        "id": key,
+        "language": language,
+        "reading_level": reading_level,
+        "body": text,
+        "version": meta["version"],
+        "approved_by": meta["approved_by"],
+    }

@@ -4,6 +4,11 @@
 > **Track**: Fertility Challenge 03 — Inherited disease risk linked to consanguinity (Abu Dhabi)  
 > **Clinical Status**: *DRAFT - requires clinical sign-off*. Prototype designed for culturally grounded patient education, autonomous private consent, deterministic clinical triage, and accredited genetic counsellor handoff.
 
+📖 **Comprehensive Documentation**:
+- 📘 **[Complete User Guide & Demo Playbook (docs/USER_GUIDE.md)](file:///e:/inheritance_project/docs/USER_GUIDE.md)**: Beginner-friendly overview, click-by-click 5-minute demo walkthrough with judge script, troubleshooting, feature matrix, and judge Q&A cheat sheet.
+- 📋 **[Independent QA Audit & Verification Report (docs/AUDIT.md)](file:///e:/inheritance_project/docs/AUDIT.md)**: 60-item compliance audit with verified execution evidence, 100% engine coverage, and safety eval benchmarks.
+- 📜 **[Architecture Decision Log (docs/DECISIONS.md)](file:///e:/inheritance_project/docs/DECISIONS.md)**: Rationales for every design decision and trade-off.
+
 ---
 
 ## Architectural Principles (Non-Negotiable)
@@ -77,10 +82,10 @@ See [`docs/DEMO.md`](file:///e:/inheritance_project/docs/DEMO.md) for the detail
 
 ## Testing & Quality Gates
 
-The codebase enforces strict test-driven development with 53 comprehensive automated tests across all components:
+The codebase enforces strict test-driven development with 62 comprehensive automated tests across all components:
 
 ```bash
-# Run full pytest suite (53 tests across engine, backend, explain, data, eval)
+# Run full pytest suite (62 tests across engine, backend, explain, data, eval)
 python -m pytest -v
 
 # Run randomized symmetry property tests: couple(a, b) == couple(b, a)

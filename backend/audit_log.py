@@ -7,7 +7,7 @@ is cryptographically chained to the previous entry using SHA-256.
 import hashlib
 import datetime
 import uuid
-from typing import Optional, Tuple
+from typing import Optional, Tuple, List, Dict, Any
 from pydantic import BaseModel
 from backend.database import Database, db
 
@@ -123,6 +123,21 @@ class AuditLogService:
             expected_prev = row["hash"]
 
         return True, None
+
+    def get_user_access_history(self, user_id: str, limit: int = 50) -> List[Dict[str, Any]]:
+        """Retrieve audit events related to user (where user was actor or target)."""
+        conn = self.db.get_connection()
+        cur = conn.cursor()
+        cur.execute("""
+            SELECT id, actor, action, target, grant_id, prev_hash, hash, at
+            FROM audit_event
+            WHERE actor = ? OR target LIKE ?
+            ORDER BY at DESC, rowid DESC
+            LIMIT ?
+        """, (user_id, f"%{user_id}%", limit))
+        rows = cur.fetchall()
+        conn.close()
+        return [dict(r) for r in rows]
 
 
 # Global singleton instance

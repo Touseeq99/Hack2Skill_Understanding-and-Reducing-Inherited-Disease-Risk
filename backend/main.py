@@ -84,6 +84,12 @@ def get_current_profile(auth: Dict[str, str] = Depends(get_current_user)):
     return person
 
 
+@app.get("/api/users/me/access-history")
+def get_my_access_history(auth: Dict[str, str] = Depends(get_current_user)):
+    """Allow user to view their own cryptographic access and audit history."""
+    return audit_logger.get_user_access_history(auth["user_id"])
+
+
 @app.get("/api/screening/{person_id}", response_model=PersonResult)
 def get_individual_result(
     person_id: str,
@@ -396,6 +402,36 @@ def send_family_notice(
 @app.get("/api/family-notice/{token}")
 def open_family_notice(token: str):
     return family_notice_svc.open_notice(token)
+
+
+@app.get("/api/family-notice/shareable-card")
+def get_family_shareable_card(
+    condition: str = Query("Beta-thalassemia", description="Condition name"),
+    language: str = Query("ar", description="Language ar or en"),
+):
+    """Option 1: Educational shareable explainer card."""
+    return family_notice_svc.generate_shareable_card(condition_name=condition, language=language)
+
+
+@app.get("/api/scheduler/available-slots")
+def get_available_counsellor_slots(
+    language: Optional[str] = Query(None, description="Preferred language (ar or en)"),
+    gender: Optional[str] = Query(None, description="Preferred counsellor gender (female or male)"),
+    modality: Optional[str] = Query(None, description="Modality (video or in_person)"),
+):
+    """List open genetic counsellor appointment slots with language and gender filters."""
+    return scheduler.list_available_slots(language=language, gender=gender, modality=modality)
+
+
+@app.get("/api/services/directory")
+def get_service_directory():
+    """List accredited healthcare and genetics clinics in Abu Dhabi."""
+    conn = db.get_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM service_directory ORDER BY name_en ASC")
+    rows = cur.fetchall()
+    conn.close()
+    return [dict(r) for r in rows]
 
 
 @app.get("/dashboard")

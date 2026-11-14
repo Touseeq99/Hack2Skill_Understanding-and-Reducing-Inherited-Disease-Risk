@@ -360,20 +360,23 @@
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(15, 23, 42, 0.6);
+      background: rgba(15, 23, 42, 0.65);
       z-index: 100;
       align-items: center;
       justify-content: center;
       padding: 1rem;
+      overflow-y: auto;
     }
     .modal-overlay.open { display: flex; }
     .modal {
       background: white;
       border-radius: 20px;
-      max-width: 500px;
+      max-width: 600px;
       width: 100%;
       padding: 1.75rem;
       box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2);
+      max-height: 90vh;
+      overflow-y: auto;
     }
 
     .clinical-notice {
@@ -387,10 +390,213 @@
       margin-top: 1rem;
       text-align: center;
     }
+
+    /* Options Library Styles (F11) */
+    .options-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1rem;
+      margin: 1.25rem 0;
+    }
+    .option-card {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.15rem;
+      background: #ffffff;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: all 0.2s;
+    }
+    .option-card:hover {
+      border-color: var(--primary);
+      box-shadow: 0 4px 12px rgba(13, 148, 136, 0.1);
+    }
+    .option-card h4 {
+      font-size: 1rem;
+      color: #0f172a;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .option-card p {
+      font-size: 0.85rem;
+      color: #475569;
+      line-height: 1.5;
+      margin-bottom: 0.75rem;
+    }
+    .option-badge {
+      align-self: flex-start;
+      font-size: 0.75rem;
+      padding: 0.2rem 0.5rem;
+      border-radius: 6px;
+      background: #f1f5f9;
+      color: #475569;
+      font-weight: 600;
+    }
+
+    /* Permissions Matrix Table (F12) */
+    .matrix-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+      font-size: 0.85rem;
+    }
+    .matrix-table th, .matrix-table td {
+      padding: 0.6rem 0.8rem;
+      text-align: right;
+      border-bottom: 1px solid var(--border);
+    }
+    body[dir="ltr"] .matrix-table th, body[dir="ltr"] .matrix-table td {
+      text-align: left;
+    }
+    .matrix-table th {
+      background: #f8fafc;
+      color: #334155;
+      font-weight: 700;
+    }
+
+    /* Audit Table in Modal (C7) */
+    .audit-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+      margin-top: 1rem;
+    }
+    .audit-table th, .audit-table td {
+      padding: 0.5rem;
+      border: 1px solid #e2e8f0;
+      text-align: right;
+    }
+    body[dir="ltr"] .audit-table th, body[dir="ltr"] .audit-table td {
+      text-align: left;
+    }
+    .audit-table th {
+      background: #f1f5f9;
+      font-weight: 700;
+    }
   </style>
 </head>
 <body>
 
+  <!-- ========================================================================= -->
+  <!-- F2: Neutral "Result Ready" Modal (Zero medical content, explicit ready) -->
+  <!-- ========================================================================= -->
+  <div class="modal-overlay open" id="ready-modal">
+    <div class="modal" style="text-align: center;">
+      <div style="font-size: 2.5rem; margin-bottom: 0.75rem;">📋</div>
+      <h3 style="font-size: 1.35rem; font-weight: 800; color: #0f172a; margin-bottom: 0.75rem;" id="t-ready-title">
+        تقرير الفحص الجيني الاستكشافي جاهز للاطلاع
+      </h3>
+      <p style="font-size: 0.95rem; color: #475569; margin-bottom: 1.25rem; line-height: 1.6;" id="t-ready-body">
+        تم الانتهاء من إعداد نتائج فحص ما قبل الزواج الاستكشافي الخاص بكِ. نود تذكيركِ بأن هذا الفحص استكشافي تثقيفي ولا يُعد تشخيصاً طبياً بأي مرض. يمكنكِ الاطلاع عليه في الوقت والمكان المناسبين لكِ بكل هدوء.
+      </p>
+
+      <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1rem; margin-bottom: 1.5rem; text-align: start;">
+        <div style="font-size: 0.85rem; font-weight: 700; color: #1e293b; margin-bottom: 0.35rem;" id="t-ready-note-title">
+          قبل أن تبدئي:
+        </div>
+        <ul style="font-size: 0.85rem; color: #64748b; padding-inline-start: 1.2rem; line-height: 1.5;" id="t-ready-note-list">
+          <li>النتائج محمية داخل خزنة خصوصية شخصية مشفرة.</li>
+          <li>يمكنك اختيار التنسيق المفضل لكِ (نصي، استماع صوتي، أو رسوم بيانية).</li>
+          <li>المرشد الوراثي متاح دائماً لدعمك والإجابة على أي استفسار بكل سرية.</li>
+        </ul>
+      </div>
+
+      <button class="submit-quiz-btn" style="padding: 0.9rem 1.5rem; font-size: 1.05rem;" onclick="proceedToPrecheck()" id="t-btn-ready-confirm">
+        ✓ أنا مستعدة للاطلاع على النتيجة
+      </button>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- F3: Pre-check Screen (2 Knowledge Questions + 1 Feelings Question) -->
+  <!-- ========================================================================= -->
+  <div class="modal-overlay" id="precheck-modal">
+    <div class="modal">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border);">
+        <h3 style="font-size: 1.2rem; font-weight: 700; color: #0f172a;" id="t-precheck-title">
+          التحقق التمهيدي قبل عرض النتيجة
+        </h3>
+        <span class="pill-btn" style="background: #e0e7ff; color: #3730a3; font-size: 0.75rem;">خطوة تأكيدية</span>
+      </div>
+
+      <p style="font-size: 0.9rem; color: #475569; margin-bottom: 1.25rem;" id="t-precheck-desc">
+        إجابتكِ على هذه الأسئلة التمهيدية السريعة تضمن استيعابكِ لطبيعة الفحص وتساعدنا على توفير الدعم الأنسب لكِ:
+      </p>
+
+      <!-- Knowledge Q1 -->
+      <div class="question-block" style="border-bottom: 1px solid #e2e8f0; margin-bottom: 1rem; padding-bottom: 1rem;">
+        <div class="question-title" style="font-size: 0.95rem; margin-bottom: 0.5rem;" id="t-pk-q1">
+          1. هل صفة الحامل الوراثي تعني أن الشخص مصاب بمرض طبي؟
+        </div>
+        <label class="option-label" onclick="selectPrecheck('pk1', 'wrong', this)">
+          <input type="radio" name="precheck_q1">
+          <span id="t-pk-q1-o1">نعم، تعني الإصابة بمرض ويحتاج إلى علاج فوري.</span>
+        </label>
+        <label class="option-label" onclick="selectPrecheck('pk1', 'correct', this)">
+          <input type="radio" name="precheck_q1">
+          <span id="t-pk-q1-o2">لا، حاملو الجين أصحاء تماماً ولا تظهر عليهم أعراض، وهو فحص استكشافي.</span>
+        </label>
+      </div>
+
+      <!-- Knowledge Q2 -->
+      <div class="question-block" style="border-bottom: 1px solid #e2e8f0; margin-bottom: 1rem; padding-bottom: 1rem;">
+        <div class="question-title" style="font-size: 0.95rem; margin-bottom: 0.5rem;" id="t-pk-q2">
+          2. هل يمكن لأي فحص جيني إزالة الشك بنسبة 100% بدون أي نسبة متبقية؟
+        </div>
+        <label class="option-label" onclick="selectPrecheck('pk2', 'wrong', this)">
+          <input type="radio" name="precheck_q2">
+          <span id="t-pk-q2-o1">نعم، النتيجة السلبية تعني انعدام الخطر تماماً بنسبة 100%.</span>
+        </label>
+        <label class="option-label" onclick="selectPrecheck('pk2', 'correct', this)">
+          <input type="radio" name="precheck_q2">
+          <span id="t-pk-q2-o2">لا، تبقى دائماً احتمالية متبقية منخفضة لا يمكن لأي فحص نفيها كلياً.</span>
+        </label>
+      </div>
+
+      <!-- Feelings Q3 -->
+      <div class="question-block" style="margin-bottom: 1.25rem;">
+        <div class="question-title" style="font-size: 0.95rem; margin-bottom: 0.5rem;" id="t-pk-q3">
+          3. كيف تشعرين في هذه اللحظة قبل الاطلاع على النتيجة؟
+        </div>
+        <label class="option-label" onclick="handlePrecheckFeeling('calm', this)">
+          <input type="radio" name="precheck_feelings">
+          <span id="t-pk-q3-o1">مطمئنة ومستعدة للاطلاع بكل هدوء.</span>
+        </label>
+        <label class="option-label" onclick="handlePrecheckFeeling('curious', this)">
+          <input type="radio" name="precheck_feelings">
+          <span id="t-pk-q3-o2">لدي فضول طبيعي واستفسارات أود فهمها.</span>
+        </label>
+        <label class="option-label" onclick="handlePrecheckFeeling('anxious', this)">
+          <input type="radio" name="precheck_feelings">
+          <span id="t-pk-q3-o3">أشعر بقلق أو توتر مرتفع وأفضل دعماً متخصصاً.</span>
+        </label>
+      </div>
+
+      <!-- High Anxiety Support Banner -->
+      <div id="precheck-anxiety-support" style="display: none; background: #fff7ed; border: 1px solid #fed7aa; border-radius: 12px; padding: 1rem; margin-bottom: 1.25rem;">
+        <div style="font-weight: 700; color: #9a3412; font-size: 0.9rem; margin-bottom: 0.35rem;" id="t-anxiety-title">
+          🤝 نحن هنا لدعمكِ وراحتكِ النفسية هي الأهم
+        </div>
+        <p style="font-size: 0.85rem; color: #7c2d12; margin-bottom: 0.75rem;" id="t-anxiety-text">
+          من الطبيعي تماماً الشعور بالقلق قبل نتائج الفحوصات الوراثية. يمكنكِ اختيار التحدث مباشرة مع مرشد وراثي معتمد قبل فتح التقرير:
+        </p>
+        <button class="pill-btn" style="background: #ea580c; color: white; border: none; font-size: 0.85rem;" onclick="openBookingModal()">
+          💬 حجز جلسة استشارة سرية وفورية
+        </button>
+      </div>
+
+      <button class="submit-quiz-btn" onclick="finishPrecheckAndReveal()" id="t-btn-reveal-results">
+        المتابعة وعرض التقرير الجيني
+      </button>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MAIN APP CONTAINER -->
+  <!-- ========================================================================= -->
   <header>
     <div class="brand">
       <div class="brand-logo">🧬</div>
@@ -400,6 +606,7 @@
       </div>
     </div>
     <div class="top-controls">
+      <button class="pill-btn" onclick="openAccessHistoryModal()" id="btn-top-history">👁️ سجل الوصول</button>
       <button class="pill-btn active" id="btn-lang-ar" onclick="setLanguage('ar')">العربية</button>
       <button class="pill-btn" id="btn-lang-en" onclick="setLanguage('en')">English</button>
     </div>
@@ -514,9 +721,21 @@
         <span class="tier-badge tier-T2" id="couple-status-badge">موافقة متبادلة نشطة</span>
       </div>
 
-      <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;" id="t-couple-desc">
+      <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.75rem;" id="t-couple-desc">
         تتم مطابقة النتائج داخل خزنة رقمية مشفرة. لا يرى أي طرف قائمة الجينات الخاصة بالطرف الآخر، وتظهر النتيجة المشتركة فقط عند موافقة كلا الطرفين معاً.
       </p>
+
+      <!-- ========================================================================= -->
+      <!-- C10: Explicit Privacy Notice for Couple Matching -->
+      <!-- ========================================================================= -->
+      <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 10px; padding: 0.85rem 1rem; margin-bottom: 1.25rem;">
+        <div style="font-weight: 700; color: #1e40af; font-size: 0.85rem; margin-bottom: 0.25rem;" id="t-c10-title">
+          ℹ️ تنبيه خصوصية متبادلة مهم:
+        </div>
+        <div style="font-size: 0.8rem; color: #1e3a8a; line-height: 1.5;" id="t-c10-body">
+          مطابقة النتائج مع الشريك ستكشف تلقائياً عما إذا كان الشريك يحمل أو لا يحمل تغيراً في الجينات المفحوصة (نتيجة 'عدم وجود جين مشترك' تعني طبياً أن الشريك لا يحمل تغيراً ممرضاً في هذه الجينات المحددة ضمن باقة الفحص).
+        </div>
+      </div>
 
       <div style="background: #f0fdfa; border: 1px solid #99f6e4; border-radius: 12px; padding: 1.25rem; margin-bottom: 1rem;">
         <div style="font-weight: 700; color: #0f766e; margin-bottom: 0.5rem;" id="t-cpl-result-title">
@@ -528,7 +747,7 @@
 
         <!-- Couple 1 in 4 Icon Array -->
         <div style="background: white; border-radius: 10px; padding: 1rem; text-align: center; border: 1px solid #ccfbf1;">
-          <div style="font-size: 0.85rem; font-weight: 700; margin-bottom: 0.5rem;">احتمالات كل حمل (1 من كل 4 أطفال مصاب)</div>
+          <div style="font-size: 0.85rem; font-weight: 700; margin-bottom: 0.5rem;" id="t-icon-cpl-title">احتمالات كل حمل (1 من كل 4 أطفال مصاب)</div>
           <div style="display: flex; justify-content: center; gap: 12px;">
             <div class="icon-dot dot-red" title="مصاب (1 من 4)">1</div>
             <div class="icon-dot dot-orange" title="حامل (1 من 2)">2</div>
@@ -536,21 +755,161 @@
             <div class="icon-dot dot-green" title="سليم غير حامل (1 من 4)">4</div>
           </div>
           <div class="icon-legend" style="margin-top: 0.5rem;">
-            <div class="legend-item"><div class="legend-box" style="background: #ef4444;"></div> مصاب (1 من 4)</div>
-            <div class="legend-item"><div class="legend-box" style="background: #f97316;"></div> حامل (1 من 2)</div>
-            <div class="legend-item"><div class="legend-box" style="background: #10b981;"></div> سليم (1 من 4)</div>
+            <div class="legend-item"><div class="legend-box" style="background: #ef4444;"></div> <span id="t-cpl-leg-affected">مصاب (1 من 4)</span></div>
+            <div class="legend-item"><div class="legend-box" style="background: #f97316;"></div> <span id="t-cpl-leg-carrier">حامل (1 من 2)</span></div>
+            <div class="legend-item"><div class="legend-box" style="background: #10b981;"></div> <span id="t-cpl-leg-healthy">سليم (1 من 4)</span></div>
           </div>
         </div>
       </div>
 
-      <!-- Revocation & Notice -->
-      <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 0.75rem; border-top: 1px solid var(--border);">
-        <div style="font-size: 0.8rem; color: var(--text-muted);">
-          إلغاء الموافقة يحجب النتيجة المشتركة عن كلا الطرفين فوراً وبشكل دائم.
+      <!-- ========================================================================= -->
+      <!-- F12: Granular Permissions Matrix (Who can see what) -->
+      <!-- ========================================================================= -->
+      <div style="margin-top: 1.25rem; border-top: 1px solid var(--border); padding-top: 1rem;">
+        <div style="font-weight: 700; font-size: 0.95rem; margin-bottom: 0.5rem; color: #1e293b;" id="t-matrix-title">
+          🛡️ مصفوفة الصلاحيات الشفافة (من يملك حق الاطلاع؟)
         </div>
-        <button class="pill-btn" style="color: var(--danger); border-color: var(--danger);" onclick="revokeConsentDemo()">
-          إلغاء مشاركة التوافق
+        <table class="matrix-table">
+          <thead>
+            <tr>
+              <th id="t-th-party">الجهة / المستخدم</th>
+              <th id="t-th-scope">نطاق البيانات المسموح</th>
+              <th id="t-th-status">الحالة</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>أنتِ (فاطمة)</strong></td>
+              <td id="t-td-fatima">التقرير الفردي الكامل + نتيجة التوافق المشتركة</td>
+              <td><span class="tier-badge tier-T0">مالكة السجل (كامل)</span></td>
+            </tr>
+            <tr>
+              <td><strong>الشريك (طارق)</strong></td>
+              <td id="t-td-tariq">نتيجة التوافق فقط (محجوب عن الجينات الفردية الخاصة بكِ)</td>
+              <td><span class="tier-badge tier-T1">بموافقة متبادلة مشروطة</span></td>
+            </tr>
+            <tr>
+              <td><strong>المرشد الوراثي</strong></td>
+              <td id="t-td-counsellor">ملف الحالة السريرية النشطة (ينتهي فور إغلاق الجلسة)</td>
+              <td><span class="tier-badge tier-T2">صلاحية مؤقتة مشفرة</span></td>
+            </tr>
+            <tr>
+              <td><strong>ملفي / الأقارب</strong></td>
+              <td id="t-td-external">محجوب تماماً (لا مشاركة دون إذن جديد صريح)</td>
+              <td><span class="tier-badge tier-T3">محجوب 100%</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Revocation & Access History Buttons -->
+      <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 0.75rem; border-top: 1px solid var(--border); flex-wrap: wrap; gap: 0.5rem;">
+        <button class="pill-btn" onclick="openAccessHistoryModal()" id="btn-view-audit">
+          👁️ عرض سجل الوصول والتدقيق لبياناتي
         </button>
+        <button class="pill-btn" style="color: var(--danger); border-color: var(--danger);" onclick="revokeConsentDemo()" id="btn-revoke-cpl">
+          إلغاء مشاركة التوافق فوراً
+        </button>
+      </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- F11: Options Library & Values Clarification (Neutral, Equal-Weight) -->
+    <!-- ========================================================================= -->
+    <div class="card" id="options-library-card">
+      <div class="card-header">
+        <div class="card-title">
+          <span>🌿 مكتبة الخيارات الإنجابية المتوازنة</span>
+        </div>
+        <span class="tier-badge tier-T2" id="t-opt-badge">خيارات محايدة متساوية</span>
+      </div>
+
+      <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;" id="t-opt-intro">
+        عند تطابق صفة الحامل لنفس الجين، تتوفر خيارات متعددة ومتوازنة. لا توجد توصية واحدة تناسب الجميع، بل يُترك القرار بالكامل لكما وفق قناعاتكما بعد الاستشارة:
+      </p>
+
+      <div class="options-grid">
+        <!-- Option 1: PGT-M -->
+        <div class="option-card">
+          <div>
+            <h4>🧪 <span id="t-opt-1-title">أطفال الأنابيب مع الفحص الوراثي (PGT-M)</span></h4>
+            <p id="t-opt-1-desc">إجراء تلقيح مخبري مع فحص الأجنة وراثياً قبل الزرع لاختيار الأجنة غير المصابة بطفرة HBB.</p>
+          </div>
+          <span class="option-badge" id="t-opt-1-tag">دقة تفوق 98% · إجراء طبي تداخلي</span>
+        </div>
+
+        <!-- Option 2: Prenatal Testing -->
+        <div class="option-card">
+          <div>
+            <h4>🩺 <span id="t-opt-2-title">الحمل الطبيعي مع التشخيص المبكر</span></h4>
+            <p id="t-opt-2-desc">الحمل بصورة طبيعية مع إجراء فحص السائل الأمنيوسي (Amniocentesis) أو خملات المشيمة (CVS) في الثلث الأول.</p>
+          </div>
+          <span class="option-badge" id="t-opt-2-tag">تشخيص مؤكد أثناء الحمل</span>
+        </div>
+
+        <!-- Option 3: Neonatal Testing -->
+        <div class="option-card">
+          <div>
+            <h4>👶 <span id="t-opt-3-title">الحمل الطبيعي مع فحص المواليد المبكر</span></h4>
+            <p id="t-opt-3-desc">الحمل الطبيعي وتجهيز خطة علاجية فورية للوليد (مثل الفحص الجيني للمولود وبدء التدخل الوقائي المبكر عند الحاجة).</p>
+          </div>
+          <span class="option-badge" id="t-opt-3-tag">جاهزية طبية استباقية</span>
+        </div>
+
+        <!-- Option 4: Kafala -->
+        <div class="option-card">
+          <div>
+            <h4>🏡 <span id="t-opt-4-title">الاحتضان والكفالة الأسرية</span></h4>
+            <p id="t-opt-4-desc">خيار الكفالة الأسرية المعتمدة في دولة الإمارات للأطفال المحتاجين لرعاية أسرية ضمن القيم الإسلامية والاجتماعية.</p>
+          </div>
+          <span class="option-badge" id="t-opt-4-tag">بعد إنساني واجتماعي</span>
+        </div>
+
+        <!-- Option 5: Child-free -->
+        <div class="option-card">
+          <div>
+            <h4>🤝 <span id="t-opt-5-title">خيار عدم الإنجاب البيولوجي</span></h4>
+            <p id="t-opt-5-desc">اتفاق الزوجين على بناء حياة مشتركة دون إنجاب أطفال بيولوجيين، مع التركيز على الأهداف المهنية والاجتماعية.</p>
+          </div>
+          <span class="option-badge" id="t-opt-5-tag">خيار شخصي متبادل</span>
+        </div>
+      </div>
+
+      <!-- Values Clarification Widget -->
+      <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.25rem; margin-top: 1rem;">
+        <div style="font-weight: 700; color: #1e293b; font-size: 0.95rem; margin-bottom: 0.5rem;" id="t-vc-title">
+          ⚖️ تمرين توضيح الأولويات والقيم المشتركة
+        </div>
+        <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 1rem;" id="t-vc-desc">
+          هذا التمرين مصمم لمساعدتكما على استيضاح أولوياتكما قبل مناقشتها مع المرشد الوراثي. لا يصدر هذا التمرين أي توصية آلية:
+        </p>
+
+        <div style="display: flex; flex-direction: column; gap: 0.75rem; font-size: 0.85rem;">
+          <label style="display: flex; align-items: center; justify-content: space-between; background: white; padding: 0.6rem 0.8rem; border-radius: 8px; border: 1px solid var(--border);">
+            <span id="t-vc-q1">أهمية تفادي ولادة طفل مصاب بحالة شديدة:</span>
+            <select style="padding: 0.3rem 0.6rem; border-radius: 6px; border: 1px solid var(--border);">
+              <option>أولوية قصوى</option>
+              <option>أولوية متوسطة</option>
+              <option>أولوية ثانوية</option>
+            </select>
+          </label>
+
+          <label style="display: flex; align-items: center; justify-content: space-between; background: white; padding: 0.6rem 0.8rem; border-radius: 8px; border: 1px solid var(--border);">
+            <span id="t-vc-q2">تفضيل الطرق الطبيعية وتجنب الإجراءات التداخلية:</span>
+            <select style="padding: 0.3rem 0.6rem; border-radius: 6px; border: 1px solid var(--border);">
+              <option>أفضل الطرق الطبيعية بقدر الإمكان</option>
+              <option>مستعدة لكافة الخيارات الطبية المتاحة</option>
+            </select>
+          </label>
+
+          <label style="display: flex; align-items: center; justify-content: space-between; background: white; padding: 0.6rem 0.8rem; border-radius: 8px; border: 1px solid var(--border);">
+            <span id="t-vc-q3">التوافق مع القناعات الدينية والاجتماعية للأسرة:</span>
+            <select style="padding: 0.3rem 0.6rem; border-radius: 6px; border: 1px solid var(--border);">
+              <option>جوهرية وأساسية في القرار</option>
+              <option>مرنة وفق الاستشارة الطبية</option>
+            </select>
+          </label>
+        </div>
       </div>
     </div>
 
@@ -586,19 +945,21 @@
     </button>
   </div>
 
+  <!-- ========================================================================= -->
   <!-- Counsellor Booking Modal -->
+  <!-- ========================================================================= -->
   <div class="modal-overlay" id="booking-modal">
     <div class="modal">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
-        <h3 style="font-size: 1.2rem; font-weight: 700;">حجز استشارة وراثية متخصصة</h3>
+        <h3 style="font-size: 1.2rem; font-weight: 700;" id="t-book-modal-title">حجز استشارة وراثية متخصصة</h3>
         <button onclick="closeBookingModal()" style="border: none; background: none; font-size: 1.4rem; cursor: pointer;">✕</button>
       </div>
-      <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;">
-        نوفر لك جلسة استشارية مع مرشد وراثي معتمد لمناقشة كافة الخيارات المتاحة بكل خصوصية وهدوء.
+      <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;" id="t-book-modal-desc">
+        نوفر لكِ جلسة استشارية مع مرشد وراثي معتمد لمناقشة كافة الخيارات المتاحة بكل خصوصية وهدوء.
       </p>
 
       <div style="margin-bottom: 1rem;">
-        <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.35rem;">نوع الجلسة:</label>
+        <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.35rem;" id="t-book-mod-label">نوع الجلسة:</label>
         <select id="book-modality" style="width: 100%; padding: 0.6rem; border-radius: 8px; border: 1px solid var(--border);">
           <option value="video">مكالمة مرئية عن بُعد (خاصة وآمنة)</option>
           <option value="in_person">حضور شخصي في مركز أبوظبي للجينوم</option>
@@ -606,17 +967,58 @@
       </div>
 
       <div style="margin-bottom: 1rem;">
-        <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.35rem;">تفضيل لغة المستشار:</label>
+        <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.35rem;" id="t-book-lang-label">تفضيل لغة المستشار:</label>
         <select id="book-lang" style="width: 100%; padding: 0.6rem; border-radius: 8px; border: 1px solid var(--border);">
-          <option value="ar">اللغة العربية (لهجة خليجية متوفرة)</option>
+          <option value="ar">اللغة العربية (لهجة إماراتية / خليجية متوفرة)</option>
           <option value="en">English</option>
         </select>
       </div>
 
-      <button class="submit-quiz-btn" onclick="confirmBooking()">تأكيد حجز الموعد</button>
+      <button class="submit-quiz-btn" onclick="confirmBooking()" id="t-btn-confirm-booking">تأكيد حجز الموعد</button>
     </div>
   </div>
 
+  <!-- ========================================================================= -->
+  <!-- C7: User Access History Modal (Cryptographic Audit Log) -->
+  <!-- ========================================================================= -->
+  <div class="modal-overlay" id="access-history-modal">
+    <div class="modal" style="max-width: 750px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">
+        <h3 style="font-size: 1.2rem; font-weight: 700; color: #0f172a;" id="t-audit-modal-title">
+          👁️ سجل الوصول والتدقيق لبياناتكِ الجينية
+        </h3>
+        <button onclick="closeAccessHistoryModal()" style="border: none; background: none; font-size: 1.4rem; cursor: pointer;">✕</button>
+      </div>
+      <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 1rem;" id="t-audit-modal-desc">
+        تسجل المنصة كل عملية قراءة أو مطابقة في سجل تدقيق مشفر غير قابل للتعديل (Cryptographic Hash Chain) لضمان الشفافية التامة:
+      </p>
+
+      <div style="max-height: 350px; overflow-y: auto;">
+        <table class="audit-table">
+          <thead>
+            <tr>
+              <th id="t-aud-th-time">الوقت والتاريخ</th>
+              <th id="t-aud-th-actor">الجهة</th>
+              <th id="t-aud-th-action">الإجراء</th>
+              <th id="t-aud-th-target">السجل المستهدف</th>
+              <th id="t-aud-th-hash">بصمة التحقق (Hash)</th>
+            </tr>
+          </thead>
+          <tbody id="access-history-tbody">
+            <tr><td colspan="5" style="text-align: center; color: #94a3b8;">جاري تحميل سجل التدقيق...</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div style="margin-top: 1rem; text-align: end;">
+        <button class="pill-btn" onclick="closeAccessHistoryModal()">إغلاق</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- JAVASCRIPT LOGIC -->
+  <!-- ========================================================================= -->
   <script>
     let currentLang = 'ar';
     let currentFormat = 'text';
@@ -640,7 +1042,15 @@
         btnSubmitQuiz: "إرسال الإجابات والتحقق من الفهم",
         botCtaTitle: "هل لديكِ أي استفسار أو مشاعر قلق؟",
         botCtaSub: "خدمة الاستشارة الوراثية متاحة دائماً بسرية تامة ومجاناً",
-        btnCounsellor: "تحدث مع مختص وراثي"
+        btnCounsellor: "تحدث مع مختص وراثي",
+        readyTitle: "تقرير الفحص الجيني الاستكشافي جاهز للاطلاع",
+        readyBody: "تم الانتهاء من إعداد نتائج فحص ما قبل الزواج الاستكشافي الخاص بكِ. نود تذكيركِ بأن هذا الفحص استكشافي تثقيفي ولا يُعد تشخيصاً طبياً بأي مرض. يمكنكِ الاطلاع عليه في الوقت والمكان المناسبين لكِ بكل هدوء.",
+        btnReadyConfirm: "✓ أنا مستعدة للاطلاع على النتيجة",
+        precheckTitle: "التحقق التمهيدي قبل عرض النتيجة",
+        precheckDesc: "إجابتكِ على هذه الأسئلة التمهيدية السريعة تضمن استيعابكِ لطبيعة الفحص وتساعدنا على توفير الدعم الأنسب لكِ:",
+        btnRevealResults: "المتابعة وعرض التقرير الجيني",
+        btnViewAudit: "👁️ عرض سجل الوصول والتدقيق لبياناتي",
+        btnRevokeCpl: "إلغاء مشاركة التوافق فوراً"
       },
       en: {
         brandTitle: "Inherited Disease Risk Platform",
@@ -657,7 +1067,15 @@
         btnSubmitQuiz: "Submit Answers & Verify Understanding",
         botCtaTitle: "Do you have any questions or concerns?",
         botCtaSub: "Accredited genetic counselling is always available confidentially",
-        btnCounsellor: "Talk to a Genetic Counsellor"
+        btnCounsellor: "Talk to a Genetic Counsellor",
+        readyTitle: "Carrier Screening Report Ready for Review",
+        readyBody: "Your pre-marital carrier screening educational report is ready. Please remember this is an educational screening and not a medical diagnosis of disease. You can review it whenever you feel ready.",
+        btnReadyConfirm: "✓ I Am Ready to View My Results",
+        precheckTitle: "Pre-Check Before Reveal",
+        precheckDesc: "Please answer these quick pre-check questions so we can ensure the information is clear and support you effectively:",
+        btnRevealResults: "Proceed & View Genetic Report",
+        btnViewAudit: "👁️ View My Access & Audit Log",
+        btnRevokeCpl: "Revoke Couple Sharing Immediately"
       }
     };
 
@@ -687,6 +1105,15 @@
       document.getElementById('t-bot-cta-sub').innerText = t.botCtaSub;
       document.getElementById('t-btn-counsellor').innerText = t.btnCounsellor;
 
+      document.getElementById('t-ready-title').innerText = t.readyTitle;
+      document.getElementById('t-ready-body').innerText = t.readyBody;
+      document.getElementById('t-btn-ready-confirm').innerText = t.btnReadyConfirm;
+      document.getElementById('t-precheck-title').innerText = t.precheckTitle;
+      document.getElementById('t-precheck-desc').innerText = t.precheckDesc;
+      document.getElementById('t-btn-reveal-results').innerText = t.btnRevealResults;
+      document.getElementById('btn-view-audit').innerText = t.btnViewAudit;
+      document.getElementById('btn-revoke-cpl').innerText = t.btnRevokeCpl;
+
       loadQuizQuestions();
     }
 
@@ -704,6 +1131,34 @@
       el.classList.toggle('open');
     }
 
+    /* F2 -> F3 transitions */
+    function proceedToPrecheck() {
+      document.getElementById('ready-modal').classList.remove('open');
+      document.getElementById('precheck-modal').classList.add('open');
+    }
+
+    function selectPrecheck(qName, correctness, el) {
+      el.parentElement.querySelectorAll('.option-label').forEach(l => l.classList.remove('selected'));
+      el.classList.add('selected');
+    }
+
+    function handlePrecheckFeeling(feeling, el) {
+      el.parentElement.querySelectorAll('.option-label').forEach(l => l.classList.remove('selected'));
+      el.classList.add('selected');
+
+      const supportBanner = document.getElementById('precheck-anxiety-support');
+      if (feeling === 'anxious') {
+        supportBanner.style.display = 'block';
+      } else {
+        supportBanner.style.display = 'none';
+      }
+    }
+
+    function finishPrecheckAndReveal() {
+      document.getElementById('precheck-modal').classList.remove('open');
+    }
+
+    /* Audio */
     function toggleAudio() {
       const btn = document.getElementById('btn-play-audio');
       const status = document.getElementById('audio-status');
@@ -712,7 +1167,6 @@
         btn.innerText = "⏸";
         status.innerText = (currentLang === 'ar') ? "جاري تشغيل التسجيل الصوتي..." : "Playing audio explanation...";
         
-        // HTML5 SpeechSynthesis
         if ('speechSynthesis' in window) {
           window.speechSynthesis.cancel();
           const textToSpeak = (currentLang === 'ar') 
@@ -742,6 +1196,7 @@
       }
     }
 
+    /* Quiz */
     async function loadQuizQuestions() {
       try {
         const res = await fetch(`/api/quiz/questions?lang=${currentLang}`);
@@ -831,6 +1286,7 @@
       }
     }
 
+    /* Booking Modal */
     function openBookingModal() {
       document.getElementById('booking-modal').classList.add('open');
     }
@@ -844,6 +1300,50 @@
       closeBookingModal();
     }
 
+    /* C7: User Access History Modal */
+    async function openAccessHistoryModal() {
+      const modal = document.getElementById('access-history-modal');
+      modal.classList.add('open');
+      const tbody = document.getElementById('access-history-tbody');
+      tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #94a3b8;">جاري جلب السجل المشفر...</td></tr>';
+      
+      try {
+        const res = await fetch('/api/users/me/access-history', {
+          headers: { 'X-User-Id': 'person_001' }
+        });
+        if (res.ok) {
+          const records = await res.json();
+          if (records.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">لا توجد سجلات وصول مسجلة بعد.</td></tr>';
+            return;
+          }
+          tbody.innerHTML = '';
+          records.slice(0, 15).forEach(r => {
+            const tr = document.createElement('tr');
+            const shortHash = r.hash ? r.hash.substring(0, 12) + '...' : 'N/A';
+            const dt = r.at ? r.at.replace('T', ' ').substring(0, 19) : '-';
+            tr.innerHTML = `
+              <td style="font-family: monospace;">${dt}</td>
+              <td><strong>${r.actor || '-'}</strong></td>
+              <td><code>${r.action || '-'}</code></td>
+              <td>${r.target || '-'}</td>
+              <td style="font-family: monospace; font-size: 0.75rem; color: #0284c7;">${shortHash}</td>
+            `;
+            tbody.appendChild(tr);
+          });
+        } else {
+          tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #ef4444;">تعذر تحميل السجل.</td></tr>';
+        }
+      } catch (err) {
+        console.error("Access history fetch error:", err);
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #ef4444;">خطأ في الاتصال بالخادم.</td></tr>';
+      }
+    }
+
+    function closeAccessHistoryModal() {
+      document.getElementById('access-history-modal').classList.remove('open');
+    }
+
     // Initialize
     window.addEventListener('DOMContentLoaded', () => {
       setLanguage('ar');
@@ -852,4 +1352,3 @@
   </script>
 </body>
 </html>
-
