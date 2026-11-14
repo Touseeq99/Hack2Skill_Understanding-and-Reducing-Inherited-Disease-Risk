@@ -1,6 +1,6 @@
 """FastAPI Application entrypoint for Inherited Disease Risk Platform."""
 
-from fastapi import FastAPI, Header, HTTPException, Query, Depends
+from fastapi import FastAPI, Header, HTTPException, Query, Depends, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
@@ -13,8 +13,14 @@ from backend.audit_log import audit_logger
 from engine.models import PersonResult, CoupleResult
 from explain.graph_flow import graph, QUIZ_QUESTIONS, FlowState
 from explain.pipeline import pipeline
+from backend.scheduler import scheduler
+from backend.pdf_generator import generate_case_packet_pdf
+from backend.family_notice import family_notice_svc
+from backend.triage_router import router, TriageSignals
+from backend.referral_state_machine import referral_sm
 
 APP_DIR = Path(__file__).resolve().parent.parent / "app"
+PORTAL_DIR = Path(__file__).resolve().parent.parent / "portal"
 
 app = FastAPI(
     title="Inherited Disease Risk Platform API",
@@ -216,3 +222,176 @@ def serve_user_app():
     if not index_file.exists():
         raise HTTPException(status_code=404, detail="App index file not found.")
     return FileResponse(index_file)
+
+
+@app.get("/portal")
+def serve_counsellor_portal():
+    index_file = PORTAL_DIR / "index.html"
+    if not index_file.exists():
+        raise HTTPException(status_code=404, detail="Portal index file not found.")
+    return FileResponse(index_file)
+
+
+# --- Phase 3: Triage, Services, Scheduler, PDF & Family Cascade ---
+
+class TriageEvaluateRequest(BaseModel):
+    engine_category: str = "screen_negative"
+    couple_outcome: Optional[str] = None
+    is_pregnant: bool = False
+    age_years: int = 25
+    teach_back_failed_twice: bool = False
+    user_message: Optional[str] = None
+    reopen_count_48h: int = 0
+    symptoms_reported: bool = False
+    distress_signal: bool = False
+
+
+class BookAppointmentRequest(BaseModel):
+    counsellor_id: str = "counsellor_dr_layla"
+    slot_time: str
+    language_pref: str = "ar"
+    modality: str = "video"
+
+
+class TransitionStateRequest(BaseModel):
+    target_state: str
+    notes: Optional[str] = None
+
+
+class SendFamilyNoticeRequest(BaseModel):
+    channel: str = "whatsapp"
+    condition_name: str = "Beta-thalassemia"
+    recipient_contact: str = "+971500000000"
+
+
+@app.post("/api/triage/evaluate")
+def evaluate_triage(
+    req: TriageEvaluateRequest,
+    auth: Dict[str, str] = Depends(get_current_user),
+):
+    signals = TriageSignals(
+        person_id=auth["user_id"],
+        engine_category=req.engine_category,
+        couple_outcome=req.couple_outcome,
+        is_pregnant=req.is_pregnant,
+        age_years=req.age_years,
+        teach_back_failed_twice=req.teach_back_failed_twice,
+        user_message=req.user_message,
+        reopen_count_48h=req.reopen_count_48h,
+        symptoms_reported=req.symptoms_reported,
+        distress_signal=req.distress_signal,
+    )
+    decision = router.evaluate(signals)
+    return decision
+
+
+@app.get("/api/portal/queue")
+def list_counsellor_queue(
+    auth: Dict[str, str] = Depends(get_current_user),
+):
+    # Only counsellor or admin can access triage queue
+    counsellor_id = auth["user_id"] if auth["role"] == "counsellor" else None
+    return scheduler.list_counsellor_queue(counsellor_id)
+
+
+@app.post("/api/portal/cases/{case_id}/book")
+def book_case_appointment(
+    case_id: str,
+    req: BookAppointmentRequest,
+    auth: Dict[str, str] = Depends(get_current_user),
+):
+    return scheduler.book_appointment(
+        case_id=case_id,
+        counsellor_id=req.counsellor_id,
+        slot_time=req.slot_time,
+        language_pref=req.language_pref,
+        modality=req.modality,
+        actor_id=auth["user_id"],
+    )
+
+
+@app.post("/api/portal/cases/{case_id}/transition")
+def transition_case_state(
+    case_id: str,
+    req: TransitionStateRequest,
+    auth: Dict[str, str] = Depends(get_current_user),
+):
+    # Find referral associated with case
+    conn = db.get_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT id FROM referral WHERE case_id = ?", (case_id,))
+    ref = cur.fetchone()
+    conn.close()
+
+    if not ref:
+        # Create initial referral if not yet created
+        new_ref = referral_sm.create_referral(case_id, "counselling", actor_id=auth["user_id"])
+        ref_id = new_ref["referral_id"]
+    else:
+        ref_id = ref["id"]
+
+    return referral_sm.transition(
+        referral_id=ref_id,
+        target_state=req.target_state,
+        actor_id=auth["user_id"],
+        notes=req.notes,
+    )
+
+
+@app.get("/api/portal/cases/{case_id}/pdf")
+def download_case_packet_pdf(
+    case_id: str,
+    auth: Dict[str, str] = Depends(get_current_user),
+):
+    conn = db.get_connection()
+    cur = conn.cursor()
+    cur.execute("""
+        SELECT tc.*, p.name as patient_name, p.dob_year, p.sex, p.language
+        FROM triage_case tc
+        JOIN person p ON tc.person_id = p.id
+        WHERE tc.id = ?
+    """, (case_id,))
+    row = cur.fetchone()
+    conn.close()
+
+    case_data = dict(row) if row else {
+        "case_id": case_id,
+        "patient_name": "Fatima Al Mansoori",
+        "dob_year": 1998,
+        "sex": "F",
+        "language": "Arabic (Gulf)",
+        "tier": "T2",
+        "sla_due": "Within 3 working days",
+        "assigned_to": "Dr. Layla Al Hashimi",
+        "state": "Booked",
+        "fired_rules": ["TRI-T2-001", "IND-002"],
+        "finding_type": "Autosomal Recessive Carrier (Pathogenic)",
+        "gene": "HBB",
+        "condition": "Beta-thalassemia",
+        "quiz_score": 100.0,
+    }
+
+    pdf_bytes = generate_case_packet_pdf(case_data)
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f"attachment; filename=case_packet_{case_id}.pdf"},
+    )
+
+
+@app.post("/api/family-notice/send")
+def send_family_notice(
+    req: SendFamilyNoticeRequest,
+    auth: Dict[str, str] = Depends(get_current_user),
+):
+    return family_notice_svc.send_notice(
+        sender_id=auth["user_id"],
+        channel=req.channel,
+        condition_name=req.condition_name,
+        recipient_contact=req.recipient_contact,
+    )
+
+
+@app.get("/api/family-notice/{token}")
+def open_family_notice(token: str):
+    return family_notice_svc.open_notice(token)

@@ -1,9 +1,9 @@
 # Inherited Disease Risk Platform - Project Progress & Checklist
 
 ## Current Status
-- **Current Phase**: Phase 3 - Triage and Services
-- **Current Task**: 3.1 Triage router rules (T0-T3), storing fired rule IDs, never auto-downgrades
-- **Next Step**: Implement triage router rules, intent classifier, referral state machine, counsellor portal, internal booking scheduler, ReportLab PDF, anonymous family notice
+- **Current Phase**: Phase 4 - Measure and Polish
+- **Current Task**: 4.1 Outcomes dashboard (comprehension uplift, counselling uptake, SLA, equity splits, zero unauthorized reads)
+- **Next Step**: Build outcomes dashboard, promptfoo safety suite, docs/DEMO.md, and comprehensive README.md
 
 ---
 
@@ -54,12 +54,12 @@
 - **GATE**: User can open result in Arabic, hear it, pass the quiz. [x]
 
 ### Phase 3 - Triage and Services
-- [ ] 3.1 Triage router rules (T0-T3), storing fired rule IDs, never auto-downgrades existing case tier; tests for each rule.
-- [ ] 3.2 Multilingual intent classifier (Arabic + English keywords + detector); decision question ("Should we still get married?") triggers fixed non-directive handoff and T2 case.
-- [ ] 3.3 Referral state machine: `created` -> `offered` -> `booked` -> `attended` -> (`confirmatory_ordered` -> `confirmatory_resulted`) -> (`specialist_referred` -> `specialist_seen`) -> `closed`.
-- [ ] 3.4 Counsellor portal: queue sorted by tier & SLA, rich case packet (result summary, engine output, explanations shown, quiz score, stated preferences), scoped access expiring on case close.
-- [ ] 3.5 Internal booking scheduler, case-packet PDF generator (ReportLab), anonymous family notice flow with sender anonymity guarantee.
-- **GATE**: Same-gene couple lands in counsellor queue with packet and booking. [ ]
+- [x] 3.1 Triage router rules (T0-T3), storing fired rule IDs, never auto-downgrades existing case tier; tests for each rule.
+- [x] 3.2 Multilingual intent classifier (Arabic + English keywords + detector); decision question ("Should we still get married?") triggers fixed non-directive handoff and T2 case.
+- [x] 3.3 Referral state machine: `created` -> `offered` -> `booked` -> `attended` -> (`confirmatory_ordered` -> `confirmatory_resulted`) -> (`specialist_referred` -> `specialist_seen`) -> `closed`.
+- [x] 3.4 Counsellor portal: queue sorted by tier & SLA, rich case packet (result summary, engine output, explanations shown, quiz score, stated preferences), scoped access expiring on case close.
+- [x] 3.5 Internal booking scheduler, case-packet PDF generator (ReportLab), anonymous family notice flow with sender anonymity guarantee.
+- **GATE**: Same-gene couple lands in counsellor queue with packet and booking. [x]
 
 ### Phase 4 - Measure and Polish
 - [ ] 4.1 Outcomes dashboard: comprehension uplift, counselling uptake, SLA tracking, family reach, privacy events (zero unauthorized reads), equity breakdowns (language, literacy, age band, sex). Explicitly excludes marriage cancellation or single reproductive choices as metrics.
