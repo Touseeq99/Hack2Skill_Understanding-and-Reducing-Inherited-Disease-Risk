@@ -1,16 +1,16 @@
 # Inherited Disease Risk Platform - Project Progress & Checklist
 
 ## Current Status
-- **Current Phase**: Phase 0 - Foundations
-- **Current Task**: 0.1 Repo skeleton, docker-compose, .env.example, README stub
-- **Next Step**: Build Phase 0 deliverables and gate tests
+- **Current Phase**: Phase 1 - Engine and Vault
+- **Current Task**: 1.1 YAML rule tables exactly as above, with versioning
+- **Next Step**: Implement YAML rule tables and deterministic risk engine (classify & couple)
 
 ---
 
 ## Test & Execution Guide
 - **Run Python Engine & Backend Tests**:
   ```powershell
-  python -m pytest engine/ backend/ explain/ -v --cov=engine --cov-report=term-missing
+  python -m pytest backend/tests/ data/test_cohort_and_panel.py -v
   ```
 - **Run Hypothesis Symmetry & Engine Property Tests**:
   ```powershell
@@ -31,11 +31,11 @@
 ## Phase Checklist
 
 ### Phase 0 - Foundations
-- [ ] 0.1 Repo skeleton, `docker-compose.yml`, `.env.example`, `README.md` stub.
-- [ ] 0.2 DB schema from PDF data model plus RLS policies and policy test suite.
-- [ ] 0.3 Synthetic data generator: 200 people, 80 couples (same-gene, VUS, X-linked male/female, affected, untested partner, minor, pregnant).
-- [ ] 0.4 Gene panel metadata file (gene, inheritance mode, condition, severity class; free sources ClinVar/GeneReviews, no OMIM).
-- **GATE**: Seeded DB, RLS tests pass. [ ]
+- [x] 0.1 Repo skeleton, `docker-compose.yml`, `.env.example`, `README.md` stub.
+- [x] 0.2 DB schema from PDF data model plus RLS policies and policy test suite.
+- [x] 0.3 Synthetic data generator: 200 people, 80 couples (same-gene, VUS, X-linked male/female, affected, untested partner, minor, pregnant).
+- [x] 0.4 Gene panel metadata file (gene, inheritance mode, condition, severity class; free sources ClinVar/GeneReviews, no OMIM).
+- **GATE**: Seeded DB, RLS tests pass. [x]
 
 ### Phase 1 - Engine and Vault
 - [ ] 1.1 YAML rule tables (`engine/rules/v1.yaml`) with versioning and clinical sign-off status.

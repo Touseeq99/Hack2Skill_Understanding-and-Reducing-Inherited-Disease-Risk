@@ -1,0 +1,142 @@
+[
+  {
+    "gene": "HBB",
+    "inheritance": "AR",
+    "condition_name_en": "Beta-thalassemia",
+    "condition_name_ar": "بيتا ثلاسيميا (أنيميا البحر المتوسط)",
+    "severity_class": "severe",
+    "description_en": "An inherited blood disorder that reduces the production of hemoglobin, causing anemia.",
+    "description_ar": "اضطراب وراثي في الدم يقلل من إنتاج الهيموغلوبين، مما يسبب فقر الدم الشديد.",
+    "source": "ClinVar / GeneReviews NBK1426 / Orphanet ORPHA:2312"
+  },
+  {
+    "gene": "HBA1",
+    "inheritance": "AR",
+    "condition_name_en": "Alpha-thalassemia",
+    "condition_name_ar": "ألفا ثلاسيميا",
+    "severity_class": "severe",
+    "description_en": "An inherited blood disorder resulting from impaired production of alpha-globin chains.",
+    "description_ar": "اضطراب وراثي ناتج عن خلل في إنتاج سلاسل ألفا غلوبين.",
+    "source": "ClinVar / GeneReviews NBK1387 / Orphanet ORPHA:846"
+  },
+  {
+    "gene": "CFTR",
+    "inheritance": "AR",
+    "condition_name_en": "Cystic fibrosis",
+    "condition_name_ar": "التليف الكيسي",
+    "severity_class": "severe",
+    "description_en": "A multi-system condition affecting lungs, pancreas, and sweat glands with thick mucus buildup.",
+    "description_ar": "حالة وراثية تؤثر على الجهاز التنفسي والهضمي نتيجة تراكم المخاط اللزج.",
+    "source": "ClinVar / GeneReviews NBK1250 / Orphanet ORPHA:586"
+  },
+  {
+    "gene": "SMN1",
+    "inheritance": "AR",
+    "condition_name_en": "Spinal muscular atrophy",
+    "condition_name_ar": "ضمور العضلات الشوكي",
+    "severity_class": "severe",
+    "description_en": "A neuromuscular disease causing progressive loss of motor neurons and muscle weakness.",
+    "description_ar": "مرض عصبي عضلي يسبب فقداناً تدريجياً للخلايا العصبية الحركية وضعف العضلات.",
+    "source": "ClinVar / GeneReviews NBK1352 / Orphanet ORPHA:83330"
+  },
+  {
+    "gene": "G6PD",
+    "inheritance": "XL",
+    "condition_name_en": "G6PD deficiency (Favism)",
+    "condition_name_ar": "نقص إنزيم سداسي فوسفات الجلوكوز (أنيميا الفول)",
+    "severity_class": "moderate",
+    "description_en": "An X-linked condition predisposing red blood cells to breakdown upon oxidative triggers.",
+    "description_ar": "اضطراب وراثي مرتبط بالصبغي X يجعل خلايا الدم الحمراء عرضة للتكسر عند التعرض لبعض الأطعمة كالفول والأدوية.",
+    "source": "ClinVar / GeneReviews NBK546648 / Orphanet ORPHA:358"
+  },
+  {
+    "gene": "DMD",
+    "inheritance": "XL",
+    "condition_name_en": "Duchenne / Becker muscular dystrophy",
+    "condition_name_ar": "ضمور العضلات الدوشيني / بيكر",
+    "severity_class": "severe",
+    "description_en": "An X-linked condition causing progressive skeletal muscle weakness and degeneration.",
+    "description_ar": "اعتلال عضلي وراثي مرتبط بالصبغي X يؤدي إلى ضعف تدريجي في العضلات الحركية.",
+    "source": "ClinVar / GeneReviews NBK1119 / Orphanet ORPHA:98896"
+  },
+  {
+    "gene": "F8",
+    "inheritance": "XL",
+    "condition_name_en": "Hemophilia A",
+    "condition_name_ar": "نزاف الدم الوراثي (هيموفيليا أ)",
+    "severity_class": "severe",
+    "description_en": "An X-linked bleeding disorder caused by a deficiency of clotting factor VIII.",
+    "description_ar": "اضطراب نزفي وراثي مرتبط بالصبغي X ناجم عن نقص عامل التخثر الثامن.",
+    "source": "ClinVar / GeneReviews NBK1404 / Orphanet ORPHA:98878"
+  },
+  {
+    "gene": "PAH",
+    "inheritance": "AR",
+    "condition_name_en": "Phenylketonuria (PKU)",
+    "condition_name_ar": "بيلة الفينيل كيتون",
+    "severity_class": "severe",
+    "description_en": "Inability to metabolize phenylalanine leading to neurodevelopmental delay if untreated.",
+    "description_ar": "خلل استقلابي وراثي يمنع تحلل الفينيل ألانين ويتطلب حمية غذائية خاصة للوقاية.",
+    "source": "ClinVar / GeneReviews NBK1504 / Orphanet ORPHA:716"
+  },
+  {
+    "gene": "GJB2",
+    "inheritance": "AR",
+    "condition_name_en": "Non-syndromic hearing loss (Connexin 26)",
+    "condition_name_ar": "ضعف السمع الوراثي غير المتلازمي",
+    "severity_class": "moderate",
+    "description_en": "Sensorineural hearing loss present from birth or early childhood without other organ involvement.",
+    "description_ar": "ضعف سمع حسي عصبي وراثي يبدأ منذ الولادة أو الطفولة المبكرة.",
+    "source": "ClinVar / GeneReviews NBK1272 / Orphanet ORPHA:176"
+  },
+  {
+    "gene": "MEFV",
+    "inheritance": "AR",
+    "condition_name_en": "Familial Mediterranean fever",
+    "condition_name_ar": "حمى البحر الأبيض المتوسط العائلية",
+    "severity_class": "moderate",
+    "description_en": "Autoinflammatory disorder characterized by recurrent bouts of fever and serosal inflammation.",
+    "description_ar": "اضطراب التهابي ذاتي وراثي يتميز بنوبات متكررة من الحمى والتهاب الأغشية المصلية.",
+    "source": "ClinVar / GeneReviews NBK1219 / Orphanet ORPHA:342"
+  },
+  {
+    "gene": "ASPA",
+    "inheritance": "AR",
+    "condition_name_en": "Canavan disease",
+    "condition_name_ar": "مرض كانافان",
+    "severity_class": "severe",
+    "description_en": "A fatal neurodegenerative disease that causes progressive damage to brain nerve cells.",
+    "description_ar": "مرض تنكس عصبي وراثي يؤثر على تطور ونمو المادة البيضاء في الدماغ.",
+    "source": "ClinVar / GeneReviews NBK1234 / Orphanet ORPHA:141"
+  },
+  {
+    "gene": "HEXA",
+    "inheritance": "AR",
+    "condition_name_en": "Tay-Sachs disease",
+    "condition_name_ar": "مرض تاي ساكس",
+    "severity_class": "severe",
+    "description_en": "Progressive neurodegenerative lysosomal storage disorder leading to motor and mental decline.",
+    "description_ar": "اضطراب وراثي خطير لتخزين الشحميات في الخلايا العصبية الدماغية.",
+    "source": "ClinVar / GeneReviews NBK1218 / Orphanet ORPHA:845"
+  },
+  {
+    "gene": "PKHD1",
+    "inheritance": "AR",
+    "condition_name_en": "Autosomal recessive polycystic kidney disease",
+    "condition_name_ar": "داء الكلى متعددة الكيسات الصبغي الجسدي المتنحي",
+    "severity_class": "severe",
+    "description_en": "Severe congenital disorder characterized by cystic dilation of collecting ducts and liver fibrosis.",
+    "description_ar": "اعتلال كبدي وكلوي خلقي يتميز بظهور حويصلات كيسية متعددة في الكليتين.",
+    "source": "ClinVar / GeneReviews NBK1326 / Orphanet ORPHA:731"
+  },
+  {
+    "gene": "TYR",
+    "inheritance": "AR",
+    "condition_name_en": "Oculocutaneous albinism type 1",
+    "condition_name_ar": "المهق العيني الجلدي (النوع الأول)",
+    "severity_class": "moderate",
+    "description_en": "Condition affecting melanin synthesis resulting in hypopigmentation of hair, skin, and eyes.",
+    "description_ar": "اضطراب خلقي في إنتاج صبغة الميلانين يسبب نقص الصبغة في الشعر والجلد والعينين.",
+    "source": "ClinVar / GeneReviews NBK1459 / Orphanet ORPHA:55"
+  }
+]
