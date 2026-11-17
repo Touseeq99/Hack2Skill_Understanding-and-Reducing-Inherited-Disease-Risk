@@ -94,6 +94,24 @@
       background: #fbbf24;
       transform: translateY(-1px);
     }
+    .lang-btn {
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.3);
+      color: white;
+      padding: 0.25rem 0.6rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .lang-btn.active {
+      background: #0d9488;
+      border-color: #99f6e4;
+    }
+    body[dir="rtl"] {
+      font-family: 'Cairo', 'Inter', -apple-system, sans-serif;
+    }
 
     /* Modal Overlay for Guide */
     .modal-overlay {
@@ -225,28 +243,30 @@
   <nav class="platform-nav">
     <div class="platform-nav-brand">
       <span class="doh-badge">Abu Dhabi Health · DoH</span>
-      <span style="font-weight: 700;">Inherited Disease Risk Platform</span>
+      <span style="font-weight: 700;" id="d-nav-title">Inherited Disease Risk Platform</span>
       <span style="opacity: 0.75; font-size: 0.75rem;">(Challenge 03)</span>
     </div>
     <div class="platform-nav-links">
-      <a href="/app" class="platform-nav-item">📱 Patient App</a>
-      <a href="/portal" class="platform-nav-item">🩺 Counsellor Portal</a>
-      <a href="/dashboard" class="platform-nav-item active">📊 Executive Dashboard</a>
-      <a href="/docs" target="_blank" class="platform-nav-item">📄 API Docs</a>
-      <button class="platform-nav-guide-btn" onclick="openPlatformGuideModal()">💡 What is this Platform?</button>
+      <a href="/app" class="platform-nav-item" id="d-nav-app">📱 Patient App</a>
+      <a href="/portal" class="platform-nav-item" id="d-nav-portal">🩺 Counsellor Portal</a>
+      <a href="/dashboard" class="platform-nav-item active" id="d-nav-dash">📊 Executive Dashboard</a>
+      <a href="/docs" target="_blank" class="platform-nav-item" id="d-nav-docs">📄 API Docs</a>
+      <button class="lang-btn" id="btn-lang-en" onclick="setDashboardLanguage('en')">EN</button>
+      <button class="lang-btn" id="btn-lang-ar" onclick="setDashboardLanguage('ar')">العربية</button>
+      <button class="platform-nav-guide-btn" onclick="openPlatformGuideModal()" id="d-btn-guide">💡 What is this Platform?</button>
     </div>
   </nav>
 
   <div class="dashboard-content">
     <div class="header">
       <div class="title-area">
-        <h1>Clinical & Equity Outcomes Dashboard</h1>
-        <p>Future Health Challenge 2026 · Fertility Challenge 03 · Pre-marital Screening Outcomes</p>
+        <h1 id="d-main-title">Clinical & Equity Outcomes Dashboard</h1>
+        <p id="d-main-sub">Future Health Challenge 2026 · Fertility Challenge 03 · Pre-marital Screening Outcomes</p>
       </div>
       <div class="nav-links">
-        <a href="/app">📱 Patient App</a>
-        <a href="/portal">🩺 Counsellor Portal</a>
-        <a href="/docs">📄 OpenAPI Specs</a>
+        <a href="/app" id="d-sub-app">📱 Patient App</a>
+        <a href="/portal" id="d-sub-portal">🩺 Counsellor Portal</a>
+        <a href="/docs" id="d-sub-docs">📄 OpenAPI Specs</a>
       </div>
     </div>
 
@@ -455,6 +475,50 @@
   </div>
 
   <script>
+    let currentLang = 'en';
+
+    const DASH_I18N = {
+      en: {
+        navTitle: "Inherited Disease Risk Platform",
+        navApp: "📱 Patient App",
+        navPortal: "🩺 Counsellor Portal",
+        navDash: "📊 Executive Dashboard",
+        btnGuide: "💡 What is this Platform?",
+        mainTitle: "Clinical & Equity Outcomes Dashboard",
+        mainSub: "Future Health Challenge 2026 · Fertility Challenge 03 · Pre-marital Screening Outcomes"
+      },
+      ar: {
+        navTitle: "منصة التوافق الوراثي",
+        navApp: "📱 تطبيق المراجع",
+        navPortal: "🩺 بوابة المستشار الوراثي",
+        navDash: "📊 لوحة مؤشرات القيادة",
+        btnGuide: "💡 ما هي هذه المنصة؟",
+        mainTitle: "لوحة مؤشرات الفحص والعدالة الصحية",
+        mainSub: "تحدي صحة المستقبل 2026 · فحص ما قبل الزواج في أبوظبي"
+      }
+    };
+
+    function setDashboardLanguage(lang) {
+      currentLang = lang;
+      document.documentElement.lang = lang;
+      document.documentElement.dir = (lang === 'ar') ? 'rtl' : 'ltr';
+      document.body.dir = (lang === 'ar') ? 'rtl' : 'ltr';
+
+      document.getElementById('btn-lang-en').classList.toggle('active', lang === 'en');
+      document.getElementById('btn-lang-ar').classList.toggle('active', lang === 'ar');
+
+      const t = DASH_I18N[lang];
+      document.getElementById('d-nav-title').innerText = t.navTitle;
+      document.getElementById('d-nav-app').innerText = t.navApp;
+      document.getElementById('d-nav-portal').innerText = t.navPortal;
+      document.getElementById('d-nav-dash').innerText = t.navDash;
+      document.getElementById('d-btn-guide').innerText = t.btnGuide;
+      document.getElementById('d-main-title').innerText = t.mainTitle;
+      document.getElementById('d-main-sub').innerText = t.mainSub;
+      document.getElementById('d-sub-app').innerText = t.navApp;
+      document.getElementById('d-sub-portal').innerText = t.navPortal;
+    }
+
     function openPlatformGuideModal() {
       document.getElementById('platform-guide-modal').classList.add('open');
     }
@@ -473,7 +537,10 @@
         console.log("Using cached dashboard telemetry");
       }
     }
-    window.addEventListener('DOMContentLoaded', loadMetrics);
+    window.addEventListener('DOMContentLoaded', () => {
+      setDashboardLanguage('en');
+      loadMetrics();
+    });
   </script>
 </body>
 </html>

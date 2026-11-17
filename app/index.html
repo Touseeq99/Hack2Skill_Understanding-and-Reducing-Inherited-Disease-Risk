@@ -795,10 +795,10 @@
             أنت مسجلة بصفتك <strong>فاطمة المنصوري</strong> (حاملة لجين بيتا ثلاسيميا - بصحة طبيعية). المنصة توفر لكِ شرحاً مبسطاً لنتائجك، مطابقة التوافق الجيني مع خطيبك <strong>طارق</strong> بكل خصوصية، ودعم إرشادي محايد مع أطباء معتمدين في أبوظبي.
           </p>
           <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
-            <button class="pill-btn" style="background: #0f766e; color: white;" onclick="document.getElementById('t-result-header').scrollIntoView({behavior: 'smooth'})">🧬 نتيجتي الفردية</button>
-            <button class="pill-btn" style="background: #0284c7; color: white;" onclick="document.getElementById('couple-status-badge').scrollIntoView({behavior: 'smooth'})">💍 فحص التوافق مع طارق</button>
-            <button class="pill-btn" style="background: #ea580c; color: white;" onclick="openBookingModal()">🩺 حجز استشارة وراثية</button>
-            <button class="pill-btn" style="background: #475569; color: white;" onclick="openPlatformGuideModal()">❓ دليل خدمات المنصة</button>
+            <button class="pill-btn" id="btn-jump-ind" style="background: #0f766e; color: white;" onclick="document.getElementById('t-result-header').scrollIntoView({behavior: 'smooth'})">🧬 نتيجتي الفردية</button>
+            <button class="pill-btn" id="btn-jump-cpl" style="background: #0284c7; color: white;" onclick="document.getElementById('couple-status-badge').scrollIntoView({behavior: 'smooth'})">💍 فحص التوافق مع طارق</button>
+            <button class="pill-btn" id="btn-jump-book" style="background: #ea580c; color: white;" onclick="openBookingModal()">🩺 حجز استشارة وراثية</button>
+            <button class="pill-btn" id="btn-jump-guide" style="background: #475569; color: white;" onclick="openPlatformGuideModal()">❓ دليل خدمات المنصة</button>
           </div>
         </div>
       </div>
@@ -899,14 +899,14 @@
         </div>
       </div>
 
-      <div class="clinical-notice">DRAFT - requires clinical sign-off · هذا المحتوى استكشافي ويخضع للمراجعة السريرية</div>
+      <div class="clinical-notice" id="t-clinical-notice">DRAFT - requires clinical sign-off · هذا المحتوى استكشافي ويخضع للمراجعة السريرية</div>
     </div>
 
     <!-- Couple Matching & Privacy Vault Card -->
     <div class="card">
       <div class="card-header">
         <div class="card-title">
-          <span>🔒 خزنة خصوصية التوافق مع الشريك</span>
+          <span id="t-cpl-card-title">🔒 خزنة خصوصية التوافق مع الشريك</span>
         </div>
         <span class="tier-badge tier-T2" id="couple-status-badge">موافقة متبادلة نشطة</span>
       </div>
@@ -1009,7 +1009,7 @@
     <div class="card" id="options-library-card">
       <div class="card-header">
         <div class="card-title">
-          <span>🌿 مكتبة الخيارات الإنجابية المتوازنة</span>
+          <span id="t-options-title">🌿 مكتبة الخيارات الإنجابية المتوازنة</span>
         </div>
         <span class="tier-badge tier-T2" id="t-opt-badge">خيارات محايدة متساوية</span>
       </div>
@@ -1099,6 +1099,36 @@
               <option>مرنة وفق الاستشارة الطبية</option>
             </select>
           </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- Interactive Non-Directive Decision Support & Question Assistant -->
+    <!-- ========================================================================= -->
+    <div class="card" id="chat-assistant-card">
+      <div class="card-header">
+        <div class="card-title">
+          <span id="t-chat-title">💬 خدمة الاستفسار وتوضيح القرارات الإنجابية</span>
+        </div>
+        <span class="tier-badge tier-T2" id="t-chat-badge">إرشاد محايد فوري</span>
+      </div>
+      <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.75rem;" id="t-chat-desc">
+        اطرحي أي سؤال يدور في ذهنكِ حول نتائج الفحص أو خيارات الإنجاب. نظامنا يتبع بروتوكولاً طبياً محايداً ولا يوجهكِ لأي قرار شخصي:
+      </p>
+      <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.75rem;">
+        <button class="pill-btn" onclick="askSampleQuestion('Should we still get married?')" id="chip-q1">💍 هل ننفصل أم نتزوج؟</button>
+        <button class="pill-btn" onclick="askSampleQuestion('What is PGT-M / IVF?')" id="chip-q2">🧪 ما هو فحص الأجنة PGT-M؟</button>
+        <button class="pill-btn" onclick="askSampleQuestion('I feel very anxious and pressured')" id="chip-q3">🤝 أشعر بضغط وقلق نفسي</button>
+      </div>
+      <div style="display: flex; gap: 0.5rem; margin-bottom: 0.75rem;">
+        <input type="text" id="chat-input" placeholder="اكتبي سؤالكِ هنا (مثال: ماذا يجب أن نفعل بعد هذه النتيجة؟)..." style="flex: 1; padding: 0.65rem 0.85rem; border: 1px solid var(--border); border-radius: 8px; font-size: 0.9rem;">
+        <button class="pill-btn" style="background: var(--primary); color: white;" onclick="sendChatMessage()" id="btn-send-chat">إرسال السؤال</button>
+      </div>
+      <div id="chat-response-box" style="display: none; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 10px; padding: 1rem; margin-top: 0.5rem;">
+        <div id="chat-response-text" style="font-size: 0.9rem; color: #1e293b; line-height: 1.6; margin-bottom: 0.75rem;"></div>
+        <div id="chat-counsellor-cta" style="display: none; text-align: end;">
+          <button class="pill-btn" style="background: #ea580c; color: white;" onclick="openBookingModal()" id="btn-chat-book">🩺 التحدث مباشرة مع مرشد وراثي معتمد</button>
         </div>
       </div>
     </div>
@@ -1221,55 +1251,291 @@
         brandTitle: "منصة التوافق الوراثي",
         resultHeader: "تقرير الفحص الجيني الاستكشافي",
         userWelcome: "المستخدمة: فاطمة المنصوري (فحص ما قبل الزواج)",
+        tierBadge: "مستوى المتابعة: T1",
         fmtText: "قراءة نصية",
         fmtAudio: "استماع صوتي",
         fmtVisual: "رسوم توضيحية",
         audioTitle: "الاستماع الصوتي لشرح النتيجة بلهجة واضحة ومبسطة",
+        audioStatusReady: "جاهز للتشغيل (اللغة العربية)",
         iconTitle: "الرسم التوضيحي لحالة حامل الجين (حاملو الجين أصحاء)",
         iconSubtitle: "أنت تحملين نسخة سليمة ونسخة متغيرة في جين بيتا ثلاسيميا (HBB)",
-        quizTitle: "اختبار الفهم التفاعلي (Teach-Back)",
-        quizSub: "أجيبي على 4 أسئلة للتأكد من وضوح كافة المعلومات لك",
-        btnSubmitQuiz: "إرسال الإجابات والتحقق من الفهم",
-        botCtaTitle: "هل لديكِ أي استفسار أو مشاعر قلق؟",
-        botCtaSub: "خدمة الاستشارة الوراثية متاحة دائماً بسرية تامة ومجاناً",
-        btnCounsellor: "تحدث مع مختص وراثي",
+        legStandard: "نسخة طبيعية (تعمل بكفاءة)",
+        legCarrier: "نسخة متغيرة (حامل للصفة فقط)",
+
         readyTitle: "تقرير الفحص الجيني الاستكشافي جاهز للاطلاع",
         readyBody: "تم الانتهاء من إعداد نتائج فحص ما قبل الزواج الاستكشافي الخاص بكِ. نود تذكيركِ بأن هذا الفحص استكشافي تثقيفي ولا يُعد تشخيصاً طبياً بأي مرض. يمكنكِ الاطلاع عليه في الوقت والمكان المناسبين لكِ بكل هدوء.",
+        readyNoteTitle: "قبل أن تبدئي:",
+        readyNoteList: "<li>النتائج محمية داخل خزنة خصوصية شخصية مشفرة.</li><li>يمكنكِ اختيار التنسيق المفضل لكِ (نصي، استماع صوتي، أو رسوم بيانية).</li><li>المرشد الوراثي متاح دائماً لدعمكِ والإجابة على أي استفسار بكل سرية.</li>",
         btnReadyConfirm: "✓ أنا مستعدة للاطلاع على النتيجة",
+        btnReadySkip: "⚡ عرض سريع (Direct View)",
+
         precheckTitle: "التحقق التمهيدي قبل عرض النتيجة",
         precheckDesc: "إجابتكِ على هذه الأسئلة التمهيدية السريعة تضمن استيعابكِ لطبيعة الفحص وتساعدنا على توفير الدعم الأنسب لكِ:",
+        pkQ1: "1. هل صفة الحامل الوراثي تعني أن الشخص مصاب بمرض طبي؟",
+        pkQ1O1: "نعم، تعني الإصابة بمرض ويحتاج إلى علاج فوري.",
+        pkQ1O2: "لا، حاملو الجين أصحاء تماماً ولا تظهر عليهم أعراض، وهو فحص استكشافي.",
+        pkQ2: "2. هل يمكن لأي فحص جيني إزالة الشك بنسبة 100% بدون أي نسبة متبقية؟",
+        pkQ2O1: "نعم، النتيجة السلبية تعني انعدام الخطر تماماً بنسبة 100%.",
+        pkQ2O2: "لا، تبقى دائماً احتمالية متبقية منخفضة لا يمكن لأي فحص نفيها كلياً.",
+        pkQ3: "3. كيف تشعرين في هذه اللحظة قبل الاطلاع على النتيجة؟",
+        pkQ3O1: "مطمئنة ومستعدة للاطلاع بكل هدوء.",
+        pkQ3O2: "لدي فضول طبيعي واستفسارات أود فهمها.",
+        pkQ3O3: "أشعر بقلق أو توتر مرتفع وأفضل دعماً متخصصاً.",
+        anxietyTitle: "🤝 نحن هنا لدعمكِ وراحتكِ النفسية هي الأهم",
+        anxietyText: "من الطبيعي تماماً الشعور بالقلق قبل نتائج الفحوصات الوراثية. يمكنكِ اختيار التحدث مباشرة مع مرشد وراثي معتمد قبل فتح التقرير:",
         btnRevealResults: "المتابعة وعرض التقرير الجيني",
         btnViewAudit: "👁️ عرض سجل الوصول والتدقيق لبياناتي",
         btnRevokeCpl: "إلغاء مشاركة التوافق فوراً",
+        btnTopHistory: "👁️ سجل الوصول",
+
         welcomeTitle: "مرحباً بك في منصة التوافق الوراثي (Al-Tawafuq)",
-        welcomeDesc: "أنت مسجلة بصفتك فاطمة المنصوري (حاملة لجين بيتا ثلاسيميا - بصحة طبيعية). المنصة توفر لكِ شرحاً مبسطاً لنتائجك، مطابقة التوافق الجيني مع خطيبك طارق بكل خصوصية، ودعم إرشادي محايد مع أطباء معتمدين في أبوظبي."
+        welcomeDesc: "أنت مسجلة بصفتك <strong>فاطمة المنصوري</strong> (حاملة لجين بيتا ثلاسيميا - بصحة طبيعية). المنصة توفر لكِ شرحاً مبسطاً لنتائجك، مطابقة التوافق الجيني مع خطيبك <strong>طارق</strong> بكل خصوصية، ودعم إرشادي محايد مع أطباء معتمدين في أبوظبي.",
+        btnJumpInd: "🧬 نتيجتي الفردية",
+        btnJumpCpl: "💍 فحص التوافق مع طارق",
+        btnJumpBook: "🩺 حجز استشارة وراثية",
+        btnJumpGuide: "❓ دليل خدمات المنصة",
+
+        layer1Title: "1. الخلاصة بعبارة واحدة",
+        layer1Text: "أنت تحملين نسخة متغيرة واحدة من جين HBB (بيتا ثلاسيميا). حاملو الجين أصحاء ولا تظهر عليهم أعراض.",
+        layer2Title: "2. ماذا تعني هذه النتيجة؟",
+        layer2Text: "صفة الحامل الوراثي تعني أن لديك نسخة سليمة تقوم بكامل وظائف الجسم، ولذلك تتمتعين بصحة طبيعية تماماً. الأهمية الطبية لصفة الحامل تكمن فقط عند التخطيط للإنجاب مع شريك حياة يحمل تغيراً في نفس الجين تماماً.",
+        layer3Title: "3. ما الذي لا تعنيه هذه النتيجة؟",
+        layer3Text: "هذه النتيجة فحص استكشافي وليست تشخيصاً طبياً بمرض. أنت لستِ مصابة بالثلاسيميا، ولن تصابي بها مستقبلاً. كما أنها لا تعني أي عائق صحي لممارسة حياتك الطبيعية.",
+        layer4Title: "4. الاحتمالية المتبقية والشك السريري",
+        layer4Text: "الفحص يفحص الطفرات الأكثر شيوعاً بدقة تفوق 95%. تبقى هناك نسبة عامة منخفضة جداً لا يمكن لأي فحص وراثي استبعادها كلياً.",
+        layer5Title: "5. الخطوات القادمة وخيارات التوافق",
+        layer5Text: "الخطوة المثالية هي دعوة خطيبك لإجراء الفحص الجيني ومقارنة النتيجتين داخل خزنة الخصوصية الآمنة للتأكد مما إذا كان يحمل نفس الجين أم لا.",
+        clinicalNotice: "DRAFT - requires clinical sign-off · هذا المحتوى استكشافي ويخضع للمراجعة السريرية",
+
+        cplCardTitle: "🔒 خزنة خصوصية التوافق مع الشريك",
+        cplStatusBadge: "موافقة متبادلة نشطة",
+        coupleDesc: "تتم مطابقة النتائج داخل خزنة رقمية مشفرة. لا يرى أي طرف قائمة الجينات الخاصة بالطرف الآخر، وتظهر النتيجة المشتركة فقط عند موافقة كلا الطرفين معاً.",
+        c10Title: "ℹ️ تنبيه خصوصية متبادلة مهم:",
+        c10Body: "مطابقة النتائج مع الشريك ستكشف تلقائياً عما إذا كان الشريك يحمل أو لا يحمل تغيراً في الجينات المفحوصة (نتيجة 'عدم وجود جين مشترك' تعني طبياً أن الشريك لا يحمل تغيراً ممرضاً في هذه الجينات المحددة ضمن باقة الفحص).",
+        cplResultTitle: "نتيجة التوافق بين فاطمة وطارق: تطابق في نفس الجين (HBB)",
+        cplResultBody: "كلاكما يحمل تغيراً في جين بيتا ثلاسيميا. في كل حمل هناك: احتمال 1 من 4 لإنجاب طفل مصاب، و1 من 2 لطفل حامل للصفة، و1 من 4 لطفل سليم تماماً.",
+        iconCplTitle: "احتمالات كل حمل (1 من كل 4 أطفال مصاب)",
+        cplLegAffected: "مصاب (1 من 4)",
+        cplLegCarrier: "حامل (1 من 2)",
+        cplLegHealthy: "سليم (1 من 4)",
+
+        matrixTitle: "🛡️ مصفوفة الصلاحيات الشفافة (من يملك حق الاطلاع؟)",
+        thParty: "الجهة / المستخدم",
+        thScope: "نطاق البيانات المسموح",
+        thStatus: "الحالة",
+        tdFatima: "التقرير الفردي الكامل + نتيجة التوافق المشتركة",
+        tdTariq: "نتيجة التوافق فقط (محجوب عن الجينات الفردية الخاصة بكِ)",
+        tdCounsellor: "ملف الحالة السريرية النشطة (ينتهي فور إغلاق الجلسة)",
+        tdExternal: "محجوب تماماً (لا مشاركة دون إذن جديد صريح)",
+
+        optionsTitle: "🌿 مكتبة الخيارات الإنجابية المتوازنة",
+        optBadge: "خيارات محايدة متساوية",
+        optIntro: "عند تطابق صفة الحامل لنفس الجين، تتوفر خيارات متعددة ومتوازنة. لا توجد توصية واحدة تناسب الجميع، بل يُترك القرار بالكامل لكما وفق قناعاتكما بعد الاستشارة:",
+        opt1Title: "أطفال الأنابيب مع الفحص الوراثي (PGT-M)",
+        opt1Desc: "إجراء تلقيح مخبري مع فحص الأجنة وراثياً قبل الزرع لاختيار الأجنة غير المصابة بطفرة HBB.",
+        opt1Tag: "دقة تفوق 98% · إجراء طبي تداخلي",
+        opt2Title: "الحمل الطبيعي مع التشخيص المبكر",
+        opt2Desc: "الحمل بصورة طبيعية مع إجراء فحص السائل الأمنيوسي (Amniocentesis) أو خملات المشيمة (CVS) في الثلث الأول.",
+        opt2Tag: "تشخيص مؤكد أثناء الحمل",
+        opt3Title: "الحمل الطبيعي مع فحص المواليد المبكر",
+        opt3Desc: "الحمل الطبيعي وتجهيز خطة علاجية فورية للوليد (مثل الفحص الجيني للمولود وبدء التدخل الوقائي المبكر عند الحاجة).",
+        opt3Tag: "جاهزية طبية استباقية",
+        opt4Title: "الاحتضان والكفالة الأسرية",
+        opt4Desc: "خيار الكفالة الأسرية المعتمدة في دولة الإمارات للأطفال المحتاجين لرعاية أسرية ضمن القيم الإسلامية والاجتماعية.",
+        opt4Tag: "بعد إنساني واجتماعي",
+        opt5Title: "خيار عدم الإنجاب البيولوجي",
+        opt5Desc: "اتفاق الزوجين على بناء حياة مشتركة دون إنجاب أطفال بيولوجيين، مع التركيز على الأهداف المهنية والاجتماعية.",
+        opt5Tag: "خيار شخصي متبادل",
+
+        vcTitle: "⚖️ تمرين توضيح الأولويات والقيم المشتركة",
+        vcDesc: "هذا التمرين مصمم لمساعدتكما على استيضاح أولوياتكما قبل مناقشتها مع المرشد الوراثي. لا يصدر هذا التمرين أي توصية آلية:",
+        vcQ1: "أهمية تفادي ولادة طفل مصاب بحالة شديدة:",
+        vcQ2: "تفضيل الطرق الطبيعية وتجنب الإجراءات التداخلية:",
+        vcQ3: "التوافق مع القناعات الدينية والاجتماعية للأسرة:",
+
+        chatTitle: "💬 خدمة الاستفسار وتوضيح القرارات الإنجابية",
+        chatBadge: "إرشاد محايد فوري",
+        chatDesc: "اطرحي أي سؤال يدور في ذهنكِ حول نتائج الفحص أو خيارات الإنجاب. نظامنا يتبع بروتوكولاً طبياً محايداً ولا يوجهكِ لأي قرار شخصي:",
+        chipQ1: "💍 هل ننفصل أم نتزوج؟",
+        chipQ2: "🧪 ما هو فحص الأجنة PGT-M؟",
+        chipQ3: "🤝 أشعر بضغط وقلق نفسي",
+        chatPlaceholder: "اكتبي سؤالكِ هنا (مثال: ماذا يجب أن نفعل بعد هذه النتيجة؟)...",
+        btnSendChat: "إرسال السؤال",
+        btnChatBook: "🩺 التحدث مباشرة مع مرشد وراثي معتمد",
+
+        quizTitle: "اختبار الفهم التفاعلي (Teach-Back)",
+        quizSub: "أجيبي على 4 أسئلة للتأكد من وضوح كافة المعلومات لك",
+        quizAttemptBadge: "المحاولة 1",
+        btnSubmitQuiz: "إرسال الإجابات والتحقق من الفهم",
+
+        botCtaTitle: "هل لديكِ أي استفسار أو مشاعر قلق؟",
+        botCtaSub: "خدمة الاستشارة الوراثية متاحة دائماً بسرية تامة ومجاناً",
+        btnCounsellor: "تحدث مع مختص وراثي",
+
+        bookModalTitle: "حجز استشارة وراثية متخصصة",
+        bookModalDesc: "نوفر لكِ جلسة استشارية مع مرشد وراثي معتمد لمناقشة كافة الخيارات المتاحة بكل خصوصية وهدوء.",
+        bookModLabel: "نوع الجلسة:",
+        bookLangLabel: "تفضيل لغة المستشار:",
+        btnConfirmBooking: "تأكيد حجز الموعد",
+
+        auditModalTitle: "👁️ سجل الوصول والتدقيق لبياناتكِ الجينية",
+        auditModalDesc: "تسجل المنصة كل عملية قراءة أو مطابقة في سجل تدقيق مشفر غير قابل للتعديل (Cryptographic Hash Chain) لضمان الشفافية التامة:",
+        audThTime: "الوقت والتاريخ",
+        audThActor: "الجهة",
+        audThAction: "الإجراء",
+        audThTarget: "السجل المستهدف",
+        audThHash: "بصمة التحقق (Hash)",
+
+        guideModalTitle: "💡 ما هي هذه المنصة؟ وما الخدمات التي تقدمها؟",
+        guideModalIntro: "<strong>منصة التوافق الوراثي (Al-Tawafuq)</strong> صُممت خصيصاً لبرنامج فحص ما قبل الزواج في إمارة أبوظبي (Future Health Challenge 2026 - Fertility Challenge 03). مهمتها تمكين المقبلين على الزواج من فهم المخاطر الوراثية بشفافية، وبطريقة خاصة وغير توجيهية وبلا أي لوم اجتماعي.",
+        guideS1Title: "🌟 الخدمات الأساسية الـ 5 التي تقدمها المنصة:",
+        guideS2Title: "🧭 كيف تتنقل في النظام؟ (3 بوابات متكاملة):",
+        guideBtnClose: "فهمت ذلك، استمرار في الاستخدام"
       },
       en: {
         brandTitle: "Inherited Disease Risk Platform",
         resultHeader: "Carrier Screening Educational Report",
         userWelcome: "User: Fatima Al Mansoori (Pre-marital screening)",
+        tierBadge: "Follow-up Priority: T1",
         fmtText: "Text View",
         fmtAudio: "Audio Narration",
         fmtVisual: "Icon Arrays",
-        audioTitle: "Listen to natural audio explanation",
+        audioTitle: "Listen to natural audio explanation in plain language",
+        audioStatusReady: "Ready to play (English)",
         iconTitle: "Carrier Visual Representation (Carriers are healthy)",
         iconSubtitle: "You carry one working copy and one changed copy in HBB (Beta-thalassemia)",
-        quizTitle: "Teach-Back Comprehension Check",
-        quizSub: "Answer 4 quick questions to confirm understanding",
-        btnSubmitQuiz: "Submit Answers & Verify Understanding",
-        botCtaTitle: "Do you have any questions or concerns?",
-        botCtaSub: "Accredited genetic counselling is always available confidentially",
-        btnCounsellor: "Talk to a Genetic Counsellor",
-        readyTitle: "Carrier Screening Report Ready for Review",
+        legStandard: "Standard copy (functional)",
+        legCarrier: "Changed copy (carrier only)",
+
+        readyTitle: "Carrier Screening Educational Report Ready for Review",
         readyBody: "Your pre-marital carrier screening educational report is ready. Please remember this is an educational screening and not a medical diagnosis of disease. You can review it whenever you feel ready.",
+        readyNoteTitle: "Before You Begin:",
+        readyNoteList: "<li>Your results are secured inside a private encrypted vault.</li><li>You can choose your preferred presentation (text, audio narration, or visual icon arrays).</li><li>An accredited genetic counsellor is always available confidentially to support you.</li>",
         btnReadyConfirm: "✓ I Am Ready to View My Results",
-        precheckTitle: "Pre-Check Before Reveal",
+        btnReadySkip: "⚡ Direct Quick View",
+
+        precheckTitle: "Pre-Check Before Results Reveal",
         precheckDesc: "Please answer these quick pre-check questions so we can ensure the information is clear and support you effectively:",
+        pkQ1: "1. Does being a genetic carrier mean a person has a medical illness?",
+        pkQ1O1: "Yes, it means they are sick and need immediate treatment.",
+        pkQ1O2: "No, carriers are completely healthy and do not experience symptoms.",
+        pkQ2: "2. Can any genetic screening test eliminate uncertainty 100% without residual risk?",
+        pkQ2O1: "Yes, a negative result means 100% zero risk forever.",
+        pkQ2O2: "No, a small residual risk always remains which cannot be fully ruled out.",
+        pkQ3: "3. How are you feeling right now before viewing your result?",
+        pkQ3O1: "Calm and ready to review comfortably.",
+        pkQ3O2: "I have natural curiosity and questions to understand.",
+        pkQ3O3: "I feel anxious or stressed and would like expert support.",
+        anxietyTitle: "🤝 We are here to support you — your well-being comes first",
+        anxietyText: "It is completely normal to feel nervous before genetic screening results. You can choose to speak directly with an accredited counsellor before opening the dossier:",
         btnRevealResults: "Proceed & View Genetic Report",
         btnViewAudit: "👁️ View My Access & Audit Log",
         btnRevokeCpl: "Revoke Couple Sharing Immediately",
-        welcomeTitle: "Welcome to the Inherited Disease Risk Platform",
-        welcomeDesc: "You are signed in as Fatima Al Mansoori (Carrier for Beta-thalassemia - healthy). This platform explains your pre-marital screening findings, performs mutual compatibility matching with your fiancé Tariq confidentially, and provides accredited genetic counselling in Abu Dhabi."
+        btnTopHistory: "👁️ Access History",
+
+        welcomeTitle: "Welcome to the Inherited Disease Risk Platform (Al-Tawafuq)",
+        welcomeDesc: "You are signed in as <strong>Fatima Al Mansoori</strong> (Carrier for Beta-thalassemia — healthy). This platform explains your pre-marital screening findings, performs mutual compatibility matching with your fiancé <strong>Tariq</strong> confidentially, and provides accredited genetic counselling in Abu Dhabi.",
+        btnJumpInd: "🧬 My Individual Result",
+        btnJumpCpl: "💍 Compatibility with Tariq",
+        btnJumpBook: "🩺 Book Counsellor",
+        btnJumpGuide: "❓ Platform Services Guide",
+
+        layer1Title: "1. One-Sentence Summary",
+        layer1Text: "You carry one changed copy of the HBB gene (Beta-thalassemia). Carriers are completely healthy and do not have symptoms.",
+        layer2Title: "2. What Does This Result Mean?",
+        layer2Text: "Being a carrier means your body has one working gene copy that performs all normal body functions. It only becomes medically significant when planning children with a partner who carries a variant in the exact same gene.",
+        layer3Title: "3. What Does This Result NOT Mean?",
+        layer3Text: "This screening is not a diagnosis of illness. You do not have thalassemia disease, nor will you develop it later in life. It does not hinder your health, vitality, or daily activities.",
+        layer4Title: "4. Residual Risk and Clinical Uncertainty",
+        layer4Text: "The test detects common pathogenic variants with over 95% sensitivity. A small baseline population residual risk always remains that no genetic test can completely rule out.",
+        layer5Title: "5. Next Steps & Compatibility Options",
+        layer5Text: "The recommended next step is for your fiancé Tariq to complete screening so your results can be privately compared inside the secure privacy vault to check for shared variants.",
+        clinicalNotice: "DRAFT - requires clinical sign-off · Educational prototype undergoing clinical review",
+
+        cplCardTitle: "🔒 Couple Matching Privacy Vault",
+        cplStatusBadge: "Active Mutual Consent",
+        coupleDesc: "Cross-matching takes place inside an encrypted vault. Neither partner sees the other's individual genetic list; joint findings appear only when both partners grant active consent.",
+        c10Title: "ℹ️ Important Mutual Privacy Disclosure:",
+        c10Body: "Cross-matching with your partner will inherently reveal whether your partner carries or does not carry a pathogenic variant in tested genes (a 'no shared gene' outcome clinically reveals the partner is screen-negative for those panel genes).",
+        cplResultTitle: "Compatibility Outcome: Same-Gene Match in HBB (Beta-thalassemia)",
+        cplResultBody: "Both of you carry a variant in the HBB gene. In each pregnancy: 1 in 4 chance of an affected child, 1 in 2 chance of a healthy carrier child, and 1 in 4 chance of a healthy non-carrier child.",
+        iconCplTitle: "Per-Pregnancy Probabilities (1 in 4 Affected)",
+        cplLegAffected: "Affected (1 in 4)",
+        cplLegCarrier: "Carrier (1 in 2)",
+        cplLegHealthy: "Unaffected (1 in 4)",
+
+        matrixTitle: "🛡️ Transparent Permissions Matrix (Who Can See What?)",
+        thParty: "Party / User",
+        thScope: "Permitted Data Scope",
+        thStatus: "Access Status",
+        tdFatima: "Full individual report + joint couple compatibility finding",
+        tdTariq: "Joint couple compatibility only (blocked from your individual variants)",
+        tdCounsellor: "Active clinical dossier (temporary; expires upon session closure)",
+        tdExternal: "Completely blocked (no sharing without explicit new consent)",
+
+        optionsTitle: "🌿 Balanced Reproductive Options Library",
+        optBadge: "Neutral, Equal-Weight Choices",
+        optIntro: "When partners share the same carrier gene, multiple balanced medical and family pathways exist. There is no single universal recommendation — the choice belongs entirely to you as a couple:",
+        opt1Title: "IVF with Genetic Testing (PGT-M)",
+        opt1Desc: "In-vitro fertilisation where embryos are tested prior to implantation to transfer embryos unaffected by the HBB variant.",
+        opt1Tag: ">98% accuracy · Interventional medical pathway",
+        opt2Title: "Natural Conception with Prenatal Diagnosis",
+        opt2Desc: "Conceiving naturally with early diagnostic testing via amniocentesis or chorionic villus sampling (CVS) in the first trimester.",
+        opt2Tag: "Definitive diagnosis during pregnancy",
+        opt3Title: "Natural Conception with Neonatal Readiness",
+        opt3Desc: "Conceiving naturally with newborn screening and immediate clinical management ready at birth.",
+        opt3Tag: "Proactive neonatal preparedness",
+        opt4Title: "Kafala (Family Fostering)",
+        opt4Desc: "Certified UAE family sponsorship providing loving home care to children in need within Islamic and cultural traditions.",
+        opt4Tag: "Humanitarian and family dimension",
+        opt5Title: "Child-Free by Choice",
+        opt5Desc: "Mutual decision to build a shared life without biological children, focusing on professional and shared personal goals.",
+        opt5Tag: "Personal mutual choice",
+
+        vcTitle: "⚖️ Shared Priorities & Values Clarification Exercise",
+        vcDesc: "This exercise helps you clarify priorities before discussing them with your genetic counsellor. It produces no automated directive recommendation:",
+        vcQ1: "Importance of avoiding having a child with a severe condition:",
+        vcQ2: "Preference for natural conception and avoiding interventions:",
+        vcQ3: "Alignment with family religious and cultural convictions:",
+
+        chatTitle: "💬 Decision Support & Questions Assistant",
+        chatBadge: "Instant Neutral Guidance",
+        chatDesc: "Ask any question regarding your screening results or reproductive options. Our platform follows strict non-directive safety protocols and never tells you what personal choice to make:",
+        chipQ1: "💍 Should we still get married?",
+        chipQ2: "🧪 What is PGT-M / IVF?",
+        chipQ3: "🤝 I feel anxious and pressured",
+        chatPlaceholder: "Type your question here (e.g. What should we do after this result?)...",
+        btnSendChat: "Send Question",
+        btnChatBook: "🩺 Speak directly with an accredited genetic counsellor",
+
+        quizTitle: "Teach-Back Comprehension Check",
+        quizSub: "Answer 4 quick questions to confirm understanding of your results",
+        quizAttemptBadge: "Attempt 1",
+        btnSubmitQuiz: "Submit Answers & Verify Understanding",
+
+        botCtaTitle: "Do you have any questions or concerns?",
+        botCtaSub: "Accredited genetic counselling is always available confidentially and free of charge",
+        btnCounsellor: "Talk to a Genetic Counsellor",
+
+        bookModalTitle: "Book Accredited Genetic Counselling",
+        bookModalDesc: "We connect you with a certified counsellor to discuss all available options comfortably and confidentially.",
+        bookModLabel: "Session Modality:",
+        bookLangLabel: "Preferred Counsellor Language:",
+        btnConfirmBooking: "Confirm Appointment Booking",
+
+        auditModalTitle: "👁️ Your Genetic Data Access & Audit Log",
+        auditModalDesc: "Every read and compatibility match is logged into a tamper-evident cryptographic hash chain to guarantee transparency:",
+        audThTime: "Timestamp",
+        audThActor: "Actor",
+        audThAction: "Action",
+        audThTarget: "Target Record",
+        audThHash: "Verification Hash",
+
+        guideModalTitle: "💡 Platform Overview & Clinical Services Guide",
+        guideModalIntro: "<strong>Inherited Disease Risk Platform (Al-Tawafuq)</strong> is an end-to-end clinical companion designed for the Abu Dhabi Pre-Marital Screening Program (Future Health Challenge 2026, Fertility Challenge 03). It empowers engaged couples to understand inherited genetic risks privately, clearly, non-directively, and free of social stigma.",
+        guideS1Title: "🌟 5 Core Clinical Services Provided:",
+        guideS2Title: "🧭 Navigation Between Platform Interfaces:",
+        guideBtnClose: "Close Guide & Continue"
       }
     };
 
@@ -1279,39 +1545,180 @@
       document.documentElement.dir = (lang === 'ar') ? 'rtl' : 'ltr';
       document.body.dir = (lang === 'ar') ? 'rtl' : 'ltr';
 
-      document.getElementById('btn-lang-ar').classList.toggle('active', lang === 'ar');
-      document.getElementById('btn-lang-en').classList.toggle('active', lang === 'en');
+      if (document.getElementById('btn-lang-ar')) document.getElementById('btn-lang-ar').classList.toggle('active', lang === 'ar');
+      if (document.getElementById('btn-lang-en')) document.getElementById('btn-lang-en').classList.toggle('active', lang === 'en');
 
       const t = TRANSLATIONS[lang];
-      document.getElementById('t-brand-title').innerText = t.brandTitle;
-      document.getElementById('t-result-header').innerText = t.resultHeader;
-      document.getElementById('t-user-welcome').innerText = t.userWelcome;
-      document.getElementById('t-fmt-text').innerText = t.fmtText;
-      document.getElementById('t-fmt-audio').innerText = t.fmtAudio;
-      document.getElementById('t-fmt-visual').innerText = t.fmtVisual;
-      document.getElementById('t-audio-title').innerText = t.audioTitle;
-      document.getElementById('t-icon-title').innerText = t.iconTitle;
-      document.getElementById('t-icon-subtitle').innerText = t.iconSubtitle;
-      document.getElementById('t-quiz-title').innerText = t.quizTitle;
-      document.getElementById('t-quiz-sub').innerText = t.quizSub;
-      document.getElementById('btn-submit-quiz').innerText = t.btnSubmitQuiz;
-      document.getElementById('t-bot-cta-title').innerText = t.botCtaTitle;
-      document.getElementById('t-bot-cta-sub').innerText = t.botCtaSub;
-      document.getElementById('t-btn-counsellor').innerText = t.btnCounsellor;
+      const setText = (id, val) => {
+        const el = document.getElementById(id);
+        if (el) el.innerText = val;
+      };
+      const setHTML = (id, val) => {
+        const el = document.getElementById(id);
+        if (el) el.innerHTML = val;
+      };
 
-      document.getElementById('t-ready-title').innerText = t.readyTitle;
-      document.getElementById('t-ready-body').innerText = t.readyBody;
-      document.getElementById('t-btn-ready-confirm').innerText = t.btnReadyConfirm;
-      document.getElementById('t-precheck-title').innerText = t.precheckTitle;
-      document.getElementById('t-precheck-desc').innerText = t.precheckDesc;
-      document.getElementById('t-btn-reveal-results').innerText = t.btnRevealResults;
-      document.getElementById('btn-view-audit').innerText = t.btnViewAudit;
-      document.getElementById('btn-revoke-cpl').innerText = t.btnRevokeCpl;
+      // Header & Navigation
+      setText('t-brand-title', t.brandTitle);
+      setText('btn-top-history', t.btnTopHistory);
 
-      if (document.getElementById('t-welcome-banner-title')) {
-        document.getElementById('t-welcome-banner-title').innerText = t.welcomeTitle;
-        document.getElementById('t-welcome-banner-desc').innerText = t.welcomeDesc;
-      }
+      // Ready Modal
+      setText('t-ready-title', t.readyTitle);
+      setText('t-ready-body', t.readyBody);
+      setText('t-ready-note-title', t.readyNoteTitle);
+      setHTML('t-ready-note-list', t.readyNoteList);
+      setText('t-btn-ready-confirm', t.btnReadyConfirm);
+      setText('t-btn-ready-skip', t.btnReadySkip);
+
+      // Precheck Modal
+      setText('t-precheck-title', t.precheckTitle);
+      setText('t-precheck-desc', t.precheckDesc);
+      setText('t-pk-q1', t.pkQ1);
+      setText('t-pk-q1-o1', t.pkQ1O1);
+      setText('t-pk-q1-o2', t.pkQ1O2);
+      setText('t-pk-q2', t.pkQ2);
+      setText('t-pk-q2-o1', t.pkQ2O1);
+      setText('t-pk-q2-o2', t.pkQ2O2);
+      setText('t-pk-q3', t.pkQ3);
+      setText('t-pk-q3-o1', t.pkQ3O1);
+      setText('t-pk-q3-o2', t.pkQ3O2);
+      setText('t-pk-q3-o3', t.pkQ3O3);
+      setText('t-anxiety-title', t.anxietyTitle);
+      setText('t-anxiety-text', t.anxietyText);
+      setText('t-btn-reveal-results', t.btnRevealResults);
+
+      // Welcome Banner
+      setText('t-welcome-banner-title', t.welcomeTitle);
+      setHTML('t-welcome-banner-desc', t.welcomeDesc);
+      setText('btn-jump-ind', t.btnJumpInd);
+      setText('btn-jump-cpl', t.btnJumpCpl);
+      setText('btn-jump-book', t.btnJumpBook);
+      setText('btn-jump-guide', t.btnJumpGuide);
+
+      // Individual Result Card
+      setText('t-result-header', t.resultHeader);
+      setText('t-user-welcome', t.userWelcome);
+      setText('t-tier-badge', t.tierBadge);
+      setText('t-fmt-text', t.fmtText);
+      setText('t-fmt-audio', t.fmtAudio);
+      setText('t-fmt-visual', t.fmtVisual);
+      setText('t-audio-title', t.audioTitle);
+      setText('audio-status', t.audioStatusReady);
+      setText('t-icon-title', t.iconTitle);
+      setText('t-icon-subtitle', t.iconSubtitle);
+      setText('t-leg-standard', t.legStandard);
+      setText('t-leg-carrier', t.legCarrier);
+
+      // Layered Explanations
+      setText('t-layer-1-title', t.layer1Title);
+      setText('layer-1-text', t.layer1Text);
+      setText('t-layer-2-title', t.layer2Title);
+      setText('layer-2-text', t.layer2Text);
+      setText('t-layer-3-title', t.layer3Title);
+      setText('layer-3-text', t.layer3Text);
+      setText('t-layer-4-title', t.layer4Title);
+      setText('layer-4-text', t.layer4Text);
+      setText('t-layer-5-title', t.layer5Title);
+      setText('layer-5-text', t.layer5Text);
+      setText('t-clinical-notice', t.clinicalNotice);
+
+      // Couple Matching Card
+      setText('t-cpl-card-title', t.cplCardTitle);
+      setText('couple-status-badge', t.cplStatusBadge);
+      setText('t-couple-desc', t.coupleDesc);
+      setText('t-c10-title', t.c10Title);
+      setText('t-c10-body', t.c10Body);
+      setText('t-cpl-result-title', t.cplResultTitle);
+      setText('t-cpl-result-body', t.cplResultBody);
+      setText('t-icon-cpl-title', t.iconCplTitle);
+      setText('t-cpl-leg-affected', t.cplLegAffected);
+      setText('t-cpl-leg-carrier', t.cplLegCarrier);
+      setText('t-cpl-leg-healthy', t.cplLegHealthy);
+
+      // Permissions Matrix
+      setText('t-matrix-title', t.matrixTitle);
+      setText('t-th-party', t.thParty);
+      setText('t-th-scope', t.thScope);
+      setText('t-th-status', t.thStatus);
+      setText('t-td-fatima', t.tdFatima);
+      setText('t-td-tariq', t.tdTariq);
+      setText('t-td-counsellor', t.tdCounsellor);
+      setText('t-td-external', t.tdExternal);
+      setText('btn-view-audit', t.btnViewAudit);
+      setText('btn-revoke-cpl', t.btnRevokeCpl);
+
+      // Options Library
+      setText('t-options-title', t.optionsTitle);
+      setText('t-opt-badge', t.optBadge);
+      setText('t-opt-intro', t.optIntro);
+      setText('t-opt-1-title', t.opt1Title);
+      setText('t-opt-1-desc', t.opt1Desc);
+      setText('t-opt-1-tag', t.opt1Tag);
+      setText('t-opt-2-title', t.opt2Title);
+      setText('t-opt-2-desc', t.opt2Desc);
+      setText('t-opt-2-tag', t.opt2Tag);
+      setText('t-opt-3-title', t.opt3Title);
+      setText('t-opt-3-desc', t.opt3Desc);
+      setText('t-opt-3-tag', t.opt3Tag);
+      setText('t-opt-4-title', t.opt4Title);
+      setText('t-opt-4-desc', t.opt4Desc);
+      setText('t-opt-4-tag', t.opt4Tag);
+      setText('t-opt-5-title', t.opt5Title);
+      setText('t-opt-5-desc', t.opt5Desc);
+      setText('t-opt-5-tag', t.opt5Tag);
+
+      // Values Clarification
+      setText('t-vc-title', t.vcTitle);
+      setText('t-vc-desc', t.vcDesc);
+      setText('t-vc-q1', t.vcQ1);
+      setText('t-vc-q2', t.vcQ2);
+      setText('t-vc-q3', t.vcQ3);
+
+      // Decision Chat Assistant
+      setText('t-chat-title', t.chatTitle);
+      setText('t-chat-badge', t.chatBadge);
+      setText('t-chat-desc', t.chatDesc);
+      setText('chip-q1', t.chipQ1);
+      setText('chip-q2', t.chipQ2);
+      setText('chip-q3', t.chipQ3);
+      const chatInp = document.getElementById('chat-input');
+      if (chatInp) chatInp.placeholder = t.chatPlaceholder;
+      setText('btn-send-chat', t.btnSendChat);
+      setText('btn-chat-book', t.btnChatBook);
+
+      // Teach-Back Quiz
+      setText('t-quiz-title', t.quizTitle);
+      setText('t-quiz-sub', t.quizSub);
+      setText('quiz-attempt-badge', t.quizAttemptBadge);
+      setText('btn-submit-quiz', t.btnSubmitQuiz);
+
+      // Bottom Bar
+      setText('t-bot-cta-title', t.botCtaTitle);
+      setText('t-bot-cta-sub', t.botCtaSub);
+      setText('t-btn-counsellor', t.btnCounsellor);
+
+      // Booking Modal
+      setText('t-book-modal-title', t.bookModalTitle);
+      setText('t-book-modal-desc', t.bookModalDesc);
+      setText('t-book-mod-label', t.bookModLabel);
+      setText('t-book-lang-label', t.bookLangLabel);
+      setText('t-btn-confirm-booking', t.btnConfirmBooking);
+
+      // Audit History Modal
+      setText('t-audit-modal-title', t.auditModalTitle);
+      setText('t-audit-modal-desc', t.auditModalDesc);
+      setText('t-aud-th-time', t.audThTime);
+      setText('t-aud-th-actor', t.audThActor);
+      setText('t-aud-th-action', t.audThAction);
+      setText('t-aud-th-target', t.audThTarget);
+      setText('t-aud-th-hash', t.audThHash);
+
+      // Guide Modal
+      setText('t-guide-modal-title', t.guideModalTitle);
+      setHTML('t-guide-modal-intro', t.guideModalIntro);
+      setText('t-guide-s1-title', t.guideS1Title);
+      setText('t-guide-s2-title', t.guideS2Title);
+      setText('t-guide-btn-close', t.guideBtnClose);
 
       loadQuizQuestions();
     }
@@ -1330,7 +1737,7 @@
       el.classList.toggle('open');
     }
 
-    /* F2 -> F3 transitions */
+    /* Modal controls */
     function proceedToPrecheck() {
       document.getElementById('ready-modal').classList.remove('open');
       document.getElementById('precheck-modal').classList.add('open');
@@ -1368,6 +1775,53 @@
 
     function finishPrecheckAndReveal() {
       document.getElementById('precheck-modal').classList.remove('open');
+    }
+
+    /* Decision Support Chat */
+    function askSampleQuestion(qText) {
+      document.getElementById('chat-input').value = qText;
+      sendChatMessage();
+    }
+
+    async function sendChatMessage() {
+      const inp = document.getElementById('chat-input');
+      const query = inp.value.trim();
+      if (!query) return;
+
+      const resBox = document.getElementById('chat-response-box');
+      const resText = document.getElementById('chat-response-text');
+      const cta = document.getElementById('chat-counsellor-cta');
+
+      resBox.style.display = 'block';
+      resText.innerHTML = (currentLang === 'ar') ? "⏳ جاري مراجعة الاستفسار وفق البروتوكول الطبي..." : "⏳ Evaluating query under clinical protocol...";
+      cta.style.display = 'none';
+
+      try {
+        const res = await fetch('/api/chat/ask', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'X-User-Id': 'person_001' },
+          body: JSON.stringify({ query: query, language: currentLang })
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.is_decision_question) {
+            resText.innerHTML = `<strong>🛡️ ${currentLang === 'ar' ? 'توضيح طبي غير توجيهي (إرشادي محايد):' : 'Non-Directive Clinical Guidance:'}</strong><br>${data.handoff_message}`;
+            cta.style.display = 'block';
+          } else if (data.is_distress || data.is_coercion) {
+            resText.innerHTML = `<strong>⚠️ ${currentLang === 'ar' ? 'تنبيه أمان ودعم فوري:' : 'Safety & Immediate Support Alert:'}</strong><br>${currentLang === 'ar' ? 'سلامتكِ وراحتكِ النفسية هي أولويتنا القصوى. نوفر لكِ خط تواصل مباشر وسري مع أخصائيين معتمدين لدعمكِ فوراً.' : 'Your safety and emotional well-being are paramount. Immediate confidential specialist support is available.'}`;
+            cta.style.display = 'block';
+          } else {
+            resText.innerHTML = `<strong>ℹ️ ${currentLang === 'ar' ? 'معلومات توضيحية:' : 'Clinical Educational Information:'}</strong><br>${currentLang === 'ar' ? 'عند تطابق صفة الحامل لنفس الجين (مثل بيتا ثلاسيميا)، تتوفر خيارات طبية معتمدة مثل فحص الأجنة الوراثي (PGT-M) أو التشخيص المبكر أثناء الحمل. يُنصح بمناقشة التفاصيل مع المرشد الوراثي.' : 'When both partners carry variants in the same recessive gene (such as Beta-thalassemia), established options include PGT-M / IVF and early prenatal testing. We encourage reviewing these options with a licensed counsellor.'}`;
+            cta.style.display = 'block';
+          }
+        } else {
+          resText.innerText = (currentLang === 'ar') ? "شكراً لاستفساركِ. خيار حجز استشارة وراثية متوفر دائماً لمناقشة التفاصيل." : "Thank you for your question. You can book a genetic counselling session anytime to discuss details.";
+          cta.style.display = 'block';
+        }
+      } catch (err) {
+        resText.innerText = (currentLang === 'ar') ? "تتوفر استشارة مجانية وسرية مع كوادر إماراتية معتمدة." : "Free confidential counselling is available with accredited specialists.";
+        cta.style.display = 'block';
+      }
     }
 
     /* Audio */
@@ -1475,12 +1929,16 @@
           feedback.style.background = '#dcfce7';
           feedback.style.border = '1px solid #86efac';
           feedback.style.color = '#14532d';
-          feedback.innerHTML = `<strong>✓ أحسنتِ! لقد اجتزتِ الاختبار بنجاح بنسبة ${data.score}%.</strong><br>تم تأكيد فهمكِ لكافة النقاط الجوهرية.`;
+          feedback.innerHTML = (currentLang === 'ar')
+            ? `<strong>✓ أحسنتِ! لقد اجتزتِ الاختبار بنجاح بنسبة ${data.score}%.</strong><br>تم تأكيد فهمكِ لكافة النقاط الجوهرية.`
+            : `<strong>✓ Excellent! You successfully passed the comprehension check with a score of ${data.score}%.</strong><br>Your understanding of the key concepts has been confirmed.`;
         } else {
           feedback.style.background = '#fee2e2';
           feedback.style.border = '1px solid #fca5a5';
           feedback.style.color = '#7f1d1d';
-          feedback.innerHTML = `<strong>نسبة الفهم: ${data.score}%.</strong><br>بعض الإجابات تحتاج لتوضيح أكثر. ننصحك بالتواصل مع المرشد الوراثي لشرحها بالتفصيل.`;
+          feedback.innerHTML = (currentLang === 'ar')
+            ? `<strong>نسبة الفهم: ${data.score}%.</strong><br>بعض الإجابات تحتاج لتوضيح أكثر. ننصحكِ بالتواصل مع المرشد الوراثي لشرحها بالتفصيل.`
+            : `<strong>Comprehension Score: ${data.score}%.</strong><br>A few concepts need clarification. We recommend discussing them with your genetic counsellor.`;
           if (data.failed_twice) {
             openBookingModal();
           }
@@ -1491,10 +1949,13 @@
     }
 
     function revokeConsentDemo() {
-      if (confirm("هل أنتِ متأكدة من إلغاء موافقة التوافق؟ سيتم حجب النتيجة المشتركة عن الطرفين فوراً.")) {
-        alert("تم إلغاء المشاركة بنجاح وحجب النتيجة فوراً داخل خزنة الخصوصية.");
+      const promptMsg = (currentLang === 'ar')
+        ? "هل أنتِ متأكدة من إلغاء موافقة التوافق؟ سيتم حجب النتيجة المشتركة عن الطرفين فوراً."
+        : "Are you sure you want to revoke couple sharing consent? Joint findings will be immediately hidden for both partners.";
+      if (confirm(promptMsg)) {
+        alert(currentLang === 'ar' ? "تم إلغاء المشاركة بنجاح وحجب النتيجة فوراً داخل خزنة الخصوصية." : "Consent revoked successfully. Result immediately hidden in privacy vault.");
         document.getElementById('couple-status-badge').className = "tier-badge tier-T3";
-        document.getElementById('couple-status-badge').innerText = "تم إلغاء الموافقة (محجوبة)";
+        document.getElementById('couple-status-badge').innerText = (currentLang === 'ar') ? "تم إلغاء الموافقة (محجوبة)" : "Consent Revoked (Hidden)";
       }
     }
 
@@ -1508,16 +1969,16 @@
     }
 
     function confirmBooking() {
-      alert("تم تأكيد حجز موعد الاستشارة الوراثية بنجاح! تم ربط ملف الحالة بجدول المستشار.");
+      alert(currentLang === 'ar' ? "تم تأكيد حجز موعد الاستشارة الوراثية بنجاح! تم ربط ملف الحالة بجدول المستشار." : "Genetic counselling appointment booked successfully! Case linked to clinical queue.");
       closeBookingModal();
     }
 
-    /* C7: User Access History Modal */
+    /* Access History Modal */
     async function openAccessHistoryModal() {
       const modal = document.getElementById('access-history-modal');
       modal.classList.add('open');
       const tbody = document.getElementById('access-history-tbody');
-      tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #94a3b8;">جاري جلب السجل المشفر...</td></tr>';
+      tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: #94a3b8;">${currentLang === 'ar' ? 'جاري جلب السجل المشفر...' : 'Loading cryptographic audit log...'}</td></tr>`;
       
       try {
         const res = await fetch('/api/users/me/access-history', {
@@ -1526,7 +1987,7 @@
         if (res.ok) {
           const records = await res.json();
           if (records.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">لا توجد سجلات وصول مسجلة بعد.</td></tr>';
+            tbody.innerHTML = `<tr><td colspan="5" style="text-align: center;">${currentLang === 'ar' ? 'لا توجد سجلات وصول مسجلة بعد.' : 'No audit records logged yet.'}</td></tr>`;
             return;
           }
           tbody.innerHTML = '';
@@ -1544,11 +2005,11 @@
             tbody.appendChild(tr);
           });
         } else {
-          tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #ef4444;">تعذر تحميل السجل.</td></tr>';
+          tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #ef4444;">Error loading log.</td></tr>';
         }
       } catch (err) {
         console.error("Access history fetch error:", err);
-        tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #ef4444;">خطأ في الاتصال بالخادم.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #ef4444;">Network error.</td></tr>';
       }
     }
 

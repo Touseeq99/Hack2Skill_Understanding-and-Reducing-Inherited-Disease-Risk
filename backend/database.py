@@ -238,13 +238,13 @@ class Database:
 
     def can_read_person(self, target_person_id: str, current_user_id: str, role: str = "patient") -> bool:
         """RLS check: Person table read access."""
-        if role in ("admin", "system"):
+        if role in ("admin", "system", "counsellor"):
             return True
         return target_person_id == current_user_id
 
     def can_read_screening_result(self, result_id: str, current_user_id: str, role: str = "patient") -> bool:
         """RLS check: Screening result & variants read access."""
-        if role in ("admin", "system"):
+        if role in ("admin", "system", "counsellor"):
             return True
         conn = self.get_connection()
         cur = conn.cursor()

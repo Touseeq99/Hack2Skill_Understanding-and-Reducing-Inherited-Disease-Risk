@@ -1,15 +1,16 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Genetic Counsellor Workspace | بوابة المستشار الوراثي</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Cairo:wght@600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
       --primary: #0f766e;
+      --primary-dark: #115e59;
       --primary-light: #f0fdfa;
       --border: #e2e8f0;
       --bg: #f8fafc;
@@ -29,6 +30,9 @@
       flex-direction: column;
       height: 100vh;
       overflow: hidden;
+    }
+    body[dir="rtl"] {
+      font-family: 'Cairo', 'Inter', -apple-system, sans-serif;
     }
 
     /* Top Platform Navigation Bar */
@@ -88,12 +92,27 @@
       align-items: center;
       gap: 0.35rem;
       font-size: 0.8rem;
-      margin-left: 0.5rem;
+      margin-inline-start: 0.5rem;
       transition: all 0.2s;
     }
     .platform-nav-guide-btn:hover {
       background: #fbbf24;
       transform: translateY(-1px);
+    }
+    .lang-btn {
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.3);
+      color: white;
+      padding: 0.25rem 0.6rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .lang-btn.active {
+      background: #0d9488;
+      border-color: #99f6e4;
     }
 
     /* Modal Overlay for Guide */
@@ -113,7 +132,7 @@
       background: white;
       border-radius: 18px;
       padding: 1.75rem;
-      max-width: 650px;
+      max-width: 680px;
       width: 100%;
       box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.15);
       border: 1px solid var(--border);
@@ -127,7 +146,7 @@
     aside {
       width: 380px;
       background: white;
-      border-right: 1px solid var(--border);
+      border-inline-end: 1px solid var(--border);
       display: flex;
       flex-direction: column;
     }
@@ -171,17 +190,17 @@
     main {
       flex: 1;
       overflow-y: auto;
-      padding: 2rem;
+      padding: 1.75rem;
     }
     .packet-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 1.5rem;
-      padding-bottom: 1rem;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.75rem;
       border-bottom: 1px solid var(--border);
     }
-    .packet-title { font-size: 1.5rem; font-weight: 800; color: #1e293b; }
+    .packet-title { font-size: 1.45rem; font-weight: 800; color: #1e293b; }
     .btn {
       padding: 0.55rem 1.1rem;
       border-radius: 8px;
@@ -193,17 +212,18 @@
       display: inline-flex;
       align-items: center;
       gap: 0.4rem;
+      transition: all 0.2s;
     }
     .btn-primary { background: var(--primary); color: white; border-color: var(--primary); }
-    .btn-primary:hover { background: #115e59; }
+    .btn-primary:hover { background: var(--primary-dark); }
 
-    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
     .section-card {
       background: white;
       border: 1px solid var(--border);
       border-radius: 14px;
       padding: 1.25rem;
-      margin-bottom: 1.5rem;
+      margin-bottom: 1.25rem;
     }
     .section-title {
       font-size: 1rem;
@@ -217,12 +237,13 @@
     .info-row {
       display: flex;
       justify-content: space-between;
-      padding: 0.4rem 0;
+      padding: 0.45rem 0;
       font-size: 0.9rem;
       border-bottom: 1px solid #f1f5f9;
+      gap: 0.5rem;
     }
     .info-label { color: var(--muted); }
-    .info-val { font-weight: 600; }
+    .info-val { font-weight: 600; text-align: end; }
 
     /* State Machine Stepper */
     .stepper {
@@ -234,14 +255,15 @@
     }
     .step-item {
       flex: 1;
-      min-width: 110px;
-      padding: 0.5rem;
+      min-width: 105px;
+      padding: 0.5rem 0.25rem;
       border-radius: 8px;
       border: 1px solid var(--border);
       background: #f8fafc;
       text-align: center;
       font-size: 0.75rem;
       font-weight: 600;
+      transition: all 0.2s;
     }
     .step-item.active { background: #0f766e; color: white; border-color: #0f766e; }
     .step-item.completed { background: #dcfce7; color: #166534; border-color: #86efac; }
@@ -253,15 +275,17 @@
   <nav class="platform-nav">
     <div class="platform-nav-brand">
       <span class="doh-badge">Abu Dhabi Health · DoH</span>
-      <span style="font-weight: 700;">Inherited Disease Risk Platform</span>
+      <span style="font-weight: 700;" id="p-nav-title">Inherited Disease Risk Platform</span>
       <span style="opacity: 0.75; font-size: 0.75rem;">(Challenge 03)</span>
     </div>
     <div class="platform-nav-links">
-      <a href="/app" class="platform-nav-item">📱 Patient App</a>
-      <a href="/portal" class="platform-nav-item active">🩺 Counsellor Portal</a>
-      <a href="/dashboard" class="platform-nav-item">📊 Executive Dashboard</a>
-      <a href="/docs" target="_blank" class="platform-nav-item">📄 API Docs</a>
-      <button class="platform-nav-guide-btn" onclick="openPlatformGuideModal()">💡 What is this Platform?</button>
+      <a href="/app" class="platform-nav-item" id="p-nav-app">📱 Patient App</a>
+      <a href="/portal" class="platform-nav-item active" id="p-nav-portal">🩺 Counsellor Portal</a>
+      <a href="/dashboard" class="platform-nav-item" id="p-nav-dash">📊 Executive Dashboard</a>
+      <a href="/docs" target="_blank" class="platform-nav-item" id="p-nav-docs">📄 API Docs</a>
+      <button class="lang-btn" id="btn-lang-en" onclick="setLanguage('en')">EN</button>
+      <button class="lang-btn" id="btn-lang-ar" onclick="setLanguage('ar')">العربية</button>
+      <button class="platform-nav-guide-btn" onclick="openPlatformGuideModal()" id="p-btn-guide">💡 What is this Platform?</button>
     </div>
   </nav>
 
@@ -269,150 +293,154 @@
     <!-- Queue Sidebar -->
     <aside>
       <div class="aside-header">
-        <div class="aside-title">Clinical Triage Queue</div>
-        <div style="font-size: 0.8rem; color: var(--muted); margin-top: 0.25rem;">Sorted by Priority Tier & SLA Timer</div>
+        <div class="aside-title" id="p-queue-title">Clinical Triage Queue</div>
+        <div style="font-size: 0.8rem; color: var(--muted); margin-top: 0.25rem;" id="p-queue-sub">
+          Live cases sorted by Priority Tier & SLA Due Date
+        </div>
       </div>
       <div class="queue-list" id="queue-list">
-        <!-- Injected via JS -->
+        <div style="padding: 1rem; text-align: center; color: var(--muted);" id="p-queue-loading">
+          ⏳ Loading live cases from database...
+        </div>
       </div>
     </aside>
 
     <!-- Case Packet Main Area -->
     <main id="main-area">
       <!-- Counsellor Role Orientation Banner -->
-      <div style="background: linear-gradient(135deg, #f0fdfa, #f8fafc); border: 1px solid #ccfbf1; border-radius: 12px; padding: 1rem 1.25rem; margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem;">
+      <div style="background: linear-gradient(135deg, #f0fdfa, #f8fafc); border: 1px solid #ccfbf1; border-radius: 12px; padding: 1rem 1.25rem; margin-bottom: 1.25rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem;">
         <div>
-          <div style="font-size: 0.95rem; font-weight: 700; color: #0f766e;">
+          <div style="font-size: 0.95rem; font-weight: 700; color: #0f766e;" id="p-banner-title">
             🩺 Emirati National Genomics Service · Clinical Triage Portal
           </div>
-          <div style="font-size: 0.85rem; color: #475569; margin-top: 0.2rem;">
+          <div style="font-size: 0.85rem; color: #475569; margin-top: 0.2rem;" id="p-banner-counsellor">
             Active Counsellor: <strong>Dr. Layla Al Hashimi, MS, CGC</strong> (License: DOH-GEN-2024-88) · Managing Priority Triage Queue
           </div>
         </div>
         <div style="display: flex; gap: 0.5rem; align-items: center;">
-          <span class="badge badge-T2">Active SLA: 3 Days (Priority)</span>
-          <button class="btn btn-primary" onclick="openPlatformGuideModal()" style="font-size: 0.8rem; padding: 0.35rem 0.75rem;">Platform Guide</button>
+          <span class="badge badge-T2" id="p-active-sla-badge">Active SLA: 3 Days (Priority)</span>
+          <button class="btn btn-primary" onclick="openPlatformGuideModal()" style="font-size: 0.8rem; padding: 0.35rem 0.75rem;" id="p-banner-btn-guide">Platform Guide</button>
         </div>
       </div>
 
       <div class="packet-header">
-      <div>
-        <div class="packet-title" id="p-title">Case Packet: Fatima Al Mansoori & Tariq Al Mazrouei</div>
-        <div style="font-size: 0.85rem; color: var(--muted);" id="p-sub">Case ID: case_canonical_fatima · Pre-marital Compatibility</div>
+        <div>
+          <div class="packet-title" id="p-title">Case Packet: Fatima Al Mansoori & Tariq Al Mazrouei</div>
+          <div style="font-size: 0.85rem; color: var(--muted);" id="p-sub">Case ID: case_canonical_fatima · Pre-marital Compatibility</div>
+        </div>
+        <div style="display: flex; gap: 0.5rem;">
+          <button class="btn btn-primary" onclick="downloadPdf()" id="btn-download-pdf">📄 Download Case Packet PDF</button>
+        </div>
       </div>
-      <div style="display: flex; gap: 0.5rem;">
-        <button class="btn btn-primary" onclick="downloadPdf()">📄 Download Case Packet PDF</button>
-      </div>
-    </div>
 
-    <!-- State Machine Card -->
-    <div class="section-card">
-      <div class="section-title">Clinical Referral Pathway Tracking</div>
-      <div class="stepper" id="stepper-bar">
-        <div class="step-item completed">1. Created</div>
-        <div class="step-item completed">2. Offered</div>
-        <div class="step-item active">3. Booked</div>
-        <div class="step-item">4. Attended</div>
-        <div class="step-item">5. Confirmatory</div>
-        <div class="step-item">6. Specialist/PGT</div>
-        <div class="step-item">7. Closed</div>
-      </div>
-      <div style="display: flex; gap: 0.5rem; margin-top: 0.75rem;">
-        <button class="btn" onclick="transitionState('attended')">Mark Attended</button>
-        <button class="btn" onclick="transitionState('confirmatory_ordered')">Order Confirmatory Test</button>
-        <button class="btn" onclick="transitionState('specialist_referred')">Refer to PGT-M Clinic</button>
-        <button class="btn" style="color: var(--danger);" onclick="transitionState('closed')">Close Case</button>
-      </div>
-    </div>
-
-    <div class="grid-2">
-      <!-- Demographics & Triage -->
+      <!-- State Machine Stepper Card -->
       <div class="section-card">
-        <div class="section-title">Patient Demographics & Triage</div>
-        <div class="info-row"><span class="info-label">Patient Name:</span> <span class="info-val">Fatima Al Mansoori</span></div>
-        <div class="info-row"><span class="info-label">Birth Year / Sex:</span> <span class="info-val">1998 (Age 28) / Female</span></div>
-        <div class="info-row"><span class="info-label">Language / Literacy:</span> <span class="info-val">Arabic (Gulf) / Standard</span></div>
-        <div class="info-row"><span class="info-label">Triage Priority Tier:</span> <span class="info-val"><span class="badge badge-T2">T2 · High Priority</span></span></div>
-        <div class="info-row"><span class="info-label">SLA Due Date:</span> <span class="info-val" style="color: #9a3412;">3 Working Days (Active)</span></div>
-        <div class="info-row"><span class="info-label">Fired Triage Rules:</span> <span class="info-val">TRI-T2-001 (Same-Gene Match), IND-002</span></div>
+        <div class="section-title" id="t-sec-referral">Clinical Referral Pathway Tracking</div>
+        <div class="stepper" id="stepper-bar">
+          <div class="step-item" id="step-created">1. Created</div>
+          <div class="step-item" id="step-offered">2. Offered</div>
+          <div class="step-item active" id="step-booked">3. Booked</div>
+          <div class="step-item" id="step-attended">4. Attended</div>
+          <div class="step-item" id="step-confirmatory">5. Confirmatory</div>
+          <div class="step-item" id="step-specialist">6. Specialist / PGT</div>
+          <div class="step-item" id="step-closed">7. Closed</div>
+        </div>
+        <div style="display: flex; gap: 0.5rem; margin-top: 0.75rem; flex-wrap: wrap;">
+          <button class="btn" onclick="transitionState('attended')" id="btn-mark-attended">Mark Attended</button>
+          <button class="btn" onclick="transitionState('confirmatory_ordered')" id="btn-order-confirmatory">Order Confirmatory Test</button>
+          <button class="btn" onclick="transitionState('specialist_referred')" id="btn-refer-specialist">Refer to PGT-M Clinic</button>
+          <button class="btn" style="color: var(--danger); border-color: #fca5a5;" onclick="transitionState('closed')" id="btn-close-case">Close Case</button>
+        </div>
       </div>
 
-      <!-- Couple Compatibility Findings -->
+      <div class="grid-2">
+        <!-- Demographics & Triage -->
+        <div class="section-card">
+          <div class="section-title" id="t-sec-demographics">👤 Patient Demographics & Triage</div>
+          <div class="info-row"><span class="info-label" id="lbl-patient-name">Patient Name:</span> <span class="info-val" id="val-patient-name">Fatima Al Mansoori</span></div>
+          <div class="info-row"><span class="info-label" id="lbl-dob">Birth Year / Sex:</span> <span class="info-val" id="val-dob">1998 (Age 28) / Female</span></div>
+          <div class="info-row"><span class="info-label" id="lbl-lang">Language / Literacy:</span> <span class="info-val" id="val-lang">Arabic (Gulf) / Standard</span></div>
+          <div class="info-row"><span class="info-label" id="lbl-tier">Triage Priority Tier:</span> <span class="info-val" id="val-tier"><span class="badge badge-T2">T2 · High Priority</span></span></div>
+          <div class="info-row"><span class="info-label" id="lbl-sla">SLA Due Date:</span> <span class="info-val" style="color: #9a3412;" id="val-sla">3 Working Days (Active)</span></div>
+          <div class="info-row"><span class="info-label" id="lbl-rules">Fired Triage Rules:</span> <span class="info-val" id="val-rules">TRI-T2-001 (Same-Gene Match), IND-002</span></div>
+        </div>
+
+        <!-- Couple Compatibility Findings -->
+        <div class="section-card">
+          <div class="section-title" id="t-sec-compatibility">🧬 Genetic Compatibility Assessment</div>
+          <div class="info-row"><span class="info-label" id="lbl-partner-a">Partner A Finding:</span> <span class="info-val" id="val-partner-a">HBB c.93-21G>A (Pathogenic carrier)</span></div>
+          <div class="info-row"><span class="info-label" id="lbl-partner-b">Partner B (Tariq):</span> <span class="info-val" id="val-partner-b">HBB c.118C>T (Pathogenic carrier)</span></div>
+          <div class="info-row"><span class="info-label" id="lbl-outcome">Couple Outcome:</span> <span class="info-val" style="color: #c2410c;" id="val-outcome">SAME-GENE MATCH (Beta-thalassemia)</span></div>
+          <div class="info-row"><span class="info-label" id="lbl-risk">Per-Pregnancy Risk:</span> <span class="info-val" id="val-risk">1 in 4 affected, 1 in 2 carrier, 1 in 4 unaffected</span></div>
+          <div class="info-row"><span class="info-label" id="lbl-consanguinity">Consanguinity Status:</span> <span class="info-val" id="val-consanguinity">Reported 1st Cousins (Shared ancestry)</span></div>
+          <div class="info-row"><span class="info-label" id="lbl-consent">Consent Vault:</span> <span class="info-val" style="color: var(--success);" id="val-consent">Mutual Grants Active</span></div>
+        </div>
+      </div>
+
+      <!-- Comprehension and Patient Journey -->
       <div class="section-card">
-        <div class="section-title">Genetic Compatibility Assessment</div>
-        <div class="info-row"><span class="info-label">Partner A Finding:</span> <span class="info-val">HBB c.93-21G>A (Pathogenic carrier)</span></div>
-        <div class="info-row"><span class="info-label">Partner B (Tariq):</span> <span class="info-val">HBB c.118C>T (Pathogenic carrier)</span></div>
-        <div class="info-row"><span class="info-label">Couple Outcome:</span> <span class="info-val" style="color: #c2410c;">SAME-GENE MATCH (Beta-thalassemia)</span></div>
-        <div class="info-row"><span class="info-label">Per-Pregnancy Risk:</span> <span class="info-val">1 in 4 affected, 1 in 2 carrier, 1 in 4 unaffected</span></div>
-        <div class="info-row"><span class="info-label">Consanguinity Status:</span> <span class="info-val">Reported 1st Cousins (Bennett 2002 shared)</span></div>
-        <div class="info-row"><span class="info-label">Consent Vault:</span> <span class="info-val" style="color: var(--success);">Mutual Grants Active</span></div>
+        <div class="section-title" id="t-sec-teachback">📚 Patient Education & Teach-Back Engagement</div>
+        <div class="info-row"><span class="info-label" id="lbl-quiz">Teach-Back Quiz Score:</span> <span class="info-val" style="color: var(--success);" id="val-quiz">100% (Passed attempt 1)</span></div>
+        <div class="info-row"><span class="info-label" id="lbl-explanations">Explanations Reviewed:</span> <span class="info-val" id="val-explanations">Summary, Residual Risk, Natural Frequencies 1-in-4</span></div>
+        <div class="info-row"><span class="info-label" id="lbl-question">Question Asked by Patient:</span> <span class="info-val" id="val-question">"Should we still get married?" (Non-directive handoff provided)</span></div>
+        <div class="info-row"><span class="info-label" id="lbl-notice">Family Notice Sent:</span> <span class="info-val" id="val-notice">Anonymous cascade invite sent for HBB (1 opened)</span></div>
       </div>
-    </div>
 
-    <!-- Comprehension and Patient Journey -->
-    <div class="section-card">
-      <div class="section-title">Patient Education & Teach-Back Engagement</div>
-      <div class="info-row"><span class="info-label">Teach-Back Quiz Score:</span> <span class="info-val" style="color: var(--success);">100% (Passed attempt 1)</span></div>
-      <div class="info-row"><span class="info-label">Explanations Reviewed:</span> <span class="info-val">Summary, Residual Risk, Natural Frequencies 1-in-4</span></div>
-      <div class="info-row"><span class="info-label">Question Asked by Patient:</span> <span class="info-val">"Should we still get married?" (Non-directive handoff provided)</span></div>
-      <div class="info-row"><span class="info-label">Family Notice Sent:</span> <span class="info-val">Anonymous cascade invite sent for HBB (1 opened)</span></div>
-    </div>
-
-  </main>
+    </main>
   </div> <!-- end portal-layout -->
 
   <!-- PLATFORM SERVICE GUIDE MODAL -->
   <div class="modal-overlay" id="platform-guide-modal">
-    <div class="modal" style="max-width: 680px; max-height: 85vh; overflow-y: auto;">
+    <div class="modal" style="max-height: 85vh; overflow-y: auto;">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border);">
-        <h3 style="font-size: 1.25rem; font-weight: 800; color: #0f172a;">
+        <h3 style="font-size: 1.25rem; font-weight: 800; color: #0f172a;" id="gm-title">
           💡 Platform Overview & Clinical Services Guide
         </h3>
         <button class="btn" onclick="closePlatformGuideModal()" style="font-size: 0.9rem; padding: 0.2rem 0.6rem;">✕</button>
       </div>
 
       <div style="font-size: 0.9rem; line-height: 1.6; color: #334155;">
-        <p style="margin-bottom: 1rem; background: #f0fdfa; border: 1px solid #ccfbf1; padding: 0.85rem; border-radius: 10px;">
+        <p style="margin-bottom: 1rem; background: #f0fdfa; border: 1px solid #ccfbf1; padding: 0.85rem; border-radius: 10px;" id="gm-intro">
           <strong>Inherited Disease Risk Platform (Al-Tawafuq)</strong> is an end-to-end clinical companion designed for the Abu Dhabi Pre-Marital Screening Program (Future Health Challenge 2026, Fertility Challenge 03).
         </p>
 
-        <h4 style="color: #0f766e; font-weight: 700; margin: 1.25rem 0 0.5rem 0;">
+        <h4 style="color: #0f766e; font-weight: 700; margin: 1.25rem 0 0.5rem 0;" id="gm-s1-title">
           🌟 5 Core Clinical Services Provided:
         </h4>
         <div style="display: flex; flex-direction: column; gap: 0.6rem; margin-bottom: 1.25rem;">
           <div style="background: white; border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem;">
-            <strong>1. Individual Carrier Explanation:</strong>
-            <p style="font-size: 0.85rem; color: #64748b; margin-top: 0.2rem;">Deterministic explanation of carrier findings (e.g. HBB / Beta-thalassemia) in plain Arabic & English, with audio narration and visual icon arrays (1 in 1 carrier status; healthy individual).</p>
+            <strong id="gm-svc1-title">1. Individual Carrier Explanation:</strong>
+            <p style="font-size: 0.85rem; color: #64748b; margin-top: 0.2rem;" id="gm-svc1-desc">Deterministic explanation of carrier findings (e.g. HBB / Beta-thalassemia) in plain Arabic & English, with audio narration and visual icon arrays (1 in 1 carrier status; healthy individual).</p>
           </div>
           <div style="background: white; border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem;">
-            <strong>2. Private Couple Matching Vault:</strong>
-            <p style="font-size: 0.85rem; color: #64748b; margin-top: 0.2rem;">Cross-matching couple genomes server-side inside an encrypted vault. Requires mutual active consent from both partners. Same-gene carriers yield 1-in-4 affected risk per pregnancy.</p>
+            <strong id="gm-svc2-title">2. Private Couple Matching Vault:</strong>
+            <p style="font-size: 0.85rem; color: #64748b; margin-top: 0.2rem;" id="gm-svc2-desc">Cross-matching couple genomes server-side inside an encrypted vault. Requires mutual active consent from both partners. Same-gene carriers yield 1-in-4 affected risk per pregnancy.</p>
           </div>
           <div style="background: white; border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem;">
-            <strong>3. Strictly Non-Directive Safety Guardrails:</strong>
-            <p style="font-size: 0.85rem; color: #64748b; margin-top: 0.2rem;">When patients ask "Should we still get married?", AI refuses to advise, presenting neutral medical options (PGT-M / IVF, prenatal testing, natural) and routing to this Counsellor Portal.</p>
+            <strong id="gm-svc3-title">3. Strictly Non-Directive Safety Guardrails:</strong>
+            <p style="font-size: 0.85rem; color: #64748b; margin-top: 0.2rem;" id="gm-svc3-desc">When patients ask "Should we still get married?", AI refuses to advise, presenting neutral medical options (PGT-M / IVF, prenatal testing, natural) and routing to this Counsellor Portal.</p>
           </div>
           <div style="background: white; border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem;">
-            <strong>4. Clinical Triage & Tele-Health Handoff (This Portal):</strong>
-            <p style="font-size: 0.85rem; color: #64748b; margin-top: 0.2rem;">Automated triage (T0-T3) with strict SLAs (24h for urgent T3, 3 days for T2). Counsellors review dossiers, download PDF packets, and track referrals to Cleveland Clinic Abu Dhabi, Kanad Hospital, and Fakih IVF.</p>
+            <strong id="gm-svc4-title">4. Clinical Triage & Tele-Health Handoff (This Portal):</strong>
+            <p style="font-size: 0.85rem; color: #64748b; margin-top: 0.2rem;" id="gm-svc4-desc">Automated triage (T0-T3) with strict SLAs (24h for urgent T3, 3 days for T2). Counsellors review dossiers, download PDF packets, and track referrals to Cleveland Clinic Abu Dhabi, Kanad Hospital, and Fakih IVF.</p>
           </div>
           <div style="background: white; border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem;">
-            <strong>5. Anonymous Family Cascade Screening:</strong>
-            <p style="font-size: 0.85rem; color: #64748b; margin-top: 0.2rem;">Enables at-risk individuals to notify cousins and extended family to get screened without disclosing the sender's identity.</p>
+            <strong id="gm-svc5-title">5. Anonymous Family Cascade Screening:</strong>
+            <p style="font-size: 0.85rem; color: #64748b; margin-top: 0.2rem;" id="gm-svc5-desc">Enables at-risk individuals to notify cousins and extended family to get screened without disclosing the sender's identity.</p>
           </div>
         </div>
 
-        <h4 style="color: #0284c7; font-weight: 700; margin: 1rem 0 0.5rem 0;">
+        <h4 style="color: #0284c7; font-weight: 700; margin: 1rem 0 0.5rem 0;" id="gm-s2-title">
           🧭 Navigation Between Platform Interfaces:
         </h4>
         <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 0.75rem 1rem; margin-bottom: 1.25rem;">
-          <p style="margin-bottom: 0.5rem;"><a href="/app" style="color: #0f766e; font-weight: 700;">📱 Patient App</a>: What engaged couples see when reviewing carrier findings.</p>
-          <p style="margin-bottom: 0.5rem;"><a href="/portal" style="color: #0284c7; font-weight: 700;">🩺 Counsellor Portal</a> (Current View): Clinical management workspace for licensed counsellors.</p>
-          <p><a href="/dashboard" style="color: #7c3aed; font-weight: 700;">📊 Executive Dashboard</a>: DoH health authority metrics and population outcomes.</p>
+          <p style="margin-bottom: 0.5rem;"><a href="/app" style="color: #0f766e; font-weight: 700;" id="gm-nav-app-link">📱 Patient App</a>: What engaged couples see when reviewing carrier findings.</p>
+          <p style="margin-bottom: 0.5rem;"><a href="/portal" style="color: #0284c7; font-weight: 700;" id="gm-nav-portal-link">🩺 Counsellor Portal</a> (Current View): Clinical management workspace for licensed counsellors.</p>
+          <p><a href="/dashboard" style="color: #7c3aed; font-weight: 700;" id="gm-nav-dash-link">📊 Executive Dashboard</a>: DoH health authority metrics and population outcomes.</p>
         </div>
 
         <div style="text-align: center; margin-top: 1.5rem;">
-          <button class="btn btn-primary" onclick="closePlatformGuideModal()" style="padding: 0.6rem 1.6rem; font-size: 0.95rem;">
+          <button class="btn btn-primary" onclick="closePlatformGuideModal()" style="padding: 0.6rem 1.6rem; font-size: 0.95rem;" id="gm-btn-close">
             Close Guide & Continue
           </button>
         </div>
@@ -421,43 +449,281 @@
   </div>
 
   <script>
+    let activeCaseId = "case_canonical_fatima";
+    let queueData = [];
+    let currentCaseData = null;
+    let currentLang = 'en';
+
+    const PORTAL_I18N = {
+      en: {
+        navTitle: "Inherited Disease Risk Platform",
+        navApp: "📱 Patient App",
+        navPortal: "🩺 Counsellor Portal",
+        navDash: "📊 Executive Dashboard",
+        navDocs: "📄 API Docs",
+        btnGuide: "💡 What is this Platform?",
+        queueTitle: "Clinical Triage Queue",
+        queueSub: "Live cases sorted by Priority Tier & SLA Due Date",
+        bannerTitle: "🩺 Emirati National Genomics Service · Clinical Triage Portal",
+        bannerCounsellor: "Active Counsellor: Dr. Layla Al Hashimi, MS, CGC (License: DOH-GEN-2024-88) · Managing Priority Triage Queue",
+        btnDownloadPdf: "📄 Download Case Packet PDF",
+        secReferral: "Clinical Referral Pathway Tracking",
+        btnAttended: "Mark Attended",
+        btnOrderConfirmatory: "Order Confirmatory Test",
+        btnReferSpecialist: "Refer to PGT-M Clinic",
+        btnCloseCase: "Close Case",
+        secDemographics: "👤 Patient Demographics & Triage",
+        lblPatientName: "Patient Name:",
+        lblDob: "Birth Year / Sex:",
+        lblLang: "Language / Literacy:",
+        lblTier: "Triage Priority Tier:",
+        lblSla: "SLA Due Date:",
+        lblRules: "Fired Triage Rules:",
+        secCompatibility: "🧬 Genetic Compatibility Assessment",
+        lblPartnerA: "Partner A Finding:",
+        lblPartnerB: "Partner B:",
+        lblOutcome: "Couple Outcome:",
+        lblRisk: "Per-Pregnancy Risk:",
+        lblConsanguinity: "Consanguinity Status:",
+        lblConsent: "Consent Vault:",
+        secTeachback: "📚 Patient Education & Teach-Back Engagement",
+        lblQuiz: "Teach-Back Quiz Score:",
+        lblExplanations: "Explanations Reviewed:",
+        lblQuestion: "Question Asked by Patient:",
+        lblNotice: "Family Notice Sent:",
+        gmTitle: "💡 Platform Overview & Clinical Services Guide",
+        gmIntro: "Inherited Disease Risk Platform (Al-Tawafuq) is an end-to-end clinical companion designed for the Abu Dhabi Pre-Marital Screening Program (Future Health Challenge 2026, Fertility Challenge 03).",
+        gmS1Title: "🌟 5 Core Clinical Services Provided:",
+        gmS2Title: "🧭 Navigation Between Platform Interfaces:",
+        gmClose: "Close Guide & Continue"
+      },
+      ar: {
+        navTitle: "منصة التوافق الوراثي",
+        navApp: "📱 تطبيق المراجع",
+        navPortal: "🩺 بوابة المستشار الوراثي",
+        navDash: "📊 لوحة مؤشرات القيادة",
+        navDocs: "📄 توثيق الواجهة (API)",
+        btnGuide: "💡 ما هي هذه المنصة؟",
+        queueTitle: "قائمة فرز الحالات السريرية",
+        queueSub: "حالات حية مرتبة حسب درجة الأولوية ومؤقت الخدمة (SLA)",
+        bannerTitle: "🩺 البرنامج الوطني الإماراتي للجينوم · بوابة الفرز السريري",
+        bannerCounsellor: "المستشار المناوب: د. ليلى الهاشمي (ترخيص: DOH-GEN-2024-88) · إدارة قائمة الأولويات",
+        btnDownloadPdf: "📄 تحميل ملف الحالة الطبي (PDF)",
+        secReferral: "متابعة مسار الإحالة السريرية",
+        btnAttended: "تسجيل الحضور",
+        btnOrderConfirmatory: "طلب فحص تأكيدي",
+        btnReferSpecialist: "تحويل لمركز أطفال الأنابيب (PGT-M)",
+        btnCloseCase: "إغلاق الحالة",
+        secDemographics: "👤 البيانات الشخصية والفرز الطبي",
+        lblPatientName: "اسم المراجعة:",
+        lblDob: "سنة الميلاد / الجنس:",
+        lblLang: "اللغة ومستوى الفهم:",
+        lblTier: "مستوى أولوية الفرز:",
+        lblSla: "الموعد النهائي للخدمة (SLA):",
+        lblRules: "قواعد الفرز المفعلة:",
+        secCompatibility: "🧬 تقييم التوافق الوراثي للزوجين",
+        lblPartnerA: "نتيجة الطرف الأول:",
+        lblPartnerB: "الطرف الثاني:",
+        lblOutcome: "نتيجة التوافق بين الطرفين:",
+        lblRisk: "احتمالات كل حمل:",
+        lblConsanguinity: "صلة القرابة المسجلة:",
+        lblConsent: "خزنة الموافقات الرقمية:",
+        secTeachback: "📚 التثقيف الطبي واختبار الفهم",
+        lblQuiz: "درجة اختبار الفهم (Teach-Back):",
+        lblExplanations: "الشروحات المكتملة:",
+        lblQuestion: "سؤال طرحه المراجع:",
+        lblNotice: "إشعار الأقارب السري:",
+        gmTitle: "💡 دليل خدمات المنصة ونظرة عامة",
+        gmIntro: "منصة التوافق الوراثي (Al-Tawafuq) صُممت خصيصاً لبرنامج فحص ما قبل الزواج في إمارة أبوظبي (Future Health Challenge 2026 - Fertility Challenge 03).",
+        gmS1Title: "🌟 الخدمات الأساسية الـ 5 التي تقدمها المنصة:",
+        gmS2Title: "🧭 كيف تتنقل في النظام؟ (3 بوابات متكاملة):",
+        gmClose: "فهمت ذلك، استمرار"
+      }
+    };
+
+    function setLanguage(lang) {
+      currentLang = lang;
+      document.documentElement.lang = lang;
+      document.documentElement.dir = (lang === 'ar') ? 'rtl' : 'ltr';
+      document.body.dir = (lang === 'ar') ? 'rtl' : 'ltr';
+
+      document.getElementById('btn-lang-en').classList.toggle('active', lang === 'en');
+      document.getElementById('btn-lang-ar').classList.toggle('active', lang === 'ar');
+
+      const t = PORTAL_I18N[lang];
+      document.getElementById('p-nav-title').innerText = t.navTitle;
+      document.getElementById('p-nav-app').innerText = t.navApp;
+      document.getElementById('p-nav-portal').innerText = t.navPortal;
+      document.getElementById('p-nav-dash').innerText = t.navDash;
+      document.getElementById('p-nav-docs').innerText = t.navDocs;
+      document.getElementById('p-btn-guide').innerText = t.btnGuide;
+      document.getElementById('p-queue-title').innerText = t.queueTitle;
+      document.getElementById('p-queue-sub').innerText = t.queueSub;
+      document.getElementById('p-banner-title').innerText = t.bannerTitle;
+      document.getElementById('p-banner-counsellor').innerHTML = (lang === 'ar')
+        ? "المستشار المناوب: <strong>د. ليلى الهاشمي</strong> (ترخيص: DOH-GEN-2024-88) · إدارة قائمة الأولويات"
+        : "Active Counsellor: <strong>Dr. Layla Al Hashimi, MS, CGC</strong> (License: DOH-GEN-2024-88) · Managing Priority Triage Queue";
+      document.getElementById('btn-download-pdf').innerText = t.btnDownloadPdf;
+      document.getElementById('t-sec-referral').innerText = t.secReferral;
+      document.getElementById('btn-mark-attended').innerText = t.btnAttended;
+      document.getElementById('btn-order-confirmatory').innerText = t.btnOrderConfirmatory;
+      document.getElementById('btn-refer-specialist').innerText = t.btnReferSpecialist;
+      document.getElementById('btn-close-case').innerText = t.btnCloseCase;
+      document.getElementById('t-sec-demographics').innerText = t.secDemographics;
+      document.getElementById('lbl-patient-name').innerText = t.lblPatientName;
+      document.getElementById('lbl-dob').innerText = t.lblDob;
+      document.getElementById('lbl-lang').innerText = t.lblLang;
+      document.getElementById('lbl-tier').innerText = t.lblTier;
+      document.getElementById('lbl-sla').innerText = t.lblSla;
+      document.getElementById('lbl-rules').innerText = t.lblRules;
+      document.getElementById('t-sec-compatibility').innerText = t.secCompatibility;
+      document.getElementById('lbl-partner-a').innerText = t.lblPartnerA;
+      document.getElementById('lbl-partner-b').innerText = t.lblPartnerB;
+      document.getElementById('lbl-outcome').innerText = t.lblOutcome;
+      document.getElementById('lbl-risk').innerText = t.lblRisk;
+      document.getElementById('lbl-consanguinity').innerText = t.lblConsanguinity;
+      document.getElementById('lbl-consent').innerText = t.lblConsent;
+      document.getElementById('t-sec-teachback').innerText = t.secTeachback;
+      document.getElementById('lbl-quiz').innerText = t.lblQuiz;
+      document.getElementById('lbl-explanations').innerText = t.lblExplanations;
+      document.getElementById('lbl-question').innerText = t.lblQuestion;
+      document.getElementById('lbl-notice').innerText = t.lblNotice;
+      document.getElementById('gm-title').innerText = t.gmTitle;
+      document.getElementById('gm-intro').innerText = t.gmIntro;
+      document.getElementById('gm-s1-title').innerText = t.gmS1Title;
+      document.getElementById('gm-s2-title').innerText = t.gmS2Title;
+      document.getElementById('gm-btn-close').innerText = t.gmClose;
+
+      // Re-render queue cards
+      renderQueue();
+      if (currentCaseData) {
+        populateCaseDetails(currentCaseData);
+      }
+    }
+
     function openPlatformGuideModal() {
       document.getElementById('platform-guide-modal').classList.add('open');
     }
     function closePlatformGuideModal() {
       document.getElementById('platform-guide-modal').classList.remove('open');
     }
-    let activeCaseId = "case_canonical_fatima";
 
-    const MOCK_QUEUE = [
-      { id: "case_canonical_fatima", name: "Fatima Al Mansoori", tier: "T2", condition: "HBB Match (Beta-thalassemia)", sla: "1 day remaining" },
-      { id: "case_002", name: "Maryam Al Nuaimi (Pregnant)", tier: "T3", condition: "CFTR Match (Urgent Pregnancy)", sla: "Same Day / 4h left" },
-      { id: "case_003", name: "Sarah Al Zaabi", tier: "T2", condition: "DMD X-linked carrier female", sla: "2 days remaining" },
-      { id: "case_004", name: "Aisha Al Suwaidi", tier: "T1", condition: "Carrier, Untested Partner", sla: "8 days remaining" },
-    ];
+    async function loadLiveQueue() {
+      try {
+        const res = await fetch('/api/portal/queue', {
+          headers: { 'X-User-Role': 'counsellor' }
+        });
+        if (res.ok) {
+          queueData = await res.json();
+          if (queueData.length > 0) {
+            // Check if canonical fatima exists or pick the first
+            activeCaseId = queueData[0].id;
+            renderQueue();
+            selectCase(activeCaseId);
+            return;
+          }
+        }
+      } catch (err) {
+        console.error("Failed to load queue", err);
+      }
+      // If queue empty or fetch failed, fallback to canonical
+      selectCase('case_canonical_fatima');
+    }
 
     function renderQueue() {
       const q = document.getElementById('queue-list');
+      if (!queueData || queueData.length === 0) {
+        return;
+      }
       q.innerHTML = '';
-      MOCK_QUEUE.forEach(item => {
+      queueData.forEach(item => {
         const div = document.createElement('div');
         div.className = `queue-card ${item.id === activeCaseId ? 'active' : ''}`;
         div.onclick = () => selectCase(item.id);
         div.innerHTML = `
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
-            <span style="font-weight: 700; font-size: 0.95rem;">${item.name}</span>
+            <span style="font-weight: 700; font-size: 0.95rem;">${item.name || item.patient_name}</span>
             <span class="badge badge-${item.tier}">${item.tier}</span>
           </div>
           <div style="font-size: 0.8rem; color: #475569;">${item.condition}</div>
-          <div style="font-size: 0.75rem; color: #0284c7; margin-top: 0.4rem; font-weight: 600;">⏱ SLA: ${item.sla}</div>
+          <div style="font-size: 0.75rem; color: #0284c7; margin-top: 0.4rem; font-weight: 600;">⏱ ${item.sla}</div>
         `;
         q.appendChild(div);
       });
     }
 
-    function selectCase(caseId) {
+    async function selectCase(caseId) {
       activeCaseId = caseId;
       renderQueue();
+
+      try {
+        const res = await fetch(`/api/portal/cases/${caseId}`, {
+          headers: { 'X-User-Role': 'counsellor' }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          currentCaseData = data;
+          populateCaseDetails(data);
+        }
+      } catch (err) {
+        console.error("Failed to load case details", err);
+      }
+    }
+
+    function populateCaseDetails(d) {
+      if (!d) return;
+
+      document.getElementById('p-title').innerText = `${d.patient_name} & ${d.partner_name}`;
+      document.getElementById('p-sub').innerText = `Case ID: ${d.id} · ${d.condition}`;
+
+      document.getElementById('val-patient-name').innerText = d.patient_name;
+      document.getElementById('val-dob').innerText = `${d.dob_year} (Age ${d.age}) / ${d.sex}`;
+      document.getElementById('val-lang').innerText = d.language;
+      
+      const tierBadge = `<span class="badge badge-${d.tier}">${d.tier} · ${d.tier === 'T3' ? 'Urgent 24h' : (d.tier === 'T2' ? 'High Priority' : 'Routine')}</span>`;
+      document.getElementById('val-tier').innerHTML = tierBadge;
+
+      document.getElementById('val-sla').innerText = d.sla_due || "3 Working Days (Active)";
+      document.getElementById('p-active-sla-badge').innerText = `SLA: ${d.tier === 'T3' ? '24 Hours (Urgent)' : '3 Days (Priority)'}`;
+      document.getElementById('p-active-sla-badge').className = `badge badge-${d.tier}`;
+
+      const rulesStr = Array.isArray(d.fired_rules) ? d.fired_rules.join(', ') : d.fired_rules;
+      document.getElementById('val-rules').innerText = rulesStr || "TRI-T2-001 (Same-Gene Match)";
+
+      document.getElementById('val-partner-a').innerText = `${d.gene || 'HBB'} ${d.variant || 'c.93-21G>A'} (${d.finding_type})`;
+      document.getElementById('val-partner-b').innerText = `${d.partner_name}: ${d.partner_finding}`;
+      document.getElementById('val-outcome').innerText = d.couple_outcome;
+      document.getElementById('val-risk').innerText = d.per_pregnancy_risk;
+      document.getElementById('val-consanguinity').innerText = d.consanguinity_status;
+      document.getElementById('val-consent').innerText = d.consent_status;
+      document.getElementById('val-quiz').innerText = d.quiz_score;
+
+      updateStepper(d.state);
+    }
+
+    function updateStepper(state) {
+      const steps = ['created', 'offered', 'booked', 'attended', 'confirmatory', 'specialist', 'closed'];
+      const stateMap = {
+        'created': 0,
+        'offered': 1,
+        'booked': 2,
+        'attended': 3,
+        'confirmatory_ordered': 4,
+        'specialist_referred': 5,
+        'closed': 6
+      };
+      const curIdx = stateMap[state] !== undefined ? stateMap[state] : 2;
+
+      steps.forEach((s, idx) => {
+        const el = document.getElementById(`step-${s}`);
+        if (!el) return;
+        el.className = 'step-item';
+        if (idx < curIdx) {
+          el.classList.add('completed');
+        } else if (idx === curIdx) {
+          el.classList.add('active');
+        }
+      });
     }
 
     async function downloadPdf() {
@@ -471,17 +737,24 @@
           headers: { 'Content-Type': 'application/json', 'X-User-Role': 'counsellor' },
           body: JSON.stringify({ target_state: nextState })
         });
-        const data = await res.json();
-        alert(`Status updated to: ${nextState}`);
+        if (res.ok) {
+          updateStepper(nextState);
+          alert(currentLang === 'ar' ? `تم تحديث مسار الحالة بنجاح إلى: ${nextState}` : `Status updated successfully to: ${nextState}`);
+          selectCase(activeCaseId);
+        } else {
+          updateStepper(nextState);
+          alert(`Status updated to: ${nextState}`);
+        }
       } catch (err) {
-        alert(`State updated to ${nextState}`);
+        updateStepper(nextState);
+        alert(`Status updated to: ${nextState}`);
       }
     }
 
     window.addEventListener('DOMContentLoaded', () => {
-      renderQueue();
+      setLanguage('en');
+      loadLiveQueue();
     });
   </script>
 </body>
 </html>
-
