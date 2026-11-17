@@ -35,6 +35,71 @@
 
     body[dir="ltr"] { font-family: 'Inter', sans-serif; }
 
+    /* Top Platform Navigation Bar */
+    .platform-nav {
+      background: #042f2e;
+      color: white;
+      padding: 0.6rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.85rem;
+      border-bottom: 2px solid #0d9488;
+      z-index: 50;
+      position: relative;
+    }
+    .platform-nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .doh-badge {
+      background: #0d9488;
+      color: white;
+      padding: 0.2rem 0.6rem;
+      border-radius: 6px;
+      font-weight: 800;
+      font-size: 0.75rem;
+      letter-spacing: 0.5px;
+    }
+    .platform-nav-links {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .platform-nav-item {
+      color: #99f6e4;
+      text-decoration: none;
+      padding: 0.35rem 0.75rem;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.82rem;
+      transition: all 0.2s;
+    }
+    .platform-nav-item:hover, .platform-nav-item.active {
+      background: #115e59;
+      color: #ffffff;
+    }
+    .platform-nav-guide-btn {
+      background: #f59e0b;
+      color: #1e1b4b;
+      border: none;
+      padding: 0.35rem 0.85rem;
+      border-radius: 20px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.8rem;
+      margin-inline-start: 0.5rem;
+      transition: all 0.2s;
+    }
+    .platform-nav-guide-btn:hover {
+      background: #fbbf24;
+      transform: translateY(-1px);
+    }
+
     header {
       background: white;
       border-bottom: 1px solid var(--border);
@@ -485,6 +550,15 @@
   <!-- ========================================================================= -->
   <div class="modal-overlay open" id="ready-modal">
     <div class="modal" style="text-align: center;">
+      <!-- Language & Quick Access Bar -->
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; padding-bottom: 0.5rem; border-bottom: 1px solid #e2e8f0;">
+        <span class="doh-badge" style="background:#0284c7;">Abu Dhabi Pre-Marital Screening</span>
+        <div style="display: flex; gap: 0.35rem;">
+          <button class="pill-btn" onclick="setLanguage('en');">English</button>
+          <button class="pill-btn" onclick="setLanguage('ar');">العربية</button>
+        </div>
+      </div>
+
       <div style="font-size: 2.5rem; margin-bottom: 0.75rem;">📋</div>
       <h3 style="font-size: 1.35rem; font-weight: 800; color: #0f172a; margin-bottom: 0.75rem;" id="t-ready-title">
         تقرير الفحص الجيني الاستكشافي جاهز للاطلاع
@@ -504,9 +578,14 @@
         </ul>
       </div>
 
-      <button class="submit-quiz-btn" style="padding: 0.9rem 1.5rem; font-size: 1.05rem;" onclick="proceedToPrecheck()" id="t-btn-ready-confirm">
-        ✓ أنا مستعدة للاطلاع على النتيجة
-      </button>
+      <div style="display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap;">
+        <button class="submit-quiz-btn" style="padding: 0.85rem 1.4rem; font-size: 1rem; flex: 2; min-width: 200px;" onclick="proceedToPrecheck()" id="t-btn-ready-confirm">
+          ✓ أنا مستعدة للاطلاع على النتيجة
+        </button>
+        <button class="pill-btn" style="padding: 0.85rem 1rem; font-size: 0.85rem; flex: 1; min-width: 140px; background: #e2e8f0; color: #1e293b;" onclick="skipDirectlyToResults()" id="t-btn-ready-skip">
+          ⚡ عرض سريع (Direct View)
+        </button>
+      </div>
     </div>
   </div>
 
@@ -519,7 +598,11 @@
         <h3 style="font-size: 1.2rem; font-weight: 700; color: #0f172a;" id="t-precheck-title">
           التحقق التمهيدي قبل عرض النتيجة
         </h3>
-        <span class="pill-btn" style="background: #e0e7ff; color: #3730a3; font-size: 0.75rem;">خطوة تأكيدية</span>
+        <div style="display: flex; gap: 0.35rem; align-items: center;">
+          <button class="pill-btn" onclick="setLanguage('en');" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;">EN</button>
+          <button class="pill-btn" onclick="setLanguage('ar');" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;">AR</button>
+          <button class="pill-btn" style="background: #e2e8f0; color: #1e293b; font-size: 0.75rem; padding: 0.25rem 0.5rem;" onclick="skipDirectlyToResults()">⚡ Skip</button>
+        </div>
       </div>
 
       <p style="font-size: 0.9rem; color: #475569; margin-bottom: 1.25rem;" id="t-precheck-desc">
@@ -588,9 +671,93 @@
         </button>
       </div>
 
-      <button class="submit-quiz-btn" onclick="finishPrecheckAndReveal()" id="t-btn-reveal-results">
-        المتابعة وعرض التقرير الجيني
-      </button>
+      <div style="display: flex; gap: 0.75rem;">
+        <button class="submit-quiz-btn" style="flex: 2;" onclick="finishPrecheckAndReveal()" id="t-btn-reveal-results">
+          المتابعة وعرض التقرير الجيني
+        </button>
+        <button class="pill-btn" style="flex: 1; background: #e2e8f0; color: #1e293b;" onclick="skipDirectlyToResults()">
+          ⚡ عرض مباشر
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- GLOBAL PLATFORM NAVIGATION BAR -->
+  <!-- ========================================================================= -->
+  <nav class="platform-nav">
+    <div class="platform-nav-brand">
+      <span class="doh-badge">Abu Dhabi Health · DoH</span>
+      <span style="font-weight: 700;">Inherited Disease Risk Platform</span>
+      <span style="opacity: 0.75; font-size: 0.75rem;">(Challenge 03)</span>
+    </div>
+    <div class="platform-nav-links">
+      <a href="/app" class="platform-nav-item active">📱 Patient App</a>
+      <a href="/portal" class="platform-nav-item">🩺 Counsellor Portal</a>
+      <a href="/dashboard" class="platform-nav-item">📊 Executive Dashboard</a>
+      <a href="/docs" target="_blank" class="platform-nav-item">📄 API Docs</a>
+      <button class="platform-nav-guide-btn" onclick="openPlatformGuideModal()">💡 What is this Platform?</button>
+    </div>
+  </nav>
+
+  <!-- ========================================================================= -->
+  <!-- PLATFORM SERVICE GUIDE MODAL -->
+  <!-- ========================================================================= -->
+  <div class="modal-overlay" id="platform-guide-modal">
+    <div class="modal" style="max-width: 680px; max-height: 85vh; overflow-y: auto; text-align: start;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border);">
+        <h3 style="font-size: 1.25rem; font-weight: 800; color: #0f172a;" id="t-guide-modal-title">
+          💡 ما هي هذه المنصة؟ وما الخدمات التي تقدمها؟
+        </h3>
+        <button class="pill-btn" onclick="closePlatformGuideModal()" style="font-size: 1rem; padding: 0.2rem 0.6rem;">✕</button>
+      </div>
+
+      <div style="font-size: 0.9rem; line-height: 1.6; color: #334155;">
+        <p style="margin-bottom: 1rem; background: #f0fdfa; border: 1px solid #ccfbf1; padding: 0.85rem; border-radius: 10px;" id="t-guide-modal-intro">
+          <strong>منصة التوافق الوراثي (Al-Tawafuq)</strong> صُممت خصيصاً لبرنامج فحص ما قبل الزواج في إمارة أبوظبي (Future Health Challenge 2026 - Fertility Challenge 03). مهمتها تمكين المقبلين على الزواج من فهم المخاطر الوراثية بشفافية، وبطريقة خاصة وغير توجيهية وبلا أي لوم اجتماعي.
+        </p>
+
+        <h4 style="color: #0f766e; font-weight: 700; margin: 1.25rem 0 0.5rem 0;" id="t-guide-s1-title">
+          🌟 الخدمات الأساسية الـ 5 التي تقدمها المنصة:
+        </h4>
+        <div style="display: flex; flex-direction: column; gap: 0.6rem; margin-bottom: 1.25rem;">
+          <div style="background: white; border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem;">
+            <strong>1. شرح نتائج الفحص الفردي (Individual Screening):</strong>
+            <p style="font-size: 0.85rem; color: #64748b; margin-top: 0.2rem;">تفسير دقيق ومبسط لمعنى "حامل للجين" (أصحاء تماماً) دون مصطلحات مخيفة، مع استماع صوتي بلهجة خليجية ورسوم بيانية طبيعية ("1 من 4").</p>
+          </div>
+          <div style="background: white; border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem;">
+            <strong>2. خزنة خصوصية التوافق بين المخطوبين (Couple Matching Vault):</strong>
+            <p style="font-size: 0.85rem; color: #64748b; margin-top: 0.2rem;">مطابقة حسابية سرية تماماً تتطلب موافقة الطرفين معاً. إذا اشترك الطرفان في نفس الجين (مثل بيتا ثلاسيميا)، تظهر احتمالية 1 من 4 للإصابة مع الحفاظ على سرية باقي الجينات.</p>
+          </div>
+          <div style="background: white; border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem;">
+            <strong>3. الإرشاد المحايد وغير التوجيهي (Non-Directive Support):</strong>
+            <p style="font-size: 0.85rem; color: #64748b; margin-top: 0.2rem;">عند سؤال "هل ننفصل أم نتزوج؟"، يرفض النظام الآلي اتخاذ أي قرار نيابة عن الشريكين، ويستعرض خيارات الإنجاب العلمية (فحص الأجنة PGT-M، الفحص أثناء الحمل، المتابعة الطبيعية) ويحولهما لمستشار بشري.</p>
+          </div>
+          <div style="background: white; border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem;">
+            <strong>4. الربط المباشر بالمستشارين الوراثيين ومراكز الإخصاب:</strong>
+            <p style="font-size: 0.85rem; color: #64748b; margin-top: 0.2rem;">حجز فوري لمواعيد استشارة مرئية مع كوادر إماراتية معتمدة وفق مؤشرات زمنية دقيقة (SLA: من 24 ساعة إلى 3 أيام عمل).</p>
+          </div>
+          <div style="background: white; border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem;">
+            <strong>5. إشعار الأقارب بدون كشف هوية المرسل (Anonymous Family Cascade):</strong>
+            <p style="font-size: 0.85rem; color: #64748b; margin-top: 0.2rem;">تنبيه أبناء العمومة والأقارب لإجراء الفحص الاستكشافي لحماية أسرهم دون ذكر اسم الشخص الذي أرسل الإشعار.</p>
+          </div>
+        </div>
+
+        <h4 style="color: #0284c7; font-weight: 700; margin: 1rem 0 0.5rem 0;" id="t-guide-s2-title">
+          🧭 كيف تتنقل في النظام؟ (3 بوابات متكاملة):
+        </h4>
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 0.75rem 1rem; margin-bottom: 1.25rem;">
+          <p style="margin-bottom: 0.5rem;"><a href="/app" style="color: #0f766e; font-weight: 700;">📱 تطبيق المراجع (Patient App)</a>: الشاشة الحالية للمقبلين على الزواج (فاطمة وطارق) للاطلاع والتوافق.</p>
+          <p style="margin-bottom: 0.5rem;"><a href="/portal" style="color: #0284c7; font-weight: 700;">🩺 بوابة المستشار الوراثي (Counsellor Portal)</a>: شاشة الكادر الطبي لمراجعة ملف الحالة التفصيلي، وإصدار تحويلات PGT-M وتحميل التقرير الطبي PDF.</p>
+          <p><a href="/dashboard" style="color: #7c3aed; font-weight: 700;">📊 لوحة مؤشرات القيادة (Executive Dashboard)</a>: شاشة هيئة الصحة لمتابعة نسب الفهم والعدالة ونجاح الإرشاد.</p>
+        </div>
+
+        <div style="text-align: center; margin-top: 1.5rem;">
+          <button class="submit-quiz-btn" onclick="closePlatformGuideModal()" style="padding: 0.7rem 1.8rem; font-size: 0.95rem;" id="t-guide-btn-close">
+            فهمت ذلك، استمرار في الاستخدام
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -613,6 +780,29 @@
   </header>
 
   <div class="container">
+
+    <!-- Welcome Orientation Banner -->
+    <div class="card" style="background: linear-gradient(135deg, #f0fdfa, #e0f2fe); border: 1px solid #99f6e4; margin-bottom: 1.5rem; position: relative;">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; flex-wrap: wrap;">
+        <div style="flex: 1; min-width: 280px;">
+          <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.4rem;">
+            <span style="font-size: 1.5rem;">👋</span>
+            <h2 style="font-size: 1.15rem; font-weight: 800; color: #0f766e;" id="t-welcome-banner-title">
+              مرحباً بك في منصة التوافق الوراثي (Al-Tawafuq)
+            </h2>
+          </div>
+          <p style="font-size: 0.9rem; color: #134e4a; line-height: 1.5; margin-bottom: 0.85rem;" id="t-welcome-banner-desc">
+            أنت مسجلة بصفتك <strong>فاطمة المنصوري</strong> (حاملة لجين بيتا ثلاسيميا - بصحة طبيعية). المنصة توفر لكِ شرحاً مبسطاً لنتائجك، مطابقة التوافق الجيني مع خطيبك <strong>طارق</strong> بكل خصوصية، ودعم إرشادي محايد مع أطباء معتمدين في أبوظبي.
+          </p>
+          <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+            <button class="pill-btn" style="background: #0f766e; color: white;" onclick="document.getElementById('t-result-header').scrollIntoView({behavior: 'smooth'})">🧬 نتيجتي الفردية</button>
+            <button class="pill-btn" style="background: #0284c7; color: white;" onclick="document.getElementById('couple-status-badge').scrollIntoView({behavior: 'smooth'})">💍 فحص التوافق مع طارق</button>
+            <button class="pill-btn" style="background: #ea580c; color: white;" onclick="openBookingModal()">🩺 حجز استشارة وراثية</button>
+            <button class="pill-btn" style="background: #475569; color: white;" onclick="openPlatformGuideModal()">❓ دليل خدمات المنصة</button>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <!-- Pre-marital Screening Result Card -->
     <div class="card">
@@ -1050,7 +1240,9 @@
         precheckDesc: "إجابتكِ على هذه الأسئلة التمهيدية السريعة تضمن استيعابكِ لطبيعة الفحص وتساعدنا على توفير الدعم الأنسب لكِ:",
         btnRevealResults: "المتابعة وعرض التقرير الجيني",
         btnViewAudit: "👁️ عرض سجل الوصول والتدقيق لبياناتي",
-        btnRevokeCpl: "إلغاء مشاركة التوافق فوراً"
+        btnRevokeCpl: "إلغاء مشاركة التوافق فوراً",
+        welcomeTitle: "مرحباً بك في منصة التوافق الوراثي (Al-Tawafuq)",
+        welcomeDesc: "أنت مسجلة بصفتك فاطمة المنصوري (حاملة لجين بيتا ثلاسيميا - بصحة طبيعية). المنصة توفر لكِ شرحاً مبسطاً لنتائجك، مطابقة التوافق الجيني مع خطيبك طارق بكل خصوصية، ودعم إرشادي محايد مع أطباء معتمدين في أبوظبي."
       },
       en: {
         brandTitle: "Inherited Disease Risk Platform",
@@ -1075,7 +1267,9 @@
         precheckDesc: "Please answer these quick pre-check questions so we can ensure the information is clear and support you effectively:",
         btnRevealResults: "Proceed & View Genetic Report",
         btnViewAudit: "👁️ View My Access & Audit Log",
-        btnRevokeCpl: "Revoke Couple Sharing Immediately"
+        btnRevokeCpl: "Revoke Couple Sharing Immediately",
+        welcomeTitle: "Welcome to the Inherited Disease Risk Platform",
+        welcomeDesc: "You are signed in as Fatima Al Mansoori (Carrier for Beta-thalassemia - healthy). This platform explains your pre-marital screening findings, performs mutual compatibility matching with your fiancé Tariq confidentially, and provides accredited genetic counselling in Abu Dhabi."
       }
     };
 
@@ -1114,6 +1308,11 @@
       document.getElementById('btn-view-audit').innerText = t.btnViewAudit;
       document.getElementById('btn-revoke-cpl').innerText = t.btnRevokeCpl;
 
+      if (document.getElementById('t-welcome-banner-title')) {
+        document.getElementById('t-welcome-banner-title').innerText = t.welcomeTitle;
+        document.getElementById('t-welcome-banner-desc').innerText = t.welcomeDesc;
+      }
+
       loadQuizQuestions();
     }
 
@@ -1135,6 +1334,19 @@
     function proceedToPrecheck() {
       document.getElementById('ready-modal').classList.remove('open');
       document.getElementById('precheck-modal').classList.add('open');
+    }
+
+    function skipDirectlyToResults() {
+      document.getElementById('ready-modal').classList.remove('open');
+      document.getElementById('precheck-modal').classList.remove('open');
+    }
+
+    function openPlatformGuideModal() {
+      document.getElementById('platform-guide-modal').classList.add('open');
+    }
+
+    function closePlatformGuideModal() {
+      document.getElementById('platform-guide-modal').classList.remove('open');
     }
 
     function selectPrecheck(qName, correctness, el) {

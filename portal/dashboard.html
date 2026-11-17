@@ -27,8 +27,110 @@
       background: var(--bg);
       color: var(--text);
       line-height: 1.5;
+      padding: 0;
+      margin: 0;
+    }
+
+    /* Top Platform Navigation Bar */
+    .platform-nav {
+      background: #042f2e;
+      color: white;
+      padding: 0.6rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.85rem;
+      border-bottom: 2px solid #0d9488;
+      z-index: 50;
+    }
+    .platform-nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .doh-badge {
+      background: #0d9488;
+      color: white;
+      padding: 0.2rem 0.6rem;
+      border-radius: 6px;
+      font-weight: 800;
+      font-size: 0.75rem;
+      letter-spacing: 0.5px;
+    }
+    .platform-nav-links {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .platform-nav-item {
+      color: #99f6e4;
+      text-decoration: none;
+      padding: 0.35rem 0.75rem;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.82rem;
+      transition: all 0.2s;
+    }
+    .platform-nav-item:hover, .platform-nav-item.active {
+      background: #115e59;
+      color: #ffffff;
+    }
+    .platform-nav-guide-btn {
+      background: #f59e0b;
+      color: #1e1b4b;
+      border: none;
+      padding: 0.35rem 0.85rem;
+      border-radius: 20px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.8rem;
+      margin-left: 0.5rem;
+      transition: all 0.2s;
+    }
+    .platform-nav-guide-btn:hover {
+      background: #fbbf24;
+      transform: translateY(-1px);
+    }
+
+    /* Modal Overlay for Guide */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(4px);
+      z-index: 999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: white;
+      border-radius: 18px;
+      padding: 1.75rem;
+      max-width: 650px;
+      width: 100%;
+      box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.15);
+      border: 1px solid var(--border);
+    }
+    .btn {
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: white;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .btn-primary { background: var(--primary); color: white; border-color: var(--primary); }
+
+    .dashboard-content {
       padding: 2rem 1.5rem;
     }
+
     .header {
       max-width: 1200px;
       margin: 0 auto 2rem auto;
@@ -119,17 +221,34 @@
 </head>
 <body>
 
-  <div class="header">
-    <div class="title-area">
-      <h1>Clinical & Equity Outcomes Dashboard</h1>
-      <p>Future Health Challenge 2026 · Fertility Challenge 03 · Pre-marital Screening Outcomes</p>
+  <!-- TOP PLATFORM NAVIGATION BAR -->
+  <nav class="platform-nav">
+    <div class="platform-nav-brand">
+      <span class="doh-badge">Abu Dhabi Health · DoH</span>
+      <span style="font-weight: 700;">Inherited Disease Risk Platform</span>
+      <span style="opacity: 0.75; font-size: 0.75rem;">(Challenge 03)</span>
     </div>
-    <div class="nav-links">
-      <a href="/app">📱 Patient App (Arabic)</a>
-      <a href="/portal">🩺 Counsellor Portal</a>
-      <a href="/docs">📄 OpenAPI Specs</a>
+    <div class="platform-nav-links">
+      <a href="/app" class="platform-nav-item">📱 Patient App</a>
+      <a href="/portal" class="platform-nav-item">🩺 Counsellor Portal</a>
+      <a href="/dashboard" class="platform-nav-item active">📊 Executive Dashboard</a>
+      <a href="/docs" target="_blank" class="platform-nav-item">📄 API Docs</a>
+      <button class="platform-nav-guide-btn" onclick="openPlatformGuideModal()">💡 What is this Platform?</button>
     </div>
-  </div>
+  </nav>
+
+  <div class="dashboard-content">
+    <div class="header">
+      <div class="title-area">
+        <h1>Clinical & Equity Outcomes Dashboard</h1>
+        <p>Future Health Challenge 2026 · Fertility Challenge 03 · Pre-marital Screening Outcomes</p>
+      </div>
+      <div class="nav-links">
+        <a href="/app">📱 Patient App</a>
+        <a href="/portal">🩺 Counsellor Portal</a>
+        <a href="/docs">📄 OpenAPI Specs</a>
+      </div>
+    </div>
 
   <div class="container">
 
@@ -274,8 +393,75 @@
     </div>
 
   </div>
+  </div> <!-- end dashboard-content -->
+
+  <!-- PLATFORM SERVICE GUIDE MODAL -->
+  <div class="modal-overlay" id="platform-guide-modal">
+    <div class="modal" style="max-width: 680px; max-height: 85vh; overflow-y: auto;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border);">
+        <h3 style="font-size: 1.25rem; font-weight: 800; color: #0f172a;">
+          💡 Platform Overview & Clinical Services Guide
+        </h3>
+        <button class="btn" onclick="closePlatformGuideModal()" style="font-size: 0.9rem; padding: 0.2rem 0.6rem;">✕</button>
+      </div>
+
+      <div style="font-size: 0.9rem; line-height: 1.6; color: #334155;">
+        <p style="margin-bottom: 1rem; background: #f0fdfa; border: 1px solid #ccfbf1; padding: 0.85rem; border-radius: 10px;">
+          <strong>Inherited Disease Risk Platform (Al-Tawafuq)</strong> is an end-to-end clinical companion designed for the Abu Dhabi Pre-Marital Screening Program (Future Health Challenge 2026, Fertility Challenge 03).
+        </p>
+
+        <h4 style="color: #0f766e; font-weight: 700; margin: 1.25rem 0 0.5rem 0;">
+          🌟 5 Core Clinical Services Provided:
+        </h4>
+        <div style="display: flex; flex-direction: column; gap: 0.6rem; margin-bottom: 1.25rem;">
+          <div style="background: white; border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem;">
+            <strong>1. Individual Carrier Explanation:</strong>
+            <p style="font-size: 0.85rem; color: #64748b; margin-top: 0.2rem;">Deterministic explanation of carrier findings (e.g. HBB / Beta-thalassemia) in plain Arabic & English, with audio narration and visual icon arrays (1 in 1 carrier status; healthy individual).</p>
+          </div>
+          <div style="background: white; border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem;">
+            <strong>2. Private Couple Matching Vault:</strong>
+            <p style="font-size: 0.85rem; color: #64748b; margin-top: 0.2rem;">Cross-matching couple genomes server-side inside an encrypted vault. Requires mutual active consent from both partners. Same-gene carriers yield 1-in-4 affected risk per pregnancy.</p>
+          </div>
+          <div style="background: white; border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem;">
+            <strong>3. Strictly Non-Directive Safety Guardrails:</strong>
+            <p style="font-size: 0.85rem; color: #64748b; margin-top: 0.2rem;">When patients ask "Should we still get married?", AI refuses to advise, presenting neutral medical options (PGT-M / IVF, prenatal testing, natural) and routing to the Counsellor Portal.</p>
+          </div>
+          <div style="background: white; border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem;">
+            <strong>4. Clinical Triage & Tele-Health Handoff:</strong>
+            <p style="font-size: 0.85rem; color: #64748b; margin-top: 0.2rem;">Automated triage (T0-T3) with strict SLAs (24h for urgent T3, 3 days for T2). Counsellors review dossiers, download PDF packets, and track referrals to Cleveland Clinic Abu Dhabi, Kanad Hospital, and Fakih IVF.</p>
+          </div>
+          <div style="background: white; border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem;">
+            <strong>5. Anonymous Family Cascade Screening:</strong>
+            <p style="font-size: 0.85rem; color: #64748b; margin-top: 0.2rem;">Enables at-risk individuals to notify cousins and extended family to get screened without disclosing the sender's identity.</p>
+          </div>
+        </div>
+
+        <h4 style="color: #0284c7; font-weight: 700; margin: 1rem 0 0.5rem 0;">
+          🧭 Navigation Between Platform Interfaces:
+        </h4>
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 0.75rem 1rem; margin-bottom: 1.25rem;">
+          <p style="margin-bottom: 0.5rem;"><a href="/app" style="color: #0f766e; font-weight: 700;">📱 Patient App</a>: What engaged couples see when reviewing carrier findings.</p>
+          <p style="margin-bottom: 0.5rem;"><a href="/portal" style="color: #0284c7; font-weight: 700;">🩺 Counsellor Portal</a>: Clinical management workspace for licensed counsellors.</p>
+          <p><a href="/dashboard" style="color: #7c3aed; font-weight: 700;">📊 Executive Dashboard</a> (Current View): DoH health authority metrics and population outcomes.</p>
+        </div>
+
+        <div style="text-align: center; margin-top: 1.5rem;">
+          <button class="btn btn-primary" onclick="closePlatformGuideModal()" style="padding: 0.6rem 1.6rem; font-size: 0.95rem;">
+            Close Guide & Continue
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <script>
+    function openPlatformGuideModal() {
+      document.getElementById('platform-guide-modal').classList.add('open');
+    }
+    function closePlatformGuideModal() {
+      document.getElementById('platform-guide-modal').classList.remove('open');
+    }
+
     async function loadMetrics() {
       try {
         const res = await fetch('/api/analytics/metrics');
