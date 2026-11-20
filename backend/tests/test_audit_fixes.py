@@ -111,8 +111,8 @@ def test_e11_service_directory():
 
     assert len(rows) >= 5
     names = [r["name_en"] for r in rows]
-    assert "Sheikh Khalifa Medical City - Medical Genetics" in names
-    assert "Fakih IVF Fertility Center - PGT-M Lab" in names
+    assert "Demo Hospital A - Medical Genetics (placeholder)" in names
+    assert "Demo Fertility Centre - PGT-M Lab (placeholder)" in names
 
 
 def test_e12_shareable_card():

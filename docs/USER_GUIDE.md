@@ -115,10 +115,10 @@ When running locally on port `8000`:
 | Account / User | ID | Role | Key Profile Attributes & Synthetic Data Seeded |
 |:---|:---|:---|:---|
 | **Fatima Al Mansoori** | `person_001` | Patient (Female, 24) | Pre-marital screening. Heterozygous pathogenic variant in `HBB` (Beta-thalassemia). Individual Tier **T1** (healthy carrier). |
-| **Tariq Al Hashemi** | `person_101` | Patient (Male, 26) | Fatima's fiancé. Heterozygous pathogenic variant in `HBB`. Individual Tier **T1**. Mutual match with Fatima produces Tier **T2** (1 in 4 risk). |
+| **Tariq Al Mazrouei** | `person_101` | Patient (Male, 26) | Fatima's fiancé. Heterozygous pathogenic variant in `HBB`. Individual Tier **T1**. Mutual match with Fatima produces Tier **T2** (1 in 4 risk). |
 | **Untested Partner** | `person_104` | Patient (Male) | Registered in cohort but has not submitted a genetic sample. Couple link produces `incomplete` outcome and Tier **T1**. |
-| **Dr. Maryam Al Nuaimi** | `counsellor_maryam` | Senior Counselor | Licensed Emirati Genetic Counselor at Sheikh Khalifa Medical City (SKMC). Fluent in Arabic (Emirati dialect) and English. |
-| **Dr. Ahmed Al Mansoori** | `counsellor_ahmed` | Senior Counselor | Cleveland Clinic Abu Dhabi Genomics Center. Specialty: Pre-implantation genetics (PGT-M). |
+| **Dr. Maryam Al Nuaimi** | `counsellor_maryam` | Senior Counselor | Fictional demo counsellor (placeholder account at 'Demo Hospital A'). Arabic and English. |
+| **Dr. Ahmed Al Mansoori** | `counsellor_ahmed` | Senior Counselor | Fictional demo counsellor (placeholder account at 'Demo Hospital B'). |
 
 ---
 
@@ -198,7 +198,7 @@ flowchart LR
   4. Click **"Download Clinical Case Packet (PDF)"**. A 2-page ReportLab PDF downloads instantly with clinical header, watermark, and synthetic disclaimer.
   5. Advance referral state from `booked` to `attended`.
 - **What to say**:
-  > *"Here is the Counselor Portal at Sheikh Khalifa Medical City. Dr. Maryam can see exactly which rule IDs fired, what explanations Fatima reviewed, and her teach-back quiz score. Dr. Maryam downloads a standardized clinical dossier in PDF to coordinate with fetal medicine specialists."*
+  > *"Here is the Counselor Portal (demo, synthetic data). Dr. Maryam can see exactly which rule IDs fired, what explanations Fatima reviewed, and her teach-back quiz score. Dr. Maryam downloads a standardized clinical dossier in PDF to coordinate with fetal medicine specialists."*
 
 ---
 
