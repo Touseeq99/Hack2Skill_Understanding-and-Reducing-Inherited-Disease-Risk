@@ -5,9 +5,9 @@
 > **Clinical Status**: *DRAFT - requires clinical sign-off*. Prototype designed for culturally grounded patient education, autonomous private consent, deterministic clinical triage, and accredited genetic counsellor handoff.
 
 📖 **Comprehensive Documentation**:
-- 📘 **[Complete User Guide & Demo Playbook (docs/USER_GUIDE.md)](file:///e:/inheritance_project/docs/USER_GUIDE.md)**: Beginner-friendly overview, click-by-click 5-minute demo walkthrough with judge script, troubleshooting, feature matrix, and judge Q&A cheat sheet.
-- 📋 **[Independent QA Audit & Verification Report (docs/AUDIT.md)](file:///e:/inheritance_project/docs/AUDIT.md)**: 60-item compliance audit with verified execution evidence, 100% engine coverage, and safety eval benchmarks.
-- 📜 **[Architecture Decision Log (docs/DECISIONS.md)](file:///e:/inheritance_project/docs/DECISIONS.md)**: Rationales for every design decision and trade-off.
+- 📘 **[Complete User Guide & Demo Playbook (docs/USER_GUIDE.md)](docs/USER_GUIDE.md)**: Beginner-friendly overview, click-by-click 5-minute demo walkthrough with judge script, troubleshooting, feature matrix, and judge Q&A cheat sheet.
+- 📋 **[Independent QA Audit & Verification Report (docs/AUDIT.md)](docs/AUDIT.md)**: 60-item compliance audit with verified execution evidence, 99% engine coverage, and safety eval benchmarks.
+- 📜 **[Architecture Decision Log (docs/DECISIONS.md)](docs/DECISIONS.md)**: Rationales for every design decision and trade-off.
 
 ---
 
@@ -28,28 +28,53 @@
 ### Option A: Local Python (Fastest)
 
 ```bash
-# 1. Clone repository
-git clone https://github.com/example/inherited-disease-risk-platform.git
-cd inherited-disease-risk-platform
+# 1. Open the project folder
+cd inheritance_project
 
-# 2. Install dependencies
+# 2. Install dependencies (PostgreSQL driver is optional: pip install -r requirements-postgres.txt)
 pip install -r requirements.txt
 
 # 3. Seed synthetic database (200 people, 80 couples across clinical edge cases)
 python -m data.generate_seed
 
+# 3b. Simulate the synthetic comprehension cohort used by the outcomes dashboard
+python -m data.seed_outcomes
+
+# 3c. Route the synthetic cohort through the real triage router to fill the counsellor queue
+python -m data.seed_cases
+
 # 4. Start FastAPI server
 uvicorn backend.main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
-### Option B: Docker Compose (One-Command Deployment)
+### Option B: Docker Compose (single container)
 
 ```bash
-# Launch full stack (PostgreSQL + FastAPI + Static Apps)
 docker compose up -d --build
 ```
+Builds one container (FastAPI + SQLite, seeded on first start, data in a volume) and serves on port 8000, rules-only safety
+layer. Not yet tested on this machine (the Docker daemon was not running); use Option A if it misbehaves. PostgreSQL is not
+a supported runtime yet: `infra/migrations/001_initial_schema.sql` documents the target schema and row-level-security policies.
 
 ---
+
+## Safety classifier (optional ML layer)
+
+Chat messages are checked by keyword rules and, when installed, a multilingual embedding model. See
+[`docs/SAFETY_EVAL.md`](docs/SAFETY_EVAL.md) for measured recall and its limits.
+
+```bash
+pip install -r requirements-ml.txt     # fastembed (ONNX), scikit-learn, numpy
+python -m eval.train_safety            # downloads the ~220 MB model once, trains, writes models/safety_clf.json
+python -m eval.safety_report           # scores the frozen held-out set
+```
+Without it the app runs on rules only and always offers a human.
+
+## Sign-in (prototype)
+
+The apps sign in automatically with a demo one-time code (`DEMO_OTP`, default `123456`) and receive a signed bearer
+token; roles (`patient`, `counsellor_*`, `lab_*`, `admin_*`) are decided on the server. Header-based identity is
+rejected unless `ALLOW_HEADER_AUTH=1` (tests only). Production would use UAE Pass.
 
 ## Web Interfaces & Services
 
@@ -74,18 +99,18 @@ This steps through:
 3. Fatima asking *"Should we still get married?"* -> intent classifier triggers non-directive handoff and logs T2 priority triage case.
 4. Genetic counsellor Maryam logging in to `/portal`, inspecting priority queue, progressing referral state, and generating ReportLab case packet PDF.
 5. Fatima sending an anonymous cascade notice to her cousin with sender privacy warning and hashed sender ID.
-6. Outcomes dashboard metrics verifying comprehension uplift (+48%), 100% SLA adherence, zero unauthorized reads, and demographic equity parity.
+6. Outcomes dashboard metrics computed from the database (comprehension uplift, SLA adherence, revocations honoured, equity gaps); figures come from the synthetic cohort and show "no data yet" when not measured.
 
-See [`docs/DEMO.md`](file:///e:/inheritance_project/docs/DEMO.md) for the detailed step-by-step evaluator script.
+See [`docs/DEMO.md`](docs/DEMO.md) for the detailed step-by-step evaluator script.
 
 ---
 
 ## Testing & Quality Gates
 
-The codebase enforces strict test-driven development with 62 comprehensive automated tests across all components:
+The codebase enforces strict test-driven development with 69 automated tests across all components:
 
 ```bash
-# Run full pytest suite (62 tests across engine, backend, explain, data, eval)
+# Run full pytest suite (69 tests across engine, backend, explain, data, eval)
 python -m pytest -v
 
 # Run randomized symmetry property tests: couple(a, b) == couple(b, a)
@@ -145,7 +170,7 @@ inherited-disease-risk-platform/
 │   ├── run_eval.py            # Standalone python eval runner
 │   └── test_safety_eval.py    # Pytest wrapper for eval suite
 ├── explain/                   # Multilingual explanation generation
-│   ├── graph_flow.py          # LangGraph state machine: Explain -> Quiz -> Route
+│   ├── graph_flow.py          # Explain -> Quiz -> Route state flow (LangGraph-style; plain Python, no langgraph dependency)
 │   ├── pipeline.py            # Select -> Fill -> Adapt -> Validate -> Log pipeline
 │   ├── validator.py           # Safety validator (numbers, disclaimers, banned phrases)
 │   ├── templates/             # Clinician-approved EN and AR templates

@@ -1,3 +1,4 @@
+import datetime
 """Internal appointment scheduling engine for genetic counselling."""
 
 import uuid
@@ -6,6 +7,12 @@ from fastapi import HTTPException
 from backend.database import Database, db
 from backend.audit_log import audit_logger
 from backend.referral_state_machine import ReferralStateMachine
+
+
+def _slot(days_ahead: int, hour: int, minute: int = 0) -> str:
+    """Demo appointment slot relative to today (UTC), so the demo never offers times in the past."""
+    d = datetime.datetime.now(datetime.timezone.utc).replace(hour=hour, minute=minute, second=0, microsecond=0) + datetime.timedelta(days=days_ahead)
+    return d.strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
 class SchedulerService:
@@ -94,24 +101,24 @@ class SchedulerService:
                 "name": "Dr. Maryam Al Nuaimi",
                 "gender": "female",
                 "languages": ["ar", "en"],
-                "facility": "Sheikh Khalifa Medical City (SKMC), Abu Dhabi",
-                "slots": ["2026-11-18T09:00:00Z", "2026-11-18T11:00:00Z", "2026-11-19T14:00:00Z"],
+                "facility": "Demo Hospital A (placeholder)",
+                "slots": [_slot(1, 9), _slot(1, 11), _slot(2, 14)],
             },
             {
                 "counsellor_id": "counsellor_ahmed",
                 "name": "Dr. Ahmed Al Mansoori",
                 "gender": "male",
                 "languages": ["ar", "en"],
-                "facility": "Cleveland Clinic Abu Dhabi",
-                "slots": ["2026-11-18T10:00:00Z", "2026-11-19T10:00:00Z", "2026-11-20T11:00:00Z"],
+                "facility": "Demo Hospital B (placeholder)",
+                "slots": [_slot(1, 10), _slot(2, 10), _slot(3, 11)],
             },
             {
                 "counsellor_id": "counsellor_sarah",
                 "name": "Dr. Sarah Jenkins",
                 "gender": "female",
                 "languages": ["en"],
-                "facility": "Kanad Hospital Genetic Counseling Service",
-                "slots": ["2026-11-19T09:30:00Z", "2026-11-20T13:00:00Z"],
+                "facility": "Demo Hospital C (placeholder)",
+                "slots": [_slot(2, 9, 30), _slot(3, 13)],
             },
         ]
 

@@ -61,3 +61,19 @@ def test_audit_log_detects_broken_chain(audit_svc):
     valid, err = audit_svc.verify_chain()
     assert valid is False
     assert "Broken chain" in err
+
+
+def test_concurrent_writers_do_not_fork_the_chain(tmp_path):
+    import threading
+    from backend.database import Database
+    from backend.audit_log import AuditLogService as AuditLogger
+    logger = AuditLogger(Database(f"sqlite:///{tmp_path / 'race.db'}"))
+
+    def work(n):
+        for i in range(15):
+            logger.record_event(actor=f"w{n}", action="read", target=f"t{i}")
+
+    threads = [threading.Thread(target=work, args=(n,)) for n in range(4)]
+    [t.start() for t in threads]
+    [t.join() for t in threads]
+    assert logger.verify_chain() == (True, None)

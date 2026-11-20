@@ -1,0 +1,69 @@
+/* Shared accessibility layer for the patient app, counsellor portal and dashboard (WCAG 2.2 AA targets).
+ * Loaded after each page's own CSS so these rules win. Companion script: a11y.js. */
+
+/* ---- Contrast: darker brand tokens (white text on --primary was 3.7:1, now >= 5:1) ---- */
+:root {
+  --primary: #0f766e;
+  --primary-dark: #115e59;
+  --secondary: #0369a1;
+  --danger: #b91c1c;
+  --text-muted: #475569;
+  --success: #047857;
+  --warning: #b45309;
+}
+.doh-badge { background: #0f766e !important; }
+.dot-green { background: #047857 !important; color: #fff !important; }
+.dot-orange { background: #c2410c !important; color: #fff !important; }
+.dot-red { background: #b91c1c !important; color: #fff !important; }
+.dot-purple { background: #7e22ce !important; color: #fff !important; }
+.dot-gray { background: #475569 !important; color: #fff !important; }
+.pill-btn.active, .pill-btn:hover { color: #fff; }
+
+/* ---- Visible keyboard focus (never rely on the browser default being visible on coloured buttons) ---- */
+:focus-visible {
+  outline: 3px solid #1d4ed8 !important;
+  outline-offset: 2px !important;
+  border-radius: 4px;
+}
+.modal :focus-visible { outline-color: #1e3a8a !important; }
+
+/* ---- Skip link and screen-reader-only text ---- */
+.skip-link {
+  position: absolute; left: 8px; top: -60px; z-index: 10000;
+  background: #0f172a; color: #fff; padding: 0.6rem 1rem; border-radius: 8px; text-decoration: none; font-weight: 700;
+}
+.skip-link:focus { top: 8px; }
+[dir="rtl"] .skip-link { left: auto; right: 8px; }
+.sr-only {
+  position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+}
+
+/* ---- Interactive affordances for retrofitted widgets ---- */
+[role="button"][tabindex] { cursor: pointer; }
+.layer-header[role="button"] { min-height: 44px; }
+.layer-header[aria-expanded="true"] span:last-child { transform: rotate(180deg); }
+button, select, input[type="text"], [role="button"] { min-height: 32px; }
+
+/* ---- Text size control (WCAG 1.4.4) ---- */
+html.a11y-text-lg { font-size: 112.5%; }
+html.a11y-text-xl { font-size: 125%; }
+.a11y-text-btn {
+  border: 1px solid currentColor; background: transparent; color: inherit; border-radius: 999px;
+  padding: 0.25rem 0.7rem; font-weight: 700; cursor: pointer; font-size: 0.8rem;
+}
+.a11y-text-btn[aria-pressed="true"] { background: #fff; color: #0f172a; }
+
+/* ---- Reduced motion ---- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; scroll-behavior: auto !important; }
+}
+
+/* ---- Forced colours / high contrast ---- */
+@media (forced-colors: active) {
+  .tier-badge, .icon-dot, .pill-btn { border: 1px solid CanvasText; }
+  :focus-visible { outline-color: Highlight !important; }
+}
+
+/* ---- Target size (WCAG 2.2 AA 2.5.8): small navigation links ---- */
+#d-sub-app, #d-sub-portal, #d-sub-docs, .sub-nav a { display: inline-block; padding: 0.3rem 0.25rem; min-height: 24px; }

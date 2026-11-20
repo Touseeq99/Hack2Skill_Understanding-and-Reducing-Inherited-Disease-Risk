@@ -9,10 +9,10 @@
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --primary: #0d9488;
+      --primary: #0f766e;
       --primary-dark: #0f766e;
       --primary-light: #ccfbf1;
-      --secondary: #0284c7;
+      --secondary: #0369a1;
       --accent: #f59e0b;
       --danger: #ef4444;
       --success: #10b981;
@@ -44,7 +44,7 @@
       justify-content: space-between;
       align-items: center;
       font-size: 0.85rem;
-      border-bottom: 2px solid #0d9488;
+      border-bottom: 2px solid #0f766e;
       z-index: 50;
       position: relative;
     }
@@ -54,7 +54,7 @@
       gap: 0.75rem;
     }
     .doh-badge {
-      background: #0d9488;
+      background: #0f766e;
       color: white;
       padding: 0.2rem 0.6rem;
       border-radius: 6px;
@@ -406,7 +406,7 @@
     }
     .help-text { font-size: 0.85rem; color: var(--text-muted); }
     .counsellor-cta {
-      background: linear-gradient(135deg, #0d9488, #0284c7);
+      background: linear-gradient(135deg, #0f766e, #0369a1);
       color: white;
       border: none;
       padding: 0.75rem 1.5rem;
@@ -542,6 +542,8 @@
       font-weight: 700;
     }
   </style>
+  <link rel="stylesheet" href="/assets/a11y.css">
+  <script src="/assets/a11y.js" defer></script>
 </head>
 <body>
 
@@ -552,7 +554,7 @@
     <div class="modal" style="text-align: center;">
       <!-- Language & Quick Access Bar -->
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; padding-bottom: 0.5rem; border-bottom: 1px solid #e2e8f0;">
-        <span class="doh-badge" style="background:#0284c7;">Abu Dhabi Pre-Marital Screening</span>
+        <span class="doh-badge" style="background:#0369a1;">Pre-marital screening (demo)</span>
         <div style="display: flex; gap: 0.35rem;">
           <button class="pill-btn" onclick="setLanguage('en');">English</button>
           <button class="pill-btn" onclick="setLanguage('ar');">العربية</button>
@@ -687,7 +689,7 @@
   <!-- ========================================================================= -->
   <nav class="platform-nav">
     <div class="platform-nav-brand">
-      <span class="doh-badge">Abu Dhabi Health · DoH</span>
+      <span class="doh-badge">Prototype · synthetic data</span>
       <span style="font-weight: 700;">Inherited Disease Risk Platform</span>
       <span style="opacity: 0.75; font-size: 0.75rem;">(Challenge 03)</span>
     </div>
@@ -743,12 +745,12 @@
           </div>
         </div>
 
-        <h4 style="color: #0284c7; font-weight: 700; margin: 1rem 0 0.5rem 0;" id="t-guide-s2-title">
+        <h4 style="color: #0369a1; font-weight: 700; margin: 1rem 0 0.5rem 0;" id="t-guide-s2-title">
           🧭 كيف تتنقل في النظام؟ (3 بوابات متكاملة):
         </h4>
         <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 0.75rem 1rem; margin-bottom: 1.25rem;">
           <p style="margin-bottom: 0.5rem;"><a href="/app" style="color: #0f766e; font-weight: 700;">📱 تطبيق المراجع (Patient App)</a>: الشاشة الحالية للمقبلين على الزواج (فاطمة وطارق) للاطلاع والتوافق.</p>
-          <p style="margin-bottom: 0.5rem;"><a href="/portal" style="color: #0284c7; font-weight: 700;">🩺 بوابة المستشار الوراثي (Counsellor Portal)</a>: شاشة الكادر الطبي لمراجعة ملف الحالة التفصيلي، وإصدار تحويلات PGT-M وتحميل التقرير الطبي PDF.</p>
+          <p style="margin-bottom: 0.5rem;"><a href="/portal" style="color: #0369a1; font-weight: 700;">🩺 بوابة المستشار الوراثي (Counsellor Portal)</a>: شاشة الكادر الطبي لمراجعة ملف الحالة التفصيلي، وإصدار تحويلات PGT-M وتحميل التقرير الطبي PDF.</p>
           <p><a href="/dashboard" style="color: #7c3aed; font-weight: 700;">📊 لوحة مؤشرات القيادة (Executive Dashboard)</a>: شاشة هيئة الصحة لمتابعة نسب الفهم والعدالة ونجاح الإرشاد.</p>
         </div>
 
@@ -773,6 +775,10 @@
       </div>
     </div>
     <div class="top-controls">
+      <select id="demo-user" onchange="switchDemoUser(this.value)" title="Demo only: act as a different synthetic user" style="padding:0.3rem 0.5rem;border-radius:999px;border:1px solid var(--border);font-size:0.8rem;">
+        <option value="person_001">Demo user: patient</option>
+        <option value="person_101">Demo user: partner</option>
+      </select>
       <button class="pill-btn" onclick="openAccessHistoryModal()" id="btn-top-history">👁️ سجل الوصول</button>
       <button class="pill-btn active" id="btn-lang-ar" onclick="setLanguage('ar')">العربية</button>
       <button class="pill-btn" id="btn-lang-en" onclick="setLanguage('en')">English</button>
@@ -796,9 +802,9 @@
           </p>
           <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
             <button class="pill-btn" id="btn-jump-ind" style="background: #0f766e; color: white;" onclick="document.getElementById('t-result-header').scrollIntoView({behavior: 'smooth'})">🧬 نتيجتي الفردية</button>
-            <button class="pill-btn" id="btn-jump-cpl" style="background: #0284c7; color: white;" onclick="document.getElementById('couple-status-badge').scrollIntoView({behavior: 'smooth'})">💍 فحص التوافق مع طارق</button>
-            <button class="pill-btn" id="btn-jump-book" style="background: #ea580c; color: white;" onclick="openBookingModal()">🩺 حجز استشارة وراثية</button>
-            <button class="pill-btn" id="btn-jump-guide" style="background: #475569; color: white;" onclick="openPlatformGuideModal()">❓ دليل خدمات المنصة</button>
+            <button class="pill-btn" id="btn-jump-cpl" style="background: #0369a1; color: white;" onclick="document.getElementById('couple-status-badge').scrollIntoView({behavior: 'smooth'})">💍 فحص التوافق مع طارق</button>
+            <button class="pill-btn" id="btn-jump-book" style="background: #c2410c; color: white;" onclick="openBookingModal()">🩺 حجز استشارة وراثية</button>
+            <button class="pill-btn" id="btn-jump-guide" style="background: #334155; color: white;" onclick="openPlatformGuideModal()">❓ دليل خدمات المنصة</button>
           </div>
         </div>
       </div>
@@ -927,7 +933,11 @@
         </div>
       </div>
 
-      <div style="background: #f0fdfa; border: 1px solid #99f6e4; border-radius: 12px; padding: 1.25rem; margin-bottom: 1rem;">
+      <div id="couple-hidden-block" style="display:none;background:#fef2f2;border:1px solid #fecaca;border-radius:12px;padding:1.25rem;margin-bottom:1rem;">
+        <div style="font-weight:700;color:#991b1b;" id="couple-hidden-title"></div>
+        <p style="font-size:0.9rem;color:#7f1d1d;margin-top:0.4rem;" id="couple-hidden-body"></p>
+      </div>
+      <div id="couple-result-block" style="background: #f0fdfa; border: 1px solid #99f6e4; border-radius: 12px; padding: 1.25rem; margin-bottom: 1rem;">
         <div style="font-weight: 700; color: #0f766e; margin-bottom: 0.5rem;" id="t-cpl-result-title">
           نتيجة التوافق بين فاطمة وطارق: تطابق في نفس الجين (HBB)
         </div>
@@ -997,9 +1007,38 @@
         <button class="pill-btn" onclick="openAccessHistoryModal()" id="btn-view-audit">
           👁️ عرض سجل الوصول والتدقيق لبياناتي
         </button>
+        <button class="pill-btn" style="background:#0f766e;color:white;" onclick="grantCoupleConsent()" id="btn-grant-cpl"></button>
+        <button class="pill-btn" style="color: var(--danger); border-color: var(--danger);" onclick="deleteMyData()" id="btn-delete-data"></button>
         <button class="pill-btn" style="color: var(--danger); border-color: var(--danger);" onclick="revokeConsentDemo()" id="btn-revoke-cpl">
           إلغاء مشاركة التوافق فوراً
         </button>
+      </div>
+    </div>
+
+    <!-- Check-in: decision confidence (SURE) and anxiety (GAD-2) -->
+    <div class="card" id="checkin-card">
+      <div class="card-header"><div class="card-title"><span id="ck-title"></span></div></div>
+      <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:0.75rem;" id="ck-intro"></p>
+      <div id="ck-anx" style="margin-bottom:1rem;"></div>
+      <div id="ck-sure" style="margin-bottom:1rem;"></div>
+      <button class="pill-btn" style="background:#0f766e;color:white;" onclick="submitCheckin()" id="ck-submit"></button>
+      <div id="ck-status" style="font-size:0.85rem;margin-top:0.5rem;"></div>
+    </div>
+
+    <!-- Family cascade (PDF Flow C): share personally OR send an anonymous notice -->
+    <div class="card" id="family-card">
+      <div class="card-header"><div class="card-title"><span id="fam-title"></span></div></div>
+      <p style="font-size:0.9rem;color:var(--text-muted);margin-bottom:1rem;" id="fam-intro"></p>
+      <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:1rem;">
+        <button class="pill-btn" onclick="loadShareCard()" id="fam-btn-card"></button>
+        <button class="pill-btn" onclick="toggleNoticeForm()" id="fam-btn-notice"></button>
+      </div>
+      <div id="fam-card-out" style="display:none;background:#f8fafc;border:1px solid var(--border);border-radius:12px;padding:1rem;margin-bottom:1rem;"></div>
+      <div id="fam-notice-form" style="display:none;background:#fff7ed;border:1px solid #fed7aa;border-radius:12px;padding:1rem;">
+        <p style="font-size:0.85rem;color:#9a3412;margin-bottom:0.75rem;" id="fam-warning"></p>
+        <input id="fam-contact" type="text" placeholder="+971..." style="width:100%;padding:0.6rem;border-radius:8px;border:1px solid var(--border);margin-bottom:0.6rem;">
+        <button class="pill-btn" style="background:#0f766e;color:white;" onclick="sendFamilyNotice()" id="fam-send"></button>
+        <div id="fam-status" style="font-size:0.85rem;margin-top:0.6rem;"></div>
       </div>
     </div>
 
@@ -1018,52 +1057,7 @@
         عند تطابق صفة الحامل لنفس الجين، تتوفر خيارات متعددة ومتوازنة. لا توجد توصية واحدة تناسب الجميع، بل يُترك القرار بالكامل لكما وفق قناعاتكما بعد الاستشارة:
       </p>
 
-      <div class="options-grid">
-        <!-- Option 1: PGT-M -->
-        <div class="option-card">
-          <div>
-            <h4>🧪 <span id="t-opt-1-title">أطفال الأنابيب مع الفحص الوراثي (PGT-M)</span></h4>
-            <p id="t-opt-1-desc">إجراء تلقيح مخبري مع فحص الأجنة وراثياً قبل الزرع لاختيار الأجنة غير المصابة بطفرة HBB.</p>
-          </div>
-          <span class="option-badge" id="t-opt-1-tag">دقة تفوق 98% · إجراء طبي تداخلي</span>
-        </div>
-
-        <!-- Option 2: Prenatal Testing -->
-        <div class="option-card">
-          <div>
-            <h4>🩺 <span id="t-opt-2-title">الحمل الطبيعي مع التشخيص المبكر</span></h4>
-            <p id="t-opt-2-desc">الحمل بصورة طبيعية مع إجراء فحص السائل الأمنيوسي (Amniocentesis) أو خملات المشيمة (CVS) في الثلث الأول.</p>
-          </div>
-          <span class="option-badge" id="t-opt-2-tag">تشخيص مؤكد أثناء الحمل</span>
-        </div>
-
-        <!-- Option 3: Neonatal Testing -->
-        <div class="option-card">
-          <div>
-            <h4>👶 <span id="t-opt-3-title">الحمل الطبيعي مع فحص المواليد المبكر</span></h4>
-            <p id="t-opt-3-desc">الحمل الطبيعي وتجهيز خطة علاجية فورية للوليد (مثل الفحص الجيني للمولود وبدء التدخل الوقائي المبكر عند الحاجة).</p>
-          </div>
-          <span class="option-badge" id="t-opt-3-tag">جاهزية طبية استباقية</span>
-        </div>
-
-        <!-- Option 4: Kafala -->
-        <div class="option-card">
-          <div>
-            <h4>🏡 <span id="t-opt-4-title">الاحتضان والكفالة الأسرية</span></h4>
-            <p id="t-opt-4-desc">خيار الكفالة الأسرية المعتمدة في دولة الإمارات للأطفال المحتاجين لرعاية أسرية ضمن القيم الإسلامية والاجتماعية.</p>
-          </div>
-          <span class="option-badge" id="t-opt-4-tag">بعد إنساني واجتماعي</span>
-        </div>
-
-        <!-- Option 5: Child-free -->
-        <div class="option-card">
-          <div>
-            <h4>🤝 <span id="t-opt-5-title">خيار عدم الإنجاب البيولوجي</span></h4>
-            <p id="t-opt-5-desc">اتفاق الزوجين على بناء حياة مشتركة دون إنجاب أطفال بيولوجيين، مع التركيز على الأهداف المهنية والاجتماعية.</p>
-          </div>
-          <span class="option-badge" id="t-opt-5-tag">خيار شخصي متبادل</span>
-        </div>
-      </div>
+      <div class="options-grid" id="options-grid"></div>
 
       <!-- Values Clarification Widget -->
       <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.25rem; margin-top: 1rem;">
@@ -1077,7 +1071,7 @@
         <div style="display: flex; flex-direction: column; gap: 0.75rem; font-size: 0.85rem;">
           <label style="display: flex; align-items: center; justify-content: space-between; background: white; padding: 0.6rem 0.8rem; border-radius: 8px; border: 1px solid var(--border);">
             <span id="t-vc-q1">أهمية تفادي ولادة طفل مصاب بحالة شديدة:</span>
-            <select style="padding: 0.3rem 0.6rem; border-radius: 6px; border: 1px solid var(--border);">
+            <select id="val-q1" style="padding: 0.3rem 0.6rem; border-radius: 6px; border: 1px solid var(--border);">
               <option>أولوية قصوى</option>
               <option>أولوية متوسطة</option>
               <option>أولوية ثانوية</option>
@@ -1086,7 +1080,7 @@
 
           <label style="display: flex; align-items: center; justify-content: space-between; background: white; padding: 0.6rem 0.8rem; border-radius: 8px; border: 1px solid var(--border);">
             <span id="t-vc-q2">تفضيل الطرق الطبيعية وتجنب الإجراءات التداخلية:</span>
-            <select style="padding: 0.3rem 0.6rem; border-radius: 6px; border: 1px solid var(--border);">
+            <select id="val-q2" style="padding: 0.3rem 0.6rem; border-radius: 6px; border: 1px solid var(--border);">
               <option>أفضل الطرق الطبيعية بقدر الإمكان</option>
               <option>مستعدة لكافة الخيارات الطبية المتاحة</option>
             </select>
@@ -1094,12 +1088,17 @@
 
           <label style="display: flex; align-items: center; justify-content: space-between; background: white; padding: 0.6rem 0.8rem; border-radius: 8px; border: 1px solid var(--border);">
             <span id="t-vc-q3">التوافق مع القناعات الدينية والاجتماعية للأسرة:</span>
-            <select style="padding: 0.3rem 0.6rem; border-radius: 6px; border: 1px solid var(--border);">
+            <select id="val-q3" style="padding: 0.3rem 0.6rem; border-radius: 6px; border: 1px solid var(--border);">
               <option>جوهرية وأساسية في القرار</option>
               <option>مرنة وفق الاستشارة الطبية</option>
             </select>
           </label>
         </div>
+        <label style="display:flex;gap:0.5rem;align-items:center;margin-top:0.9rem;font-size:0.85rem;">
+          <input type="checkbox" id="val-share"> <span id="val-share-label"></span>
+        </label>
+        <button class="pill-btn" style="margin-top:0.75rem;background:#0f766e;color:white;" onclick="saveValues()" id="val-save"></button>
+        <div id="val-status" style="font-size:0.85rem;margin-top:0.5rem;"></div>
       </div>
     </div>
 
@@ -1128,7 +1127,7 @@
       <div id="chat-response-box" style="display: none; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 10px; padding: 1rem; margin-top: 0.5rem;">
         <div id="chat-response-text" style="font-size: 0.9rem; color: #1e293b; line-height: 1.6; margin-bottom: 0.75rem;"></div>
         <div id="chat-counsellor-cta" style="display: none; text-align: end;">
-          <button class="pill-btn" style="background: #ea580c; color: white;" onclick="openBookingModal()" id="btn-chat-book">🩺 التحدث مباشرة مع مرشد وراثي معتمد</button>
+          <button class="pill-btn" style="background: #c2410c; color: white;" onclick="openBookingModal()" id="btn-chat-book">🩺 التحدث مباشرة مع مرشد وراثي معتمد</button>
         </div>
       </div>
     </div>
@@ -1179,7 +1178,7 @@
       </p>
 
       <div style="margin-bottom: 1rem;">
-        <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.35rem;" id="t-book-mod-label">نوع الجلسة:</label>
+        <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.35rem;" id="t-book-mod-label" for="book-modality">نوع الجلسة:</label>
         <select id="book-modality" style="width: 100%; padding: 0.6rem; border-radius: 8px; border: 1px solid var(--border);">
           <option value="video">مكالمة مرئية عن بُعد (خاصة وآمنة)</option>
           <option value="in_person">حضور شخصي في مركز أبوظبي للجينوم</option>
@@ -1187,13 +1186,18 @@
       </div>
 
       <div style="margin-bottom: 1rem;">
-        <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.35rem;" id="t-book-lang-label">تفضيل لغة المستشار:</label>
+        <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.35rem;" id="t-book-lang-label" for="book-lang">تفضيل لغة المستشار:</label>
         <select id="book-lang" style="width: 100%; padding: 0.6rem; border-radius: 8px; border: 1px solid var(--border);">
           <option value="ar">اللغة العربية (لهجة إماراتية / خليجية متوفرة)</option>
           <option value="en">English</option>
         </select>
       </div>
 
+      <div style="margin-bottom: 1rem;">
+        <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.35rem;" id="book-slot-label" for="book-slot">Available times</label>
+        <select id="book-slot" style="width: 100%; padding: 0.6rem; border-radius: 8px; border: 1px solid var(--border);"></select>
+      </div>
+      <div id="book-status" style="font-size:0.85rem;margin-bottom:0.75rem;"></div>
       <button class="submit-quiz-btn" onclick="confirmBooking()" id="t-btn-confirm-booking">تأكيد حجز الموعد</button>
     </div>
   </div>
@@ -1756,12 +1760,16 @@
       document.getElementById('platform-guide-modal').classList.remove('open');
     }
 
+    const precheckState = { answers: {}, feeling: null };
+
     function selectPrecheck(qName, correctness, el) {
       el.parentElement.querySelectorAll('.option-label').forEach(l => l.classList.remove('selected'));
       el.classList.add('selected');
+      precheckState.answers[qName] = (correctness === 'correct');
     }
 
     function handlePrecheckFeeling(feeling, el) {
+      precheckState.feeling = feeling;
       el.parentElement.querySelectorAll('.option-label').forEach(l => l.classList.remove('selected'));
       el.classList.add('selected');
 
@@ -1773,8 +1781,17 @@
       }
     }
 
-    function finishPrecheckAndReveal() {
+    async function finishPrecheckAndReveal() {
       document.getElementById('precheck-modal').classList.remove('open');
+      const total = 2;
+      const correct = Object.values(precheckState.answers).filter(Boolean).length;
+      try {
+        await fetch('/api/precheck/submit', {
+          method: 'POST',
+          headers: apiHeaders(),
+          body: JSON.stringify({ correct, total, feeling: precheckState.feeling, language: currentLang })
+        });
+      } catch (e) { /* baseline is best-effort; never block the user from their result */ }
     }
 
     /* Decision Support Chat */
@@ -1799,21 +1816,34 @@
       try {
         const res = await fetch('/api/chat/ask', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'X-User-Id': 'person_001' },
+          headers: apiHeaders(),
           body: JSON.stringify({ query: query, language: currentLang })
         });
         if (res.ok) {
           const data = await res.json();
+          const esc = (t) => String(t).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+          let html = '';
           if (data.is_decision_question) {
-            resText.innerHTML = `<strong>🛡️ ${currentLang === 'ar' ? 'توضيح طبي غير توجيهي (إرشادي محايد):' : 'Non-Directive Clinical Guidance:'}</strong><br>${data.handoff_message}`;
-            cta.style.display = 'block';
-          } else if (data.is_distress || data.is_coercion) {
-            resText.innerHTML = `<strong>⚠️ ${currentLang === 'ar' ? 'تنبيه أمان ودعم فوري:' : 'Safety & Immediate Support Alert:'}</strong><br>${currentLang === 'ar' ? 'سلامتكِ وراحتكِ النفسية هي أولويتنا القصوى. نوفر لكِ خط تواصل مباشر وسري مع أخصائيين معتمدين لدعمكِ فوراً.' : 'Your safety and emotional well-being are paramount. Immediate confidential specialist support is available.'}`;
-            cta.style.display = 'block';
+            html = `<strong>🛡️ ${currentLang === 'ar' ? 'توضيح طبي غير توجيهي (إرشادي محايد):' : 'Non-Directive Clinical Guidance:'}</strong><br>${esc(data.handoff_message)}`;
+          } else if (data.safety) {
+            const sf = data.safety;
+            const nums = sf.emergency.concat(sf.support).map(x => `${currentLang === 'ar' ? x.name_ar : x.name_en}: <strong>${x.number}</strong>`).join('<br>');
+            html = `<strong>⚠️ ${currentLang === 'ar' ? 'تنبيه أمان ودعم فوري:' : 'Safety & Immediate Support Alert:'}</strong><br>${esc(currentLang === 'ar' ? sf.message_ar : sf.message_en)}<br>${nums}` +
+              (sf.out_of_hours ? `<br><em>${currentLang === 'ar' ? 'نحن خارج ساعات العمل الآن؛ سيتصل بكِ أول مرشد متاح.' : 'We are outside counsellor hours; the first available counsellor will call you.'}</em>` : '');
+          } else if (data.answer) {
+            html = `<strong>📘 ${currentLang === 'ar' ? 'إجابة من المكتبة المعتمدة' : 'From the approved library'}</strong>` +
+              `<div style="font-size:0.8rem;color:#64748b;margin:0.2rem 0;">${currentLang === 'ar' ? 'الموضوع' : 'Topic'}: ${esc(data.answer.topic)}</div>` +
+              `${esc(data.answer.text)}<div style="font-size:0.8rem;margin-top:0.4rem;">${currentLang === 'ar' ? 'ليست هذه إجابة سؤالك؟ تحدثي مع مرشد وراثي.' : 'Not what you asked? You can talk to a genetic counsellor.'}</div>`;
+          } else if (data.recognised) {
+            html = `<strong>ℹ️ ${currentLang === 'ar' ? 'تم تحويل سؤالك' : 'Your question was noted'}</strong><br>${currentLang === 'ar' ? 'هذا الموضوع يُناقش مع مرشد وراثي مختص.' : 'A genetic counsellor is the right person to discuss this with.'}`;
           } else {
-            resText.innerHTML = `<strong>ℹ️ ${currentLang === 'ar' ? 'معلومات توضيحية:' : 'Clinical Educational Information:'}</strong><br>${currentLang === 'ar' ? 'عند تطابق صفة الحامل لنفس الجين (مثل بيتا ثلاسيميا)، تتوفر خيارات طبية معتمدة مثل فحص الأجنة الوراثي (PGT-M) أو التشخيص المبكر أثناء الحمل. يُنصح بمناقشة التفاصيل مع المرشد الوراثي.' : 'When both partners carry variants in the same recessive gene (such as Beta-thalassemia), established options include PGT-M / IVF and early prenatal testing. We encourage reviewing these options with a licensed counsellor.'}`;
-            cta.style.display = 'block';
+            html = `<strong>ℹ️ ${currentLang === 'ar' ? 'لم أتمكن من فهم سؤالك بدقة' : 'I could not match your question'}</strong><br>${currentLang === 'ar' ? 'لا أقدم نصائح شخصية أو طبية. يمكنك التحدث مع مرشد وراثي في أي وقت.' : 'I do not give personal or medical advice. You can talk to a genetic counsellor at any time.'}`;
           }
+          if (data.triage) {
+            html += `<div style="margin-top:0.6rem;font-size:0.8rem;color:#475569;">${currentLang === 'ar' ? 'المستوى' : 'Tier'}: <strong>${data.triage.tier}</strong> · ${currentLang === 'ar' ? 'القواعد' : 'Rules fired'}: ${(data.triage.fired_rules_now || data.triage.fired_rules).map(esc).join(', ')}</div>`;
+          }
+          resText.innerHTML = html;
+          cta.style.display = 'block';
         } else {
           resText.innerText = (currentLang === 'ar') ? "شكراً لاستفساركِ. خيار حجز استشارة وراثية متوفر دائماً لمناقشة التفاصيل." : "Thank you for your question. You can book a genetic counselling session anytime to discuss details.";
           cta.style.display = 'block';
@@ -1825,6 +1855,7 @@
     }
 
     /* Audio */
+    if ('speechSynthesis' in window) { window.speechSynthesis.getVoices(); window.speechSynthesis.onvoiceschanged = () => {}; }  // warm the voice list
     function toggleAudio() {
       const btn = document.getElementById('btn-play-audio');
       const status = document.getElementById('audio-status');
@@ -1833,6 +1864,18 @@
         btn.innerText = "⏸";
         status.innerText = (currentLang === 'ar') ? "جاري تشغيل التسجيل الصوتي..." : "Playing audio explanation...";
         
+        const want = (currentLang === 'ar') ? 'ar' : 'en';
+        const voices = ('speechSynthesis' in window) ? window.speechSynthesis.getVoices() : [];
+        const noVoice = !('speechSynthesis' in window) || (voices.length > 0 && !voices.some(v => (v.lang || '').toLowerCase().startsWith(want)));
+        if (noVoice) {
+          // Be honest: never pretend to play audio the device cannot produce.
+          isPlayingAudio = false;
+          btn.innerText = "▶";
+          status.innerText = (currentLang === 'ar')
+            ? "جهازك لا يحتوي على صوت عربي لقراءة النص. يمكنك قراءة الشرح المكتوب أو التحدث مع مرشد وراثي."
+            : "Your device has no English voice installed for read-aloud. Please read the written explanation or talk to a genetic counsellor.";
+          return;
+        }
         if ('speechSynthesis' in window) {
           window.speechSynthesis.cancel();
           const textToSpeak = (currentLang === 'ar') 
@@ -1846,13 +1889,14 @@
             btn.innerText = "▶";
             status.innerText = (currentLang === 'ar') ? "اكتمل التشغيل" : "Playback finished";
           };
-          window.speechSynthesis.speak(utter);
-        } else {
-          setTimeout(() => {
+          utter.onerror = () => {
             isPlayingAudio = false;
             btn.innerText = "▶";
-            status.innerText = "اكتمل التشغيل";
-          }, 4000);
+            status.innerText = (currentLang === 'ar')
+              ? "تعذر تشغيل الصوت على هذا الجهاز. يمكنك قراءة الشرح المكتوب."
+              : "Audio could not be played on this device. Please read the written explanation.";
+          };
+          window.speechSynthesis.speak(utter);
         }
       } else {
         isPlayingAudio = false;
@@ -1915,7 +1959,7 @@
       try {
         const res = await fetch('/api/quiz/submit', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'X-User-Id': 'person_001' },
+          headers: apiHeaders(),
           body: JSON.stringify({
             answers: selectedAnswers,
             language: currentLang,
@@ -1982,7 +2026,7 @@
       
       try {
         const res = await fetch('/api/users/me/access-history', {
-          headers: { 'X-User-Id': 'person_001' }
+          headers: apiHeaders()
         });
         if (res.ok) {
           const records = await res.json();
@@ -2000,7 +2044,7 @@
               <td><strong>${r.actor || '-'}</strong></td>
               <td><code>${r.action || '-'}</code></td>
               <td>${r.target || '-'}</td>
-              <td style="font-family: monospace; font-size: 0.75rem; color: #0284c7;">${shortHash}</td>
+              <td style="font-family: monospace; font-size: 0.75rem; color: #0369a1;">${shortHash}</td>
             `;
             tbody.appendChild(tr);
           });
@@ -2022,6 +2066,315 @@
       setLanguage('ar');
       setFormat('text');
     });
+  </script>
+  <script>
+    /* ===== Live API wiring (replaces the earlier alert()-only demo stubs) ===== */
+    let currentUserId = 'person_001';
+    let coupleLink = null;   // {id, partner_id}
+
+
+    /* Demo sign-in: obtains a signed bearer token (production: UAE Pass / OTP). */
+    const AUTH_TOKENS = {};
+    const LOGIN_PROMISES = {};
+    function ensureLogin(userId) {
+      if (AUTH_TOKENS[userId]) return Promise.resolve(true);
+      if (!LOGIN_PROMISES[userId]) LOGIN_PROMISES[userId] = doLogin(userId).finally(() => { delete LOGIN_PROMISES[userId]; });
+      return LOGIN_PROMISES[userId];
+    }
+    async function doLogin(userId) {
+      try {
+        const r = await fetch('/api/auth/login', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ user_id: userId, otp: '123456' })
+        });
+        if (!r.ok) return false;
+        AUTH_TOKENS[userId] = (await r.json()).access_token;
+        return true;
+      } catch (e) { return false; }
+    }
+
+    function apiHeaders(extra) {
+      const h = { 'Content-Type': 'application/json' };
+      if (AUTH_TOKENS[currentUserId]) h['Authorization'] = 'Bearer ' + AUTH_TOKENS[currentUserId];
+      return Object.assign(h, extra || {});
+    }
+    const L = (ar, en) => (currentLang === 'ar' ? ar : en);
+
+    async function switchDemoUser(id) {
+      await ensureLogin(id);
+      currentUserId = id;
+      await refreshCouple();
+    }
+
+    async function refreshCouple() {
+      await ensureLogin(currentUserId);
+      const resultBlock = document.getElementById('couple-result-block');
+      const hiddenBlock = document.getElementById('couple-hidden-block');
+      const badge = document.getElementById('couple-status-badge');
+      const grantBtn = document.getElementById('btn-grant-cpl');
+      const revokeBtn = document.getElementById('btn-revoke-cpl');
+      try {
+        const linkRes = await fetch('/api/my/couple-link', { headers: apiHeaders() });
+        if (!linkRes.ok) throw new Error('no link');
+        coupleLink = await linkRes.json();
+        const grants = await (await fetch('/api/grants/mine', { headers: apiHeaders() })).json();
+        const mine = grants.find(g => g.scope === 'couple_result' && !g.revoked_at);
+
+        grantBtn.innerText = L('منح موافقة المطابقة', 'Grant couple-match consent');
+        document.getElementById('btn-delete-data').innerText = L('حذف بياناتي نهائياً', 'Delete my data');
+        grantBtn.style.display = mine ? 'none' : '';
+        revokeBtn.style.display = mine ? '' : 'none';
+        revokeBtn.dataset.grantId = mine ? mine.id : '';
+
+        const res = await fetch(`/api/couples/${coupleLink.id}/result`, { headers: apiHeaders() });
+        if (res.ok) {
+          const r = await res.json();
+          resultBlock.style.display = '';
+          hiddenBlock.style.display = 'none';
+          badge.className = 'tier-badge tier-T2';
+          badge.innerText = L('موافقة متبادلة نشطة', 'Mutual consent active');
+          const genes = (r.shared_genes || []).join(', ');
+          document.getElementById('t-cpl-result-title').innerText =
+            L('نتيجة التوافق: ', 'Couple result: ') + r.outcome.replace(/_/g, ' ') + (genes ? ` (${genes})` : '');
+          document.getElementById('t-cpl-result-body').innerText = currentLang === 'ar' ? r.core_message_ar : r.core_message_en;
+        } else {
+          resultBlock.style.display = 'none';
+          hiddenBlock.style.display = '';
+          badge.className = 'tier-badge tier-T3';
+          badge.innerText = L('محجوبة - تتطلب موافقة الطرفين', 'Hidden - both partners must consent');
+          document.getElementById('couple-hidden-title').innerText = L('نتيجة التوافق محجوبة', 'Couple result is hidden');
+          document.getElementById('couple-hidden-body').innerText = L(
+            'لا تظهر النتيجة المشتركة إلا عندما يمنح كلا الشريكين موافقة فعّالة وغير ملغاة. لم يتم الكشف عن أي جينات فردية.',
+            'The joint result only appears while BOTH partners hold an active, unrevoked consent. No individual genes are revealed.');
+        }
+      } catch (e) {
+        hiddenBlock.style.display = '';
+        resultBlock.style.display = 'none';
+        document.getElementById('couple-hidden-title').innerText = L('لا يوجد ارتباط زوجي نشط', 'No active couple link');
+        document.getElementById('couple-hidden-body').innerText = '';
+      }
+    }
+
+    async function grantCoupleConsent() {
+      if (!coupleLink) return;
+      await fetch('/api/grants', {
+        method: 'POST', headers: apiHeaders(),
+        body: JSON.stringify({ grantee: coupleLink.partner_id, scope: 'couple_result', couple_link_id: coupleLink.id })
+      });
+      await refreshCouple();
+    }
+
+    async function deleteMyData() {
+      const typed = prompt(L('هذا الإجراء نهائي ويحذف جميع بياناتك من المنصة. اكتبي DELETE للتأكيد:',
+                             'This permanently erases all your data from the platform. Type DELETE to confirm:'));
+      if (typed !== 'DELETE') return;
+      const res = await fetch('/api/users/me/delete', { method: 'POST', headers: apiHeaders(), body: JSON.stringify({ confirm: typed }) });
+      alert(res.ok ? L('تم حذف بياناتك. سُجّل الحدث في سجل التدقيق.', 'Your data was deleted. The event is recorded in the audit log.')
+                   : L('تعذر الحذف.', 'Deletion failed.'));
+      if (res.ok) location.reload();
+    }
+
+    async function revokeConsentDemo() {
+      const id = document.getElementById('btn-revoke-cpl').dataset.grantId;
+      if (!id) return;
+      if (!confirm(L('هل أنتِ متأكدة من إلغاء موافقة التوافق؟ سيتم حجب النتيجة المشتركة عن الطرفين فوراً.',
+                     'Are you sure you want to revoke couple sharing consent? The joint result will be hidden for both partners immediately.'))) return;
+      await fetch(`/api/grants/${id}/revoke`, { method: 'POST', headers: apiHeaders() });
+      await refreshCouple();   // re-reads from the server: should now be hidden (403)
+    }
+
+    /* ----- Booking: real slots, real case, real appointment ----- */
+    async function openBookingModal() {
+      document.getElementById('booking-modal').classList.add('open');
+      const sel = document.getElementById('book-slot');
+      const status = document.getElementById('book-status');
+      status.innerText = '';
+      sel.innerHTML = '';
+      try {
+        const lang = document.getElementById('book-lang').value;
+        const modality = document.getElementById('book-modality').value;
+        const slots = await (await fetch(`/api/scheduler/available-slots?language=${lang}&modality=${modality}`, { headers: apiHeaders() })).json();
+        (slots || []).forEach(c => {
+          const o = document.createElement('option');
+          o.value = JSON.stringify({ counsellor_id: c.counsellor_id, slot_time: c.slot_time });
+          o.textContent = `${c.counsellor_name} - ${new Date(c.slot_time).toLocaleString(currentLang === 'ar' ? 'ar-AE' : 'en-GB')}`;
+          sel.appendChild(o);
+        });
+        if (!sel.options.length) status.innerText = L('لا توجد مواعيد متاحة بهذه التفضيلات.', 'No slots available for these preferences.');
+      } catch (e) {
+        status.innerText = L('تعذر تحميل المواعيد.', 'Could not load appointment slots.');
+      }
+    }
+
+    async function confirmBooking() {
+      const status = document.getElementById('book-status');
+      const sel = document.getElementById('book-slot');
+      if (!sel.value) { status.innerText = L('اختاري موعداً أولاً.', 'Please choose a time first.'); return; }
+      const pick = JSON.parse(sel.value);
+      try {
+        const caseRes = await fetch('/api/my/case', { headers: apiHeaders() });
+        if (!caseRes.ok) { status.innerText = L('لا توجد حالة مفتوحة للحجز.', 'You have no open case to book against.'); return; }
+        const c = await caseRes.json();
+        const res = await fetch(`/api/portal/cases/${c.id}/book`, {
+          method: 'POST', headers: apiHeaders(),
+          body: JSON.stringify({
+            counsellor_id: pick.counsellor_id, slot_time: pick.slot_time,
+            language_pref: document.getElementById('book-lang').value,
+            modality: document.getElementById('book-modality').value
+          })
+        });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const b = await res.json();
+        status.style.color = '#0f766e';
+        status.innerText = L(`تم تأكيد الحجز (${b.booking_id}). ربطنا ملف الحالة بجدول المستشار.`,
+                             `Booked (${b.booking_id}). Your case packet is attached to the counsellor's calendar.`);
+        setTimeout(closeBookingModal, 1800);
+      } catch (e) {
+        status.style.color = '#b91c1c';
+        status.innerText = L('تعذر إتمام الحجز.', 'Booking failed: ') + e.message;
+      }
+    }
+
+    // Re-render the couple card after language changes (static i18n would overwrite it).
+    const _setLanguageStatic = setLanguage;
+    setLanguage = function (lang) { _setLanguageStatic(lang); refreshCouple(); };
+    window.addEventListener('DOMContentLoaded', async () => { await ensureLogin(currentUserId); refreshCouple(); });
+  </script>
+
+
+  <script>
+    const FAM_COPY = {
+      ar: { title: 'إبلاغ الأقارب (اختياري وبسرية)', intro: 'لك وحدك القرار في إبلاغ أقاربك. يمكنك مشاركة بطاقة توعوية بنفسك، أو إرسال إشعار مجهول لا يتضمن اسمك ولا نتيجتك.',
+            card: 'الخيار 1: بطاقة توعوية لأشاركها بنفسي', notice: 'الخيار 2: إرسال إشعار مجهول', send: 'إرسال الإشعار المجهول',
+            warning: 'تنبيه خصوصية: الإشعار لا يذكر اسمك أو نتيجتك، لكن قد يستنتج الأقارب هويتك من اختيارك لمن تُبلغين.' },
+      en: { title: 'Informing relatives (optional, private)', intro: 'Whether to tell relatives is entirely your choice. Share an educational card yourself, or send an anonymous notice that contains neither your name nor your result.',
+            card: 'Option 1: Educational card I share myself', notice: 'Option 2: Send an anonymous notice', send: 'Send anonymous notice',
+            warning: 'Privacy notice: the message never names you or your result, but relatives may guess who sent it from whom you choose to inform.' }
+    };
+    function renderFamilyCopy() {
+      const c = FAM_COPY[currentLang] || FAM_COPY.en;
+      document.getElementById('fam-title').innerText = c.title;
+      document.getElementById('fam-intro').innerText = c.intro;
+      document.getElementById('fam-btn-card').innerText = c.card;
+      document.getElementById('fam-btn-notice').innerText = c.notice;
+      document.getElementById('fam-send').innerText = c.send;
+      document.getElementById('fam-warning').innerText = c.warning;
+    }
+    async function loadShareCard() {
+      const out = document.getElementById('fam-card-out');
+      const res = await fetch(`/api/family-notice/shareable-card?condition=Beta-thalassemia&language=${currentLang}`, { headers: apiHeaders() });
+      const d = await res.json();
+      const esc = (t) => String(t).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+      out.style.display = 'block';
+      out.innerHTML = `<strong>${esc(d.card.title)}</strong><p style="margin:0.5rem 0;">${esc(d.card.body)}</p><p style="font-size:0.8rem;color:var(--text-muted);">${esc(d.card.privacy_notice)} ${esc(d.card.disclaimer)}</p>`;
+    }
+    function toggleNoticeForm() {
+      const f = document.getElementById('fam-notice-form');
+      f.style.display = f.style.display === 'none' ? 'block' : 'none';
+    }
+    async function sendFamilyNotice() {
+      const contact = document.getElementById('fam-contact').value.trim();
+      const status = document.getElementById('fam-status');
+      if (!contact) { status.innerText = currentLang === 'ar' ? 'أدخلي وسيلة تواصل للقريب.' : 'Enter the relative\'s contact.'; return; }
+      const res = await fetch('/api/family-notice/send', {
+        method: 'POST', headers: apiHeaders(),
+        body: JSON.stringify({ channel: 'whatsapp', condition_name: 'Beta-thalassemia', recipient_contact: contact })
+      });
+      status.style.color = res.ok ? '#0f766e' : '#b91c1c';
+      status.innerText = res.ok
+        ? (currentLang === 'ar' ? 'تم إرسال الإشعار المجهول. لم يُكشف اسمك أو نتيجتك.' : 'Anonymous notice sent. Your name and result were not disclosed.')
+        : (currentLang === 'ar' ? 'تعذر الإرسال.' : 'Could not send.');
+    }
+    const _setLanguageWithCouple = setLanguage;
+    setLanguage = function (lang) { _setLanguageWithCouple(lang); renderFamilyCopy(); };
+    window.addEventListener('DOMContentLoaded', renderFamilyCopy);
+  </script>
+
+  <script>
+    function esc2(t) { return String(t).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+    async function loadOptions() {
+      await ensureLogin(currentUserId);
+      const grid = document.getElementById('options-grid');
+      if (!grid) return;
+      try {
+        const res = await fetch(`/api/options?language=${currentLang}`, { headers: apiHeaders() });
+        if (!res.ok) return;
+        const d = await res.json();
+        grid.innerHTML = d.options.map(o => `
+          <div class="option-card" style="${o.locked ? 'opacity:0.7;' : ''}">
+            <div>
+              <h3>${o.icon} <span>${esc2(o.title)}</span></h3>
+              <p>${o.locked ? '🔒 ' + esc2(o.locked_reason) : esc2(o.body)}</p>
+            </div>
+          </div>`).join('');
+      } catch (e) { /* keep the card empty rather than show stale content */ }
+    }
+    function renderValuesCopy() {
+      document.getElementById('val-share-label').innerText = L('أوافق على مشاركة إجاباتي مع المرشد الوراثي', 'I agree to share my answers with my genetic counsellor');
+      document.getElementById('val-save').innerText = L('حفظ إجاباتي', 'Save my answers');
+    }
+    async function saveValues() {
+      const answers = { avoid_severe: document.getElementById('val-q1').selectedIndex.toString(),
+                        natural_preference: document.getElementById('val-q2').selectedIndex.toString(),
+                        family_convictions: document.getElementById('val-q3').selectedIndex.toString() };
+      const share = document.getElementById('val-share').checked;
+      const res = await fetch('/api/values', { method: 'POST', headers: apiHeaders(), body: JSON.stringify({ answers, share_with_counsellor: share }) });
+      const st = document.getElementById('val-status');
+      st.style.color = res.ok ? '#0f766e' : '#b91c1c';
+      st.innerText = res.ok
+        ? (share ? L('تم الحفظ ومشاركتها مع المرشد.', 'Saved and shared with your counsellor.') : L('تم الحفظ بخصوصية. لن يراها أحد.', 'Saved privately. No one else can see them.'))
+        : L('تعذر الحفظ.', 'Could not save.');
+    }
+    const _setLanguageWithOptions = setLanguage;
+    setLanguage = function (lang) { _setLanguageWithOptions(lang); loadOptions(); renderValuesCopy(); };
+    window.addEventListener('DOMContentLoaded', async () => { await ensureLogin(currentUserId); loadOptions(); renderValuesCopy(); });
+    const _switchDemoUserOpts = switchDemoUser;
+    switchDemoUser = async function (id) { await _switchDemoUserOpts(id); loadOptions(); };
+  </script>
+
+  <script>
+    const CK = {
+      en: { title: 'Quick check-in', intro: 'Optional and private. It helps us see whether the information is helping you, and whether you would like to talk to a person.',
+            submit: 'Save check-in', saved: 'Thank you. Saved.', anxHead: 'Over the last 2 weeks, how often have you been bothered by:',
+            anx: ['Feeling nervous, anxious or on edge', 'Not being able to stop or control worrying'],
+            opts: ['Not at all', 'Several days', 'More than half the days', 'Nearly every day'],
+            sureHead: 'About the choices ahead of you:',
+            sure: ['I feel sure about the best choice for me', 'I know the benefits and risks of each option', 'I am clear about which benefits and risks matter most to me', 'I have enough support and advice to make a choice'],
+            yes: 'Yes', no: 'No', talk: 'If you would like to talk to someone, use "Talk to a Genetic Counsellor" at any time.' },
+      ar: { title: 'تقييم سريع لحالتك', intro: 'اختياري وخاص. يساعدنا على معرفة ما إذا كانت المعلومات مفيدة لك، وهل ترغبين بالتحدث مع مختص.',
+            submit: 'حفظ التقييم', saved: 'شكراً لك. تم الحفظ.', anxHead: 'خلال الأسبوعين الماضيين، كم مرة انزعجتِ من:',
+            anx: ['الشعور بالتوتر أو القلق', 'عدم القدرة على إيقاف القلق أو التحكم فيه'],
+            opts: ['أبداً', 'عدة أيام', 'أكثر من نصف الأيام', 'تقريباً كل يوم'],
+            sureHead: 'بخصوص الخيارات المطروحة أمامك:',
+            sure: ['أشعر بالثقة في أفضل خيار بالنسبة لي', 'أعرف فوائد ومخاطر كل خيار', 'أعرف أي الفوائد والمخاطر أهم بالنسبة لي', 'لدي الدعم والمشورة الكافية لاتخاذ قرار'],
+            yes: 'نعم', no: 'لا', talk: 'إذا رغبتِ بالتحدث مع أحد، استخدمي زر «التحدث مع مرشد وراثي» في أي وقت.' }
+    };
+    function renderCheckin() {
+      const c = CK[currentLang] || CK.en;
+      document.getElementById('ck-title').innerText = c.title;
+      document.getElementById('ck-intro').innerText = c.intro + ' ' + c.talk;
+      document.getElementById('ck-submit').innerText = c.submit;
+      document.getElementById('ck-anx').innerHTML = `<div style="font-weight:600;margin-bottom:0.4rem;">${c.anxHead}</div>` +
+        c.anx.map((q, i) => `<div style="margin-bottom:0.4rem;font-size:0.85rem;"><label for="ck-anx-${i}">${q}</label><br><select id="ck-anx-${i}" style="padding:0.3rem;border-radius:6px;border:1px solid var(--border);margin-top:0.2rem;">` +
+          c.opts.map((o, v) => `<option value="${v}">${o}</option>`).join('') + '</select></div>').join('');
+      document.getElementById('ck-sure').innerHTML = `<div style="font-weight:600;margin-bottom:0.4rem;">${c.sureHead}</div>` +
+        c.sure.map((q, i) => `<div style="margin-bottom:0.4rem;font-size:0.85rem;"><label for="ck-sure-${i}">${q}</label><br><select id="ck-sure-${i}" style="padding:0.3rem;border-radius:6px;border:1px solid var(--border);margin-top:0.2rem;">` +
+          `<option value="1">${c.yes}</option><option value="0">${c.no}</option></select></div>`).join('');
+    }
+    async function submitCheckin() {
+      const opts = await (await fetch(`/api/options?language=${currentLang}`, { headers: apiHeaders() })).json();
+      const counselled = ['attended', 'closed'].includes(opts.case_state);
+      const anx = [0, 1].map(i => parseInt(document.getElementById('ck-anx-' + i).value, 10));
+      const sure = [0, 1, 2, 3].map(i => parseInt(document.getElementById('ck-sure-' + i).value, 10));
+      const r1 = await fetch('/api/measures', { method: 'POST', headers: apiHeaders(), body: JSON.stringify({ measure: 'anxiety', phase: counselled ? 'after_counselling' : 'before_counselling', items: anx }) });
+      const r2 = await fetch('/api/measures', { method: 'POST', headers: apiHeaders(), body: JSON.stringify({ measure: 'sure', phase: counselled ? 'after_counselling' : 'after_explanation', items: sure }) });
+      const st = document.getElementById('ck-status');
+      st.style.color = (r1.ok && r2.ok) ? '#0f766e' : '#b91c1c';
+      st.innerText = (r1.ok && r2.ok) ? (CK[currentLang] || CK.en).saved : 'Error';
+    }
+    const _setLanguageCk = setLanguage;
+    setLanguage = function (lang) { _setLanguageCk(lang); renderCheckin(); };
+    window.addEventListener('DOMContentLoaded', renderCheckin);
   </script>
 </body>
 </html>

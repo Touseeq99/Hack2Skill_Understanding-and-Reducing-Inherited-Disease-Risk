@@ -1,20 +1,45 @@
 """Outcomes and Equity Analytics service.
 
+Every figure here is computed from database rows. When there is not enough data a metric is
+returned as ``None`` (rendered as "no data yet") - nothing is estimated, defaulted or hard-coded.
+
 Metrics tracked:
-- Comprehension uplift (% teach-back passed, pre/post scores)
-- Counselling uptake (% of T1/T2 cases booked and attended)
-- Time to referral vs clinical SLA
+- Comprehension (teach-back) pre vs post, and % correctly stating "risk is not a diagnosis"
+- Counselling uptake (% of T1/T2/T3 cases booked / attended / closed)
+- Time to referral vs clinical SLA (from referral state timestamps)
 - Family reach (cascade notices sent -> opened -> booked)
-- Privacy events (unauthorized read attempts blocked, 100% revocations honored, audit chain integrity)
-- Equity breakdowns by language, literacy preference, age band, and sex
+- Privacy events (blocked unauthorised reads, revocations honoured, audit chain integrity)
+- Equity breakdowns by language, literacy preference, age band, and sex (gap computed from data)
 
 EXPLICIT NON-METRIC:
 Cancelled marriages or any single reproductive choice are STRICTLY NOT success metrics.
 """
 
-from typing import Dict, Any, Optional
+import ast
+import datetime
+import json
+import statistics
+from typing import Dict, Any, Optional, List
+
 from backend.database import Database, db
 from backend.audit_log import audit_logger
+
+EQUITY_GAP_THRESHOLD_POINTS = 10.0
+SLA_HOURS = {"T3": 24.0, "T2": 72.0, "T1": 240.0}
+
+
+def _pct(num: float, den: float) -> Optional[float]:
+    return round(100.0 * num / den, 1) if den else None
+
+
+def _parse_ts(value: Any) -> Optional[datetime.datetime]:
+    if not value:
+        return None
+    try:
+        dt = datetime.datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    return dt if dt.tzinfo else dt.replace(tzinfo=datetime.timezone.utc)
 
 
 class AnalyticsService:
@@ -24,159 +49,237 @@ class AnalyticsService:
         self.db = database or db
         self.audit = audit_logger
 
-    def get_dashboard_metrics(self) -> Dict[str, Any]:
-        """Compute full outcomes dashboard metrics."""
-        conn = self.db.get_connection()
-        cur = conn.cursor()
-
-        # 1. Understanding & Comprehension Uplift
-        cur.execute("SELECT AVG(score) as avg_score, COUNT(*) as total FROM comprehension_response")
-        comp_row = cur.fetchone()
-        avg_score = round(float(comp_row["avg_score"] or 94.2), 1)
-        total_quizzes = comp_row["total"] or 0
-
-        # 2. Counselling Uptake
-        cur.execute("SELECT COUNT(*) as total_cases FROM triage_case WHERE tier IN ('T1', 'T2', 'T3')")
-        total_high_tier = cur.fetchone()["total_cases"] or 1
-        cur.execute("SELECT COUNT(*) as booked_cases FROM triage_case WHERE state IN ('booked', 'attended', 'closed') AND tier IN ('T1', 'T2', 'T3')")
-        booked_high_tier = cur.fetchone()["booked_cases"] or 0
-        counselling_uptake_pct = round((booked_high_tier / max(total_high_tier, 1)) * 100.0, 1)
-
-        # 3. Family Cascade Reach
-        cur.execute("SELECT COUNT(*) as sent, SUM(opened) as opened, SUM(booked) as booked FROM family_notice")
-        fn_row = cur.fetchone()
-        notices_sent = fn_row["sent"] or 42
-        notices_opened = fn_row["opened"] or 31
-        notices_booked = fn_row["booked"] or 19
-
-        # 4. Privacy & Audit Chain Integrity
-        chain_valid, chain_err = self.audit.verify_chain()
-        cur.execute("SELECT COUNT(*) as unauth_count FROM audit_event WHERE action LIKE '%unauthorized%'")
-        unauth_attempts = cur.fetchone()["unauth_count"] or 0
-
-        # 5. Equity Splits
-        # Equity by Language
-        cur.execute("""
-            SELECT p.language, AVG(cr.score) as avg_score, COUNT(*) as count
+    # ---- helpers -------------------------------------------------------------
+    def _group_scores(self, cur, group_sql: str) -> Dict[str, Dict[str, Any]]:
+        """Average post-explanation score per group, with cohort share."""
+        cur.execute(f"""
+            SELECT {group_sql} AS grp, AVG(cr.score) AS avg_score, COUNT(*) AS n
             FROM comprehension_response cr
             JOIN person p ON cr.person_id = p.id
-            GROUP BY p.language
+            WHERE cr.phase = 'post'
+            GROUP BY grp
         """)
-        lang_rows = cur.fetchall()
-        equity_language = {
-            r["language"]: {"avg_score": round(float(r["avg_score"]), 1), "count": r["count"]}
-            for r in lang_rows
-        }
-        if not equity_language:
-            equity_language = {"ar": {"avg_score": 94.5, "count": 160}, "en": {"avg_score": 93.8, "count": 40}}
-
-        # Equity by Literacy Preference
-        cur.execute("""
-            SELECT p.literacy_pref, AVG(cr.score) as avg_score, COUNT(*) as count
-            FROM comprehension_response cr
-            JOIN person p ON cr.person_id = p.id
-            GROUP BY p.literacy_pref
-        """)
-        lit_rows = cur.fetchall()
-        equity_literacy = {
-            r["literacy_pref"]: {"avg_score": round(float(r["avg_score"]), 1), "count": r["count"]}
-            for r in lit_rows
-        }
-        if not equity_literacy:
-            equity_literacy = {
-                "standard": {"avg_score": 95.1, "count": 120},
-                "simple": {"avg_score": 93.4, "count": 50},
-                "audio": {"avg_score": 92.8, "count": 30},
+        rows = cur.fetchall()
+        total = sum(r["n"] for r in rows)
+        return {
+            str(r["grp"]): {
+                "avg_score": round(float(r["avg_score"]), 1),
+                "count": r["n"],
+                "cohort_pct": _pct(r["n"], total),
             }
-
-        # Equity by Sex
-        cur.execute("""
-            SELECT p.sex, AVG(cr.score) as avg_score, COUNT(*) as count
-            FROM comprehension_response cr
-            JOIN person p ON cr.person_id = p.id
-            GROUP BY p.sex
-        """)
-        sex_rows = cur.fetchall()
-        equity_sex = {
-            r["sex"]: {"avg_score": round(float(r["avg_score"]), 1), "count": r["count"]}
-            for r in sex_rows
+            for r in rows
         }
-        if not equity_sex:
-            equity_sex = {"F": {"avg_score": 94.3, "count": 100}, "M": {"avg_score": 94.0, "count": 100}}
 
-        # Equity by Age Band (<18 minor, 18-29, 30+)
-        cur.execute("""
-            SELECT
-                CASE
-                    WHEN (2026 - p.dob_year) < 18 THEN '<18 (Minor)'
-                    WHEN (2026 - p.dob_year) BETWEEN 18 AND 29 THEN '18-29'
-                    ELSE '30+'
-                END as age_band,
-                AVG(cr.score) as avg_score,
-                COUNT(*) as count
-            FROM comprehension_response cr
-            JOIN person p ON cr.person_id = p.id
-            GROUP BY age_band
-        """)
-        age_rows = cur.fetchall()
-        equity_age = {
-            r["age_band"]: {"avg_score": round(float(r["avg_score"]), 1), "count": r["count"]}
-            for r in age_rows
-        }
-        if not equity_age:
-            equity_age = {
-                "<18 (Minor)": {"avg_score": 92.0, "count": 5},
-                "18-29": {"avg_score": 94.6, "count": 135},
-                "30+": {"avg_score": 93.9, "count": 60},
-            }
+    def _comprehension(self, cur) -> Dict[str, Any]:
+        cur.execute("SELECT person_id, phase, score, answers FROM comprehension_response ORDER BY created_at")
+        rows = cur.fetchall()
+        pre = [r["score"] for r in rows if r["phase"] == "pre"]
+        post = [r["score"] for r in rows if r["phase"] == "post"]
 
-        conn.close()
+        # Paired (same person) uplift is the honest comparison.
+        first_pre: Dict[str, float] = {}
+        last_post: Dict[str, float] = {}
+        for r in rows:
+            if r["phase"] == "pre":
+                first_pre.setdefault(r["person_id"], r["score"])
+            elif r["phase"] == "post":
+                last_post[r["person_id"]] = r["score"]
+        paired = [(first_pre[p], last_post[p]) for p in first_pre if p in last_post]
+        pre_avg = round(statistics.mean(a for a, _ in paired), 1) if paired else None
+        post_paired_avg = round(statistics.mean(b for _, b in paired), 1) if paired else None
+
+        # "Risk is not a diagnosis" item (q2) from stored answers.
+        correct_q2 = 0
+        answered_q2 = 0
+        for r in rows:
+            if r["phase"] != "post":
+                continue
+            try:
+                ans = ast.literal_eval(r["answers"]) if r["answers"] else {}
+            except (ValueError, SyntaxError):
+                continue
+            if "q2_risk_vs_diagnosis" in ans:
+                answered_q2 += 1
+                correct_q2 += 1 if ans["q2_risk_vs_diagnosis"] == "a" else 0
 
         return {
-            "ethical_policy": {
-                "non_directive_principle": True,
-                "explicit_excluded_metric": "Marriage cancellations or single reproductive choices are STRICTLY NOT success metrics.",
-                "rationale": "Respecting individual cultural, religious, and family autonomy in Abu Dhabi."
-            },
-            "comprehension": {
-                "post_explanation_avg_score": avg_score,
-                "pre_explanation_baseline_score": 52.0,
-                "uplift_percentage_points": round(avg_score - 52.0, 1),
-                "risk_vs_diagnosis_understanding_pct": 98.5,
-                "total_completed_quizzes": total_quizzes,
-            },
-            "counselling_uptake": {
-                "t1_t2_t3_cases_total": total_high_tier,
-                "booked_and_attended_count": booked_high_tier,
-                "uptake_percentage": counselling_uptake_pct,
-            },
-            "time_to_referral_vs_sla": {
-                "T3_urgent_hours": {"median": 4.5, "sla_limit_hours": 24, "adherence_pct": 100.0},
-                "T2_priority_days": {"median": 1.6, "sla_limit_days": 3, "adherence_pct": 97.4},
-                "T1_routine_days": {"median": 4.2, "sla_limit_days": 10, "adherence_pct": 98.8},
-            },
-            "family_cascade_reach": {
-                "notices_sent": notices_sent,
-                "notices_opened": notices_opened,
-                "relatives_screened_or_booked": notices_booked,
-                "open_rate_pct": round((notices_opened / max(notices_sent, 1)) * 100, 1),
-            },
-            "privacy_and_security": {
-                "unauthorized_access_breaches": 0,
-                "unauthorized_attempts_blocked": unauth_attempts,
-                "revocations_honored_instantaneous_pct": 100.0,
-                "cryptographic_audit_chain_valid": chain_valid,
-                "audit_tamper_error": chain_err,
-            },
-            "equity_breakdowns": {
-                "by_language": equity_language,
-                "by_literacy_preference": equity_literacy,
-                "by_sex": equity_sex,
-                "by_age_band": equity_age,
-                "maximum_equity_gap_points": 3.1,  # Under 10 point threshold
-                "equity_parity_achieved": True,
-            }
+            "post_explanation_avg_score": round(statistics.mean(post), 1) if post else None,
+            "pre_explanation_baseline_score": pre_avg,
+            "post_score_same_people": post_paired_avg,
+            "uplift_percentage_points": round(post_paired_avg - pre_avg, 1) if paired else None,
+            "paired_people": len(paired),
+            "risk_vs_diagnosis_understanding_pct": _pct(correct_q2, answered_q2),
+            "risk_vs_diagnosis_n": answered_q2,
+            "total_completed_quizzes": len(post),
+            "total_pre_checks": len(pre),
         }
+
+    def _wellbeing(self, cur) -> Dict[str, Any]:
+        """Decisional conflict (SURE) and anxiety (GAD-2) from stored responses, paired where possible."""
+        out: Dict[str, Any] = {}
+        for measure, first, second in (("sure", "after_explanation", "after_counselling"),
+                                       ("anxiety", "before_counselling", "after_counselling")):
+            cur.execute("SELECT person_id, phase, score, flag FROM measure_response WHERE measure = ? ORDER BY rowid", (measure,))
+            rows = cur.fetchall()
+            a = {r["person_id"]: r for r in rows if r["phase"] == first}
+            b = {r["person_id"]: r for r in rows if r["phase"] == second}
+            paired = [p for p in a if p in b]
+            out[measure] = {
+                "phase_a": first, "phase_b": second,
+                "n_a": len(a), "n_b": len(b), "paired": len(paired),
+                "flag_pct_a": _pct(sum(1 for r in a.values() if r["flag"]), len(a)),
+                "flag_pct_b": _pct(sum(1 for r in b.values() if r["flag"]), len(b)),
+                "mean_score_a": round(statistics.mean(r["score"] for r in a.values()), 2) if a else None,
+                "mean_score_b": round(statistics.mean(r["score"] for r in b.values()), 2) if b else None,
+                "flag_name": "decisional_conflict" if measure == "sure" else "anxiety_screen_positive",
+            }
+        return out
+
+    def _time_to_referral(self, cur) -> Dict[str, Any]:
+        cur.execute("""
+            SELECT tc.tier, r.timestamps_per_state
+            FROM referral r JOIN triage_case tc ON tc.id = r.case_id
+        """)
+        by_tier: Dict[str, List[float]] = {"T3": [], "T2": [], "T1": []}
+        for r in cur.fetchall():
+            if r["tier"] not in by_tier:
+                continue
+            try:
+                ts = json.loads(r["timestamps_per_state"] or "{}")
+            except ValueError:
+                continue
+            start, booked = _parse_ts(ts.get("created")), _parse_ts(ts.get("booked"))
+            if start and booked and booked >= start:
+                by_tier[r["tier"]].append((booked - start).total_seconds() / 3600.0)
+        out = {}
+        for tier, hours in by_tier.items():
+            limit = SLA_HOURS[tier]
+            out[tier] = {
+                "n": len(hours),
+                "median_hours": round(statistics.median(hours), 2) if hours else None,
+                "sla_limit_hours": limit,
+                "adherence_pct": _pct(sum(1 for h in hours if h <= limit), len(hours)),
+            }
+        return out
+
+    def _privacy(self, cur) -> Dict[str, Any]:
+        chain_valid, chain_err = self.audit.verify_chain()
+        cur.execute("SELECT COUNT(*) AS n FROM audit_event WHERE action LIKE '%unauthorized%'")
+        blocked = cur.fetchone()["n"]
+
+        # Revocations honoured: replay the audit log in insertion order. After a partner revokes
+        # their couple_result grant (and until they grant again), no successful couple read may occur.
+        cur.execute("SELECT id, grantor FROM consent_grant WHERE scope = 'couple_result'")
+        grant_owner = {r["id"]: r["grantor"] for r in cur.fetchall()}
+        cur.execute("SELECT id, partner_a, partner_b FROM couple_link")
+        links = {f"couple_link:{r['id']}": (r["partner_a"], r["partner_b"]) for r in cur.fetchall()}
+        cur.execute(
+            "SELECT action, target, grant_id FROM audit_event "
+            "WHERE action IN ('grant_created', 'grant_revoked', 'read_couple_result') ORDER BY rowid"
+        )
+        withdrawn: set = set()
+        revocations = 0
+        violations = 0
+        for e in cur.fetchall():
+            owner = grant_owner.get(e["grant_id"]) if e["grant_id"] else None
+            if e["action"] == "grant_revoked" and owner:
+                withdrawn.add(owner)
+                revocations += 1
+            elif e["action"] == "grant_created" and owner:
+                withdrawn.discard(owner)
+            elif e["action"] == "read_couple_result":
+                if any(p in withdrawn for p in links.get(e["target"], ())):
+                    violations += 1
+        return {
+            "unauthorized_attempts_blocked": blocked,
+            "revocations_total": revocations,
+            "reads_after_revocation": violations if revocations else None,
+            "revocations_honored": (violations == 0) if revocations else None,
+            "revocations_honored_pct": (100.0 if violations == 0 else None) if revocations else None,
+            "cryptographic_audit_chain_valid": chain_valid,
+            "audit_tamper_error": chain_err,
+        }
+
+    def _equity(self, cur) -> Dict[str, Any]:
+        year = datetime.datetime.now().year
+        splits = {
+            "by_language": self._group_scores(cur, "p.language"),
+            "by_literacy_preference": self._group_scores(cur, "p.literacy_pref"),
+            "by_sex": self._group_scores(cur, "p.sex"),
+            "by_age_band": self._group_scores(
+                cur,
+                f"CASE WHEN ({year} - p.dob_year) < 18 THEN '<18 (Minor)' "
+                f"WHEN ({year} - p.dob_year) BETWEEN 18 AND 29 THEN '18-29' ELSE '30+' END",
+            ),
+        }
+        gaps = {}
+        for name, groups in splits.items():
+            scores = [g["avg_score"] for g in groups.values()]
+            gaps[name] = round(max(scores) - min(scores), 1) if len(scores) >= 2 else None
+        known = [g for g in gaps.values() if g is not None]
+        max_gap = max(known) if known else None
+        return {
+            **splits,
+            "gap_by_split_points": gaps,
+            "maximum_equity_gap_points": max_gap,
+            "gap_threshold_points": EQUITY_GAP_THRESHOLD_POINTS,
+            "equity_parity_achieved": (max_gap <= EQUITY_GAP_THRESHOLD_POINTS) if max_gap is not None else None,
+        }
+
+    # ---- public API ----------------------------------------------------------
+    def get_dashboard_metrics(self) -> Dict[str, Any]:
+        """Compute full outcomes dashboard metrics from stored rows only."""
+        conn = self.db.get_connection()
+        cur = conn.cursor()
+        try:
+            cur.execute("SELECT COUNT(*) AS n FROM triage_case WHERE tier IN ('T1','T2','T3')")
+            eligible = cur.fetchone()["n"]
+            cur.execute(
+                "SELECT COUNT(*) AS n FROM triage_case WHERE tier IN ('T1','T2','T3') "
+                "AND state IN ('booked','attended','closed')"
+            )
+            booked = cur.fetchone()["n"]
+            cur.execute("SELECT COUNT(*) AS n FROM triage_case WHERE tier = 'T3'")
+            t3 = cur.fetchone()["n"]
+            cur.execute("SELECT COUNT(*) AS n FROM triage_case")
+            all_cases = cur.fetchone()["n"]
+
+            cur.execute("SELECT COUNT(*) AS sent, SUM(opened) AS opened, SUM(booked) AS booked FROM family_notice")
+            fn = cur.fetchone()
+            sent, opened, fbooked = fn["sent"] or 0, fn["opened"] or 0, fn["booked"] or 0
+
+            result = {
+                "data_provenance": {
+                    "synthetic_cohort": True,
+                    "note": "All figures are computed from the synthetic demonstration cohort. Metrics show 'no data yet' when a measurement has not been collected.",
+                },
+                "ethical_policy": {
+                    "non_directive_principle": True,
+                    "explicit_excluded_metric": "Marriage cancellations or single reproductive choices are STRICTLY NOT success metrics.",
+                    "rationale": "Respecting individual cultural, religious, and family autonomy in Abu Dhabi.",
+                },
+                "comprehension": self._comprehension(cur),
+                "counselling_uptake": {
+                    "t1_t2_t3_cases_total": eligible,
+                    "booked_and_attended_count": booked,
+                    "uptake_percentage": _pct(booked, eligible),
+                },
+                "time_to_referral_vs_sla": self._time_to_referral(cur),
+                "family_cascade_reach": {
+                    "notices_sent": sent,
+                    "notices_opened": opened,
+                    "relatives_screened_or_booked": fbooked,
+                    "open_rate_pct": _pct(opened, sent),
+                    "booked_rate_pct": _pct(fbooked, sent),
+                },
+                "wellbeing": self._wellbeing(cur),
+                "escalation": {"t3_cases": t3, "total_cases": all_cases, "t3_escalation_rate_pct": _pct(t3, all_cases)},
+                "privacy_and_security": self._privacy(cur),
+                "equity_breakdowns": self._equity(cur),
+            }
+        finally:
+            conn.close()
+        return result
 
 
 analytics_svc = AnalyticsService()

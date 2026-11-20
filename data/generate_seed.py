@@ -17,6 +17,8 @@ from pathlib import Path
 from typing import Dict, List, Any
 from backend.database import Database
 from backend.encryptor import default_encryptor
+from backend.vault import store_variant
+from engine.models import VariantCall
 
 PANEL_GENES_FILE = Path(__file__).resolve().parent.parent / "engine" / "panel_genes.json"
 
@@ -116,11 +118,14 @@ def generate_cohort(seed: int = 42) -> Dict[str, Any]:
             dob_year = current_year - random.randint(19, 45)
 
         # 12 pregnant females
-        pregnancy_status = (sex == "F" and i in (1, 3, 7, 12, 18, 22, 30, 45, 60, 75, 88, 95))
+        pregnancy_status = (sex == "F" and i in (2, 3, 7, 12, 18, 22, 30, 45, 60, 75, 88, 95))
         
         # Language & literacy
         language = "ar" if random.random() < 0.8 else "en"
         literacy_pref = random.choices(["standard", "simple", "audio"], weights=[0.6, 0.25, 0.15])[0]
+
+        # Canonical demo couple keeps the names used in the demo script and the apps.
+        name = {"person_001": "Fatima Al Mansoori", "person_101": "Tariq Al Mazrouei"}.get(person_id, name)
 
         person = {
             "id": person_id,
@@ -378,10 +383,9 @@ def seed_database(db: Database, cohort: Dict[str, Any]):
         """, (r["id"], r["person_id"], r["panel_id"], r["lab_id"], r["received_at"], r["fhir_ref"], r["status"]))
 
     for v in cohort["variant_calls"]:
-        cur.execute("""
-            INSERT OR REPLACE INTO variant_call (id, result_id, gene, hgvs, zygosity, classification, inheritance, encrypted_payload)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-        """, (v["id"], v["result_id"], v["gene"], v["hgvs"], v["zygosity"], v["classification"], v["inheritance"], v["encrypted_payload"]))
+        store_variant(cur, v["id"], v["result_id"], VariantCall(
+            gene=v["gene"], hgvs=v["hgvs"], zygosity=v["zygosity"],
+            classification=v["classification"], inheritance=v["inheritance"]))
 
     conn.commit()
     conn.close()

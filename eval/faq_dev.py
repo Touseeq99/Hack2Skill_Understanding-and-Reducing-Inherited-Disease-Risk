@@ -1,0 +1,43 @@
+"""Development set used ONLY to choose the retrieval thresholds (min_score, min_margin).
+
+Kept separate from eval/faq_heldout.py. Same format: (question, expected_faq_id or None).
+"""
+
+DEV_FAQ = [
+    ("What is meant by being a carrier of a gene?", "carrier_meaning"),
+    ("يعني إيش حامل للجين", "carrier_meaning"),
+    ("If I am a carrier will I fall ill?", "carrier_vs_affected"),
+    ("هل يمرض الحامل؟", "carrier_vs_affected"),
+    ("Is the screening result the same as a diagnosis by a doctor?", "risk_vs_diagnosis"),
+    ("هل نتيجة الفحص هي نفسها تشخيص الطبيب؟", "risk_vs_diagnosis"),
+    ("What are the odds for each pregnancy if we both carry the same gene?", "one_in_four"),
+    ("اشرح لي احتمال واحد من أربعة", "one_in_four"),
+    ("If nothing was found, is there still a small risk?", "negative_result"),
+    ("إذا ما لقوا شي هل يبقى خطر صغير؟", "negative_result"),
+    ("What is an unclassified variant?", "vus"),
+    ("What does X chromosome inheritance mean?", "xlinked"),
+    ("Which diseases are screened?", "what_is_tested"),
+    ("Is cousin marriage a risk factor?", "consanguinity"),
+    ("Who has access to my report?", "who_sees"),
+    ("هل شريكي يشوف جيناتي لو سوينا المطابقة؟", "partner_match_privacy"),
+    ("How do I cancel my consent?", "revoke_consent"),
+    ("How can I permanently remove my data?", "delete_data"),
+    ("Can I tell my relatives without naming myself?", "tell_relatives"),
+    ("What is the role of the genetic counsellor?", "what_counsellor_does"),
+    ("Do I need further lab confirmation?", "confirmatory_testing"),
+    ("Can the screening miss something?", "accuracy"),
+    ("What are my reproductive choices as a carrier couple?", "options_overview"),
+    ("What does draft mean on this page?", "results_not_final_meaning"),
+    ("What is the price of the screening?", None),
+    ("When does the hospital close?", None),
+    ("Do you accept my insurance card?", None),
+    ("Which tablet cures anaemia?", None),
+    ("How many days for my results?", None),
+    ("I cannot sign in to the app", None),
+    ("What is the capital of Egypt?", None),
+    ("كم سعر الفحص؟", None),
+    ("متى تغلق العيادة؟", None),
+    ("ما هو الدواء المناسب للأنيميا؟", None),
+    ("لا أستطيع تسجيل الدخول", None),
+    ("ما هي عاصمة مصر؟", None),
+]

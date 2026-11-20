@@ -194,12 +194,21 @@ def run_demo():
     print_step("STEP 6: Outcomes and Equity Parity Dashboard")
     dash = analytics_svc.get_dashboard_metrics()
     print(f"Ethical Non-Metric Policy: {dash['ethical_policy']['explicit_excluded_metric']}")
-    print(f"Comprehension Uplift: +{dash['comprehension']['uplift_percentage_points']} percentage points (Baseline 52% -> Post 94%)")
-    print(f"Counselling Uptake: {dash['counselling_uptake']['uptake_percentage']}% of at-risk couples booked & attended")
-    print("SLA Adherence: T3 Urgent 100%, T2 Priority 97.4%, T1 Routine 98.8%")
-    print(f"Zero Unauthorized Reads: {dash['privacy_and_security']['unauthorized_access_breaches']} breaches, {dash['privacy_and_security']['revocations_honored_instantaneous_pct']}% revocations honored")
+    def _v(x, suffix=""):
+        return "no data yet" if x is None else f"{x}{suffix}"
+
+    comp, up, priv = dash["comprehension"], dash["counselling_uptake"], dash["privacy_and_security"]
+    print(f"Comprehension Uplift: {_v(comp['uplift_percentage_points'], ' percentage points')} "
+          f"(pre {_v(comp['pre_explanation_baseline_score'], '%')} -> post {_v(comp['post_score_same_people'], '%')}, "
+          f"{comp['paired_people']} paired people, synthetic cohort)")
+    print(f"Counselling Uptake: {_v(up['uptake_percentage'], '%')} of T1-T3 cases booked or beyond")
+    for tier, v in dash["time_to_referral_vs_sla"].items():
+        print(f"Time to booking {tier}: median {_v(v['median_hours'], 'h')}, within SLA {_v(v['adherence_pct'], '%')} (n={v['n']})")
+    print(f"Revocations honoured: {_v(priv['revocations_honored_pct'], '%')} "
+          f"({priv['revocations_total']} revocations, {priv['reads_after_revocation']} reads after revocation, "
+          f"{priv['unauthorized_attempts_blocked']} blocked attempts)")
     print(f"Cryptographic Audit Chain Integrity: {'VERIFIED OK' if dash['privacy_and_security']['cryptographic_audit_chain_valid'] else 'COMPROMISED'}")
-    print(f"Equity Parity Achieved: {dash['equity_breakdowns']['equity_parity_achieved']} (Max gap: {dash['equity_breakdowns']['maximum_equity_gap_points']} points across language, literacy, and age)")
+    print(f"Equity Parity Achieved: {dash['equity_breakdowns']['equity_parity_achieved']} (max gap: {dash['equity_breakdowns']['maximum_equity_gap_points']} points across language, literacy, sex and age)")
 
     print("\n" + "=" * 70)
     print("  ALL 6 DEMO STEPS COMPLETED SUCCESSFULLY - FULL SYSTEM OPERATIONAL")

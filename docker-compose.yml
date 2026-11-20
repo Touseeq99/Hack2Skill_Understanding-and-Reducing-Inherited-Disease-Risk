@@ -1,42 +1,24 @@
+# Single-container demo: FastAPI + SQLite (the only database mode the prototype supports).
+# PostgreSQL: infra/migrations/001_initial_schema.sql documents the target schema and row-level-security policies,
+# but the application's SQL is SQLite-dialect, so a Postgres deployment needs a repository-layer port (see docs/SUBMISSION.md).
 services:
-  postgres:
-    image: postgres:16-alpine
-    container_name: inheritance-postgres
-    restart: unless-stopped
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER:-postgres}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres_secret_local}
-      POSTGRES_DB: ${POSTGRES_DB:-inheritance_platform}
-    ports:
-      - "5432:5432"
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-      - ./infra/migrations:/docker-entrypoint-initdb.d:ro
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d inheritance_platform"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-
   backend:
     build:
       context: .
       dockerfile: infra/Dockerfile.backend
     container_name: inheritance-backend
     restart: unless-stopped
-    depends_on:
-      postgres:
-        condition: service_healthy
     environment:
-      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres_secret_local}@postgres:5432/${POSTGRES_DB:-inheritance_platform}
+      DATABASE_URL: sqlite:////data/inheritance_platform.db
       MASTER_ENCRYPTION_KEY: ${MASTER_ENCRYPTION_KEY:-dGhpc19pc19hXzMyX2J5dGVfc2VjcmV0X2tleV9mb3JfZGVtb18=}
+      AUTH_SECRET: ${AUTH_SECRET:-demo_insecure_jwt_secret_change_in_production}
+      DEMO_OTP: ${DEMO_OTP:-123456}
       LLM_MODE: ${LLM_MODE:-template_only}
-      PANEL_SENSITIVITY: ${PANEL_SENSITIVITY:-0.95}
       APP_ENV: production
-      PORT: 8000
     ports:
       - "8000:8000"
+    volumes:
+      - appdata:/data
 
 volumes:
-  pgdata:
-
+  appdata:

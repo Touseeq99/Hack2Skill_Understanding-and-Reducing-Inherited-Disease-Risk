@@ -56,6 +56,7 @@ class TriageSignals(BaseModel):
     reopen_count_48h: int = 0
     symptoms_reported: bool = False
     distress_signal: bool = False
+    anxiety_screen_positive: bool = False
     existing_case_tier: Optional[str] = None
 
 
@@ -65,6 +66,7 @@ class TriageDecision(BaseModel):
     person_id: str
     tier: str
     fired_rules: List[str]
+    fired_rules_now: List[str] = []
     sla_due: Optional[str]
     system_action: str
     directive_handoff_message: Optional[str] = None
@@ -103,19 +105,27 @@ class TriageRouter:
         # Intent classification on user message
         if signals.user_message:
             intent_res = self.classifier.classify_intent(signals.user_message)
+            by = intent_res.get("detected_by", {})
+            model_only = set(by.get("model", [])) - set(by.get("rules", []))
+
+            def tag(rule_id: str, intent: str) -> str:
+                # Transparency: a rule that fired only on the embedding model's verdict carries ~ML
+                # (the tier is parsed from the second dash-separated part, so the suffix is harmless).
+                return rule_id + "~ML" if intent in model_only else rule_id
+
             if intent_res["is_distress"]:
-                fired_rules.append("TRI-T3-003")
+                fired_rules.append(tag("TRI-T3-003", "distress"))
                 safety_resources = True
             if intent_res["is_coercion"]:
-                fired_rules.append("TRI-T3-004")
+                fired_rules.append(tag("TRI-T3-004", "coercion"))
                 safety_resources = True
             if intent_res["is_decision_question"]:
-                fired_rules.append("TRI-T2-005")
+                fired_rules.append(tag("TRI-T2-005", "decision_question"))
                 directive_handoff = intent_res["handoff_message"]
             elif "reproductive_options" in intent_res["detected_intents"]:
-                fired_rules.append("TRI-T2-006")
+                fired_rules.append(tag("TRI-T2-006", "reproductive_options"))
             elif "help_request" in intent_res["detected_intents"]:
-                fired_rules.append("TRI-T1-003")
+                fired_rules.append(tag("TRI-T1-003", "help_request"))
 
         # --- T2 Triggers ---
         if signals.couple_outcome in ("same_gene_match", "uncertain_match", "xlinked_risk"):
@@ -138,6 +148,8 @@ class TriageRouter:
             fired_rules.append("TRI-T1-002")
         if signals.reopen_count_48h > 3:
             fired_rules.append("TRI-T1-004")
+        if signals.anxiety_screen_positive:
+            fired_rules.append("TRI-T1-005")  # positive anxiety screen: offer a counsellor (can only raise)
 
         # --- T0 Triggers ---
         if not fired_rules:
@@ -153,8 +165,26 @@ class TriageRouter:
             if TIER_RANKS.get(tier_prefix, 0) > TIER_RANKS.get(highest_rule_tier, 0):
                 highest_rule_tier = tier_prefix
 
+        rules_this_call = list(fired_rules)
+
         # Hard Rule: Tiers only escalate, never downgrade automatically!
-        final_tier = max_tier(highest_rule_tier, signals.existing_case_tier)
+        # The existing open case (if any) is loaded from the database so the rule holds
+        # across separate evaluate() calls, not just within one request.
+        import json
+        conn = self.db.get_connection()
+        cur = conn.cursor()
+        cur.execute(
+            "SELECT id, tier, fired_rules, sla_due, created_at FROM triage_case "
+            "WHERE person_id = ? AND state NOT IN ('closed', 'downgraded_by_counsellor') "
+            "ORDER BY created_at DESC LIMIT 1",
+            (signals.person_id,),
+        )
+        existing = cur.fetchone()
+        existing_tier = signals.existing_case_tier
+        if existing:
+            existing_tier = max_tier(existing["tier"], existing_tier)
+
+        final_tier = max_tier(highest_rule_tier, existing_tier)
         sla_due = compute_sla_due(final_tier)
 
         if final_tier == "T3":
@@ -167,15 +197,27 @@ class TriageRouter:
         else:
             system_action = "self_serve_options"
 
-        # Upsert or save case into database
-        conn = self.db.get_connection()
-        cur = conn.cursor()
-        case_id = f"case_{uuid.uuid4().hex[:12]}"
-        import json
-        cur.execute("""
-            INSERT INTO triage_case (id, person_id, tier, fired_rules, sla_due, state)
-            VALUES (?, ?, ?, ?, ?, 'created')
-        """, (case_id, signals.person_id, final_tier, json.dumps(fired_rules), sla_due))
+        # Upsert: update the person's open case instead of creating duplicates.
+        if existing:
+            case_id = existing["id"]
+            try:
+                prior_rules = json.loads(existing["fired_rules"]) if isinstance(existing["fired_rules"], str) else list(existing["fired_rules"] or [])
+            except Exception:
+                prior_rules = []
+            merged_rules = prior_rules + [r for r in fired_rules if r not in prior_rules]
+            if TIER_RANKS[final_tier] <= TIER_RANKS.get(existing["tier"], 0):
+                sla_due = existing["sla_due"]  # SLA clock does not restart unless tier rises
+            cur.execute(
+                "UPDATE triage_case SET tier = ?, fired_rules = ?, sla_due = ? WHERE id = ?",
+                (final_tier, json.dumps(merged_rules), sla_due, case_id),
+            )
+            fired_rules = merged_rules
+        else:
+            case_id = f"case_{uuid.uuid4().hex[:12]}"
+            cur.execute("""
+                INSERT INTO triage_case (id, person_id, tier, fired_rules, sla_due, state)
+                VALUES (?, ?, ?, ?, ?, 'created')
+            """, (case_id, signals.person_id, final_tier, json.dumps(fired_rules), sla_due))
         conn.commit()
         conn.close()
 
@@ -191,6 +233,7 @@ class TriageRouter:
             person_id=signals.person_id,
             tier=final_tier,
             fired_rules=fired_rules,
+            fired_rules_now=rules_this_call,
             sla_due=sla_due,
             system_action=system_action,
             directive_handoff_message=directive_handoff,

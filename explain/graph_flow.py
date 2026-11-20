@@ -7,6 +7,7 @@ Follows LangGraph architecture:
 3. 'route' node: evaluates deterministic router rules and assigns tier.
 """
 
+import json
 from typing import Dict, List, Any, Optional
 from pydantic import BaseModel, Field
 from explain.pipeline import ExplanationPipeline
@@ -168,7 +169,7 @@ class ExplainQuizRouterGraph:
             state.person_id,
             "teach_back_v1",
             state.quiz_score,
-            str(answers),
+            json.dumps(answers),
             state.language,
         ))
         conn.commit()

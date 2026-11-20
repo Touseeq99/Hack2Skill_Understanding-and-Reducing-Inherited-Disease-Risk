@@ -6,6 +6,7 @@ from typing import Optional, Dict, Any, List
 from fastapi import HTTPException
 from backend.database import Database, db
 from backend.encryptor import default_encryptor
+from backend.vault import load_variants
 from backend.audit_log import audit_logger
 from engine.models import VariantCall, PersonInput, PersonResult, CoupleResult
 from engine.risk_engine import classify, couple
@@ -43,26 +44,9 @@ class PlatformService:
         sr_row = cur.fetchone()
         is_tested = (sr_row is not None)
 
-        # Get variants
-        cur.execute("""
-            SELECT vc.id, vc.gene, vc.hgvs, vc.zygosity, vc.classification, vc.inheritance, vc.encrypted_payload
-            FROM variant_call vc
-            JOIN screening_result sr ON vc.result_id = sr.id
-            WHERE sr.person_id = ?
-        """, (person_id,))
-        v_rows = cur.fetchall()
+        # Get variants (decrypted inside the vault, in memory only)
+        variants: List[VariantCall] = load_variants(cur, person_id)
         conn.close()
-
-        variants: List[VariantCall] = []
-        for r in v_rows:
-            # Note: encrypted_payload is decrypted inside vault memory only
-            variants.append(VariantCall(
-                gene=r["gene"],
-                hgvs=r["hgvs"],
-                zygosity=r["zygosity"],
-                classification=r["classification"],
-                inheritance=r["inheritance"],
-            ))
 
         return PersonInput(
             id=p_row["id"],
@@ -252,6 +236,99 @@ class PlatformService:
         )
 
         return result
+
+    def delete_person_data(self, person_id: str) -> Dict[str, Any]:
+        """Erase all application data for a person (right to deletion).
+
+        Removes the person and, through foreign-key cascades, their screening results, variants,
+        assessments, couple links, own consent grants, triage cases, referrals, bookings, explanation
+        logs and comprehension responses. Also removes grants made TO them and family notices they sent.
+        The append-only audit log is intentionally retained (it is the tamper-evident record that the
+        deletion happened); it holds only pseudonymous ids and event types, never genetic payloads.
+        """
+        import hashlib
+        conn = self.db.get_connection()
+        cur = conn.cursor()
+        cur.execute("SELECT id FROM person WHERE id = ?", (person_id,))
+        if not cur.fetchone():
+            conn.close()
+            raise HTTPException(status_code=404, detail="Person not found.")
+        counts: Dict[str, int] = {}
+        for table, col in (("screening_result", "person_id"), ("triage_case", "person_id"),
+                           ("comprehension_response", "person_id"), ("explanation_log", "person_id"),
+                           ("consent_grant", "grantor")):
+            cur.execute(f"SELECT COUNT(*) AS n FROM {table} WHERE {col} = ?", (person_id,))
+            counts[table] = cur.fetchone()["n"]
+        sender_hash = hashlib.sha256(f"salt_family_notice_{person_id}".encode("utf-8")).hexdigest()
+        cur.execute("DELETE FROM consent_grant WHERE grantee = ?", (person_id,))
+        cur.execute("DELETE FROM family_notice WHERE sender_id_hash = ?", (sender_hash,))
+        cur.execute("DELETE FROM person WHERE id = ?", (person_id,))
+        conn.commit()
+        conn.close()
+        self.audit.record_event(actor=person_id, action="data_deletion_completed", target=f"person:{person_id}")
+        return {"deleted": True, "removed_records": counts,
+                "audit_note": "A tamper-evident audit entry records that deletion occurred; no genetic data is retained."}
+
+
+    def case_findings(self, person_id: str) -> Dict[str, Any]:
+        """Real, engine-derived findings for the counsellor dossier (no canned values).
+
+        Partner details are included only when BOTH partners hold active couple_result grants.
+        """
+        import json
+        from pathlib import Path
+        panel = {g["gene"]: g for g in json.loads((Path(__file__).resolve().parent.parent / "engine" / "panel_genes.json").read_text(encoding="utf-8"))}
+        person = self.get_person_input(person_id)
+        ind = classify(person)
+        pathogenic = [v for v in person.variants if v.is_pathogenic()] or [v for v in person.variants if v.is_vus()]
+        main = pathogenic[0] if pathogenic else None
+        gene = main.gene if main else None
+        out: Dict[str, Any] = {
+            "finding_type": ind.category.replace("_", " ").title(),
+            "gene": gene or "-",
+            "variant": main.hgvs if main else "-",
+            "condition": panel.get(gene, {}).get("condition_name_en", "-") if gene else "No P/LP variant",
+            "individual_rule_id": ind.rule_id,
+            "partner_name": None,
+            "partner_finding": "No linked partner",
+            "couple_outcome": "No couple link",
+            "couple_outcome_code": None,
+            "per_pregnancy_risk": ind.natural_frequency,
+            "consent_status": "No couple link",
+        }
+        conn = self.db.get_connection()
+        cur = conn.cursor()
+        cur.execute(
+            "SELECT id, partner_a, partner_b, status FROM couple_link WHERE (partner_a = ? OR partner_b = ?) AND status = 'active' LIMIT 1",
+            (person_id, person_id),
+        )
+        link = cur.fetchone()
+        if not link:
+            conn.close()
+            return out
+        partner_id = link["partner_b"] if link["partner_a"] == person_id else link["partner_a"]
+        cur.execute("SELECT name FROM person WHERE id = ?", (partner_id,))
+        pr = cur.fetchone()
+        cur.execute(
+            "SELECT DISTINCT grantor FROM consent_grant WHERE scope = 'couple_result' AND revoked_at IS NULL "
+            "AND (expires_at IS NULL OR expires_at > datetime('now')) AND grantor IN (?, ?)",
+            (link["partner_a"], link["partner_b"]),
+        )
+        granted = {r["grantor"] for r in cur.fetchall()}
+        conn.close()
+        out["partner_name"] = pr["name"] if pr else None
+        if len(granted) == 2:
+            res = couple(person, self.get_person_input(partner_id))
+            out["consent_status"] = "Mutual grants active"
+            out["couple_outcome_code"] = res.outcome
+            out["couple_outcome"] = res.outcome.replace("_", " ").upper() + (f" ({', '.join(res.shared_genes)})" if res.shared_genes else "")
+            out["per_pregnancy_risk"] = ", ".join(f"{k.replace('_', ' ')}: {v}" for k, v in res.natural_frequencies.items())
+            out["partner_finding"] = "Shared with consent: see couple outcome"
+        else:
+            out["consent_status"] = "Couple grants not both active - partner data withheld"
+            out["couple_outcome"] = "Hidden (consent required)"
+            out["partner_finding"] = "Withheld (consent required)"
+        return out
 
 
 service = PlatformService()

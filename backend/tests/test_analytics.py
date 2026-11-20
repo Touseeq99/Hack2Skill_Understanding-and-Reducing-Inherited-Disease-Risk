@@ -29,7 +29,10 @@ def analytics_test_db(tmp_path):
             ('c1', 'p1', 'quiz_1', 'post', 100.0, '{}', 'ar'),
             ('c2', 'p2', 'quiz_1', 'post', 90.0, '{}', 'ar'),
             ('c3', 'p3', 'quiz_1', 'post', 95.0, '{}', 'en'),
-            ('c4', 'p4', 'quiz_1', 'post', 90.0, '{}', 'ar')
+            ('c4', 'p4', 'quiz_1', 'post', 90.0, '{}', 'ar'),
+            ('c5', 'p1', 'precheck', 'pre', 50.0, '{}', 'ar'),
+            ('c6', 'p2', 'precheck', 'pre', 50.0, '{}', 'ar'),
+            ('c7', 'p3', 'precheck', 'pre', 50.0, '{}', 'en')
     """)
 
     # Seed triage cases
@@ -60,22 +63,38 @@ def test_analytics_metrics_computation(analytics_test_db):
     assert metrics["ethical_policy"]["non_directive_principle"] is True
     assert "STRICTLY NOT" in metrics["ethical_policy"]["explicit_excluded_metric"]
 
-    # Comprehension uplift
-    assert metrics["comprehension"]["post_explanation_avg_score"] == pytest.approx(93.8, rel=1e-1)
-    assert metrics["comprehension"]["uplift_percentage_points"] > 40.0
+    # Comprehension uplift is computed from paired pre/post rows (p1, p2, p3)
+    assert metrics["comprehension"]["post_explanation_avg_score"] == pytest.approx(93.8, abs=0.1)
+    assert metrics["comprehension"]["paired_people"] == 3
+    assert metrics["comprehension"]["pre_explanation_baseline_score"] == 50.0
+    assert metrics["comprehension"]["uplift_percentage_points"] == pytest.approx(95.0 - 50.0 + (100 + 90 + 95) / 3 - 95.0, abs=0.1)
 
     # Counselling uptake
     assert metrics["counselling_uptake"]["t1_t2_t3_cases_total"] == 3
     assert metrics["counselling_uptake"]["booked_and_attended_count"] == 2
     assert metrics["counselling_uptake"]["uptake_percentage"] == pytest.approx(66.7, rel=1e-1)
 
-    # Privacy
-    assert metrics["privacy_and_security"]["unauthorized_access_breaches"] == 0
-    assert metrics["privacy_and_security"]["revocations_honored_instantaneous_pct"] == 100.0
+    # Privacy: nothing is hard-coded; no revocations exist in this fixture
+    assert metrics["privacy_and_security"]["revocations_total"] == 0
+    assert metrics["privacy_and_security"]["revocations_honored_pct"] is None
+    assert metrics["privacy_and_security"]["cryptographic_audit_chain_valid"] is True
 
-    # Equity parity
-    assert "by_language" in metrics["equity_breakdowns"]
-    assert "by_literacy_preference" in metrics["equity_breakdowns"]
-    assert "by_sex" in metrics["equity_breakdowns"]
-    assert "by_age_band" in metrics["equity_breakdowns"]
-    assert metrics["equity_breakdowns"]["equity_parity_achieved"] is True
+    # Equity is computed from data
+    eq = metrics["equity_breakdowns"]
+    for k in ("by_language", "by_literacy_preference", "by_sex", "by_age_band"):
+        assert k in eq
+    assert eq["by_language"]["ar"]["count"] == 3
+    assert eq["maximum_equity_gap_points"] is not None
+    assert eq["equity_parity_achieved"] == (eq["maximum_equity_gap_points"] <= 10.0)
+
+
+def test_empty_database_returns_no_data_not_fabricated_numbers(tmp_path):
+    svc = AnalyticsService(database=Database(f"sqlite:///{tmp_path / 'empty.db'}"))
+    m = svc.get_dashboard_metrics()
+    assert m["comprehension"]["uplift_percentage_points"] is None
+    assert m["comprehension"]["post_explanation_avg_score"] is None
+    assert m["counselling_uptake"]["uptake_percentage"] is None
+    assert m["family_cascade_reach"]["notices_sent"] == 0
+    assert m["family_cascade_reach"]["open_rate_pct"] is None
+    assert m["equity_breakdowns"]["equity_parity_achieved"] is None
+    assert m["equity_breakdowns"]["by_language"] == {}

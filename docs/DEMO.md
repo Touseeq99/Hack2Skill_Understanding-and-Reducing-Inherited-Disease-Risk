@@ -141,22 +141,16 @@ Open your browser to:
 1. **Explicit Non-Metric Policy Banner**:
    - Highlighted prominently at the top:
      > *"Ethical Policy: Marriage cancellations or single reproductive choices are STRICTLY NOT success metrics. Success is measured by informed decision-making, patient agency, and equitable access."*
-2. **Clinical Outcomes**:
-   - **Comprehension Uplift**: Pre-explanation baseline: 52.0% -> Post-explanation average: **94.2%** (+42.2 percentage points).
-   - **Risk vs Diagnosis Comprehension**: 98.5% correctly distinguish carrier status from illness.
-   - **Counselling Uptake**: **66.7%** of T1-T3 high-risk couples attended genetic counselling.
-   - **SLA Adherence**: T3 Urgent: 100%, T2 Priority: 97.4%, T1 Routine: 98.8%.
-3. **Zero Unauthorized Reads & Privacy Integrity**:
-   - Unauthorized access breaches: **0**.
-   - Blocked unauthorized attempts: Logged and thwarted by RLS and token verification.
-   - Consent revocations honored: **100% instantaneous**.
-   - Cryptographic Audit Chain: **VERIFIED OK** (green badge).
-4. **Equity Parity Across Demographics**:
-   - Language: Arabic (94.5%) vs English (93.8%) — **Gap: 0.7%**.
-   - Literacy Preference: Standard (95.1%), Simple (93.4%), Audio (92.8%) — **Gap: 2.3%**.
-   - Sex: Female (94.3%) vs Male (94.0%) — **Gap: 0.3%**.
-   - Age Band: Minors (92.0%), 18-29 (94.6%), 30+ (93.9%) — **Gap: 2.6%**.
-   - **All gaps are well under the 10.0% disparity threshold, achieving full demographic equity parity.**
+2. **Clinical Outcomes** (all computed from the database; the cohort is synthetic, run `python -m data.seed_outcomes` first):
+   - **Comprehension Uplift**: paired pre-check vs post teach-back for the same people, with n shown.
+   - **Risk vs Diagnosis Comprehension**: share of teach-back answers that correctly say a carrier result is not a diagnosis (n shown).
+   - **Counselling Uptake**: share of T1-T3 cases that are booked, attended or closed.
+   - **Time to Referral**: median hours from referral created to booked, and % within SLA, per tier (demo timestamps are machine-generated, so near zero).
+3. **Privacy Integrity**:
+   - Revocations honoured: the audit log is replayed; any couple-result read after a revocation (until re-grant) counts as a violation.
+   - Blocked unauthorised attempts are counted; the cryptographic audit chain must show **valid**.
+4. **Equity Parity**: average comprehension by language, format/literacy, sex and age band with n per group, the gap per split, and a pass/fail against the 10-point threshold. Treat small groups (for example minors) as noisy.
+   - A metric that has not been collected shows **no data yet**; nothing is estimated.
 
 ---
 

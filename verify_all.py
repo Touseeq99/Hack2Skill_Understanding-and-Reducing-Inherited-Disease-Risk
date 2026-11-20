@@ -10,6 +10,15 @@ import tempfile
 import traceback
 
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
+
+# Windows consoles default to cp1252; the report and the demo output contain Unicode.
+for _stream in (sys.stdout, sys.stderr):
+    try:
+        _stream.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:
+        pass
+_SUBPROCESS_KW = dict(capture_output=True, text=True, encoding="utf-8", errors="replace",
+                      env={**os.environ, "PYTHONIOENCODING": "utf-8"})
 sys.path.insert(0, ".")
 
 results = []
@@ -555,36 +564,47 @@ print("="*70)
 from backend.triage_router import router, TriageSignals
 from backend.referral_state_machine import ALLOWED_TRANSITIONS
 
+def _isolated_router(person_ids):
+    """Router backed by a throwaway DB so persisted cases from other runs cannot leak into a check."""
+    import tempfile as _tf
+    from backend.triage_router import TriageRouter as _TR
+    d = _tf.mkdtemp()
+    _db = Database(f"sqlite:///{os.path.join(d, 'verify_triage.db')}")
+    _conn = _db.get_connection()
+    for pid in person_ids:
+        _conn.execute("INSERT INTO person (id, auth_id, name, dob_year, sex) VALUES (?, ?, ?, 1995, 'F')", (pid, "a_" + pid, pid))
+    _conn.commit()
+    _conn.close()
+    return _TR(_db)
+
+
+
 def check_e1():
     """Triage T0-T3 with rule IDs"""
-    s0 = TriageSignals(person_id="person_001", engine_category="screen_negative")
-    r0 = router.evaluate(s0)
-    
-    s2 = TriageSignals(person_id="person_001", engine_category="carrier", couple_outcome="same_gene_match")
-    r2 = router.evaluate(s2)
-    
-    s3 = TriageSignals(person_id="person_001", engine_category="possible_affected", is_pregnant=True)
-    r3 = router.evaluate(s3)
-    
+    rt = _isolated_router(["e1_a", "e1_b", "e1_c"])
+    r0 = rt.evaluate(TriageSignals(person_id="e1_a", engine_category="screen_negative"))
+    r2 = rt.evaluate(TriageSignals(person_id="e1_b", engine_category="carrier", couple_outcome="same_gene_match"))
+    r3 = rt.evaluate(TriageSignals(person_id="e1_c", engine_category="possible_affected", is_pregnant=True))
+
     ok = r0.tier == "T0" and r2.tier == "T2" and r3.tier == "T3"
     return ok, f"T0={r0.tier}, T2={r2.tier}, T3={r3.tier}"
 check("E1-triage-tiers", check_e1)
 
 def check_e2():
     """Tiers never downgrade"""
-    s0 = TriageSignals(person_id="person_001", engine_category="screen_negative", existing_case_tier="T2")
-    d = router.evaluate(s0)
-    return d.tier == "T2", f"Existing T2 preserved when T0 signals fire: {d.tier}"
+    rt = _isolated_router(["e2_a"])
+    first = rt.evaluate(TriageSignals(person_id="e2_a", engine_category="carrier", couple_outcome="same_gene_match"))
+    later = rt.evaluate(TriageSignals(person_id="e2_a", engine_category="screen_negative"))
+    ok = first.tier == "T2" and later.tier == "T2" and later.case_id == first.case_id
+    return ok, f"Persisted T2 preserved across calls when benign signals fire: {later.tier}, same case={later.case_id == first.case_id}"
 check("E2-no-downgrade", check_e2)
 
 def check_e5():
     """SLAs: T3=24h, T2=3days, T1=10days"""
-    s3 = TriageSignals(person_id="person_001", engine_category="possible_affected", is_pregnant=True)
-    r3 = router.evaluate(s3)
-    s2 = TriageSignals(person_id="person_001", engine_category="carrier", couple_outcome="same_gene_match")
-    r2 = router.evaluate(s2)
-    s1 = TriageSignals(person_id="person_001", engine_category="carrier", teach_back_failed_twice=True)
-    r1 = router.evaluate(s1)
+    rt = _isolated_router(["e5_a", "e5_b", "e5_c"])
+    r3 = rt.evaluate(TriageSignals(person_id="e5_a", engine_category="possible_affected", is_pregnant=True))
+    r2 = rt.evaluate(TriageSignals(person_id="e5_b", engine_category="carrier", couple_outcome="same_gene_match"))
+    r1 = rt.evaluate(TriageSignals(person_id="e5_c", engine_category="carrier", teach_back_failed_twice=True))
     
     ok = r3.sla_due is not None and r2.sla_due is not None and r1.sla_due is not None
     return ok, f"T3 sla={r3.sla_due is not None}, T2 sla={r2.sla_due is not None}, T1 sla={r1.sla_due is not None}"
@@ -694,7 +714,7 @@ print("="*70)
 def check_k_demo():
     """Demo script runs successfully"""
     import subprocess
-    result = subprocess.run([sys.executable, "demo.py"], capture_output=True, text=True, cwd=".", timeout=30)
+    result = subprocess.run([sys.executable, "demo.py"], cwd=".", timeout=60, **_SUBPROCESS_KW)
     ok = result.returncode == 0 and "ALL 6 DEMO STEPS COMPLETED" in result.stdout
     return ok, "All 6 demo steps complete" if ok else f"Exit={result.returncode}, stderr={result.stderr[:200]}"
 check("K-demo-script", check_k_demo)
@@ -702,7 +722,7 @@ check("K-demo-script", check_k_demo)
 def check_k_tests():
     """Full pytest suite"""
     import subprocess
-    result = subprocess.run([sys.executable, "-m", "pytest", "-v", "--tb=short"], capture_output=True, text=True, cwd=".", timeout=60)
+    result = subprocess.run([sys.executable, "-m", "pytest", "-v", "--tb=short"], cwd=".", timeout=180, **_SUBPROCESS_KW)
     lines = result.stdout.strip().split("\n")
     last_line = lines[-1] if lines else ""
     ok = result.returncode == 0 and "passed" in last_line

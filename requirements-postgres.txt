@@ -1,0 +1,2 @@
+# Only needed when DATABASE_URL points to PostgreSQL (docker compose). Needs libpq / a wheel for your Python version.
+psycopg2-binary>=2.9.9

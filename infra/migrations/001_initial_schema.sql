@@ -294,10 +294,54 @@ CREATE TABLE IF NOT EXISTS service_directory (
 
 INSERT INTO service_directory (id, name_en, name_ar, facility_type, location, contact_phone, services_offered)
 VALUES 
-    ('serv_skmc', 'Sheikh Khalifa Medical City - Medical Genetics', 'مدينة الشيخ خليفة الطبية - قسم الأمراض الجينية', 'hospital', 'Abu Dhabi Central', '+971-2-8190000', 'Clinical genetic counselling, confirmatory genomic sequencing, pediatric genetics'),
-    ('serv_ccad', 'Cleveland Clinic Abu Dhabi - Genomics Center', 'كليفلاند كلينك أبوظبي - مركز الجينوم الطبي', 'hospital', 'Al Maryah Island, Abu Dhabi', '+971-2-6590000', 'Adult genetic counselling, pre-conception risk assessment, cardiogenetics'),
-    ('serv_kanad', 'Kanad Hospital Genetic Counseling Department', 'مستشفى كندا - قسم الإرشاد الجيني', 'hospital', 'Al Ain', '+971-3-7131000', 'Pre-marital counselling, family cascade testing, maternal-fetal medicine'),
-    ('serv_fakih', 'Fakih IVF Fertility Center - PGT-M Lab', 'مركز فقيه للإخصاب - مختبر الفحص الجيني للأجنة', 'fertility_clinic', 'Abu Dhabi Corniche', '+971-2-4444107', 'In Vitro Fertilization (IVF), Pre-implantation Genetic Testing for Monogenic diseases (PGT-M)'),
-    ('serv_burjeel', 'Burjeel Medical City - Fetal Medicine & Genetics', 'مدينة برجيل الطبية - قسم طب الجنين والأمراض الوراثية', 'hospital', 'Mohammed Bin Zayed City', '+971-2-80055', 'Comprehensive prenatal diagnosis, amniocentesis, fetal anomaly counselling')
+    ('serv_skmc', 'Demo Hospital A - Medical Genetics (placeholder)', 'مستشفى تجريبي أ - قسم الأمراض الجينية (بيانات افتراضية)', 'hospital', 'Placeholder location', '+971-0-000-0000', 'Clinical genetic counselling, confirmatory genomic sequencing, pediatric genetics'),
+    ('serv_ccad', 'Demo Hospital B - Genomics Center (placeholder)', 'مستشفى تجريبي ب - مركز الجينوم (بيانات افتراضية)', 'hospital', 'Placeholder location', '+971-0-000-0000', 'Adult genetic counselling, pre-conception risk assessment, cardiogenetics'),
+    ('serv_kanad', 'Demo Hospital C - Genetic Counselling (placeholder)', 'مستشفى تجريبي ج - الإرشاد الجيني (بيانات افتراضية)', 'hospital', 'Placeholder location', '+971-0-000-0000', 'Pre-marital counselling, family cascade testing, maternal-fetal medicine'),
+    ('serv_fakih', 'Demo Fertility Centre - PGT-M Lab (placeholder)', 'مركز خصوبة تجريبي - مختبر الفحص الجيني للأجنة (بيانات افتراضية)', 'fertility_clinic', 'Placeholder location', '+971-0-000-0000', 'In Vitro Fertilization (IVF), Pre-implantation Genetic Testing for Monogenic diseases (PGT-M)'),
+    ('serv_burjeel', 'Demo Hospital D - Fetal Medicine (placeholder)', 'مستشفى تجريبي د - طب الجنين (بيانات افتراضية)', 'hospital', 'Placeholder location', '+971-0-000-0000', 'Comprehensive prenatal diagnosis, amniocentesis, fetal anomaly counselling')
 ON CONFLICT (id) DO NOTHING;
 
+
+
+-- Values clarification answers (shared with the counsellor only when share_with_counsellor is true)
+CREATE TABLE IF NOT EXISTS values_response (
+    id TEXT PRIMARY KEY,
+    person_id TEXT NOT NULL REFERENCES person(id) ON DELETE CASCADE,
+    answers JSONB NOT NULL,
+    share_with_counsellor BOOLEAN NOT NULL DEFAULT FALSE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+
+-- SURE (decisional conflict) and anxiety (GAD-2) measures, scored server-side
+CREATE TABLE IF NOT EXISTS measure_response (
+    id TEXT PRIMARY KEY,
+    person_id TEXT NOT NULL REFERENCES person(id) ON DELETE CASCADE,
+    measure TEXT NOT NULL CHECK (measure IN ('sure', 'anxiety')),
+    phase TEXT NOT NULL,
+    score REAL NOT NULL,
+    flag BOOLEAN NOT NULL DEFAULT FALSE,
+    items JSONB NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+
+-- Questions the user asked the assistant (shown to the assigned counsellor; erased on deletion request)
+CREATE TABLE IF NOT EXISTS chat_message (
+    id TEXT PRIMARY KEY,
+    person_id TEXT NOT NULL REFERENCES person(id) ON DELETE CASCADE,
+    text TEXT NOT NULL,
+    intents JSONB NOT NULL DEFAULT '[]'::jsonb,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+
+-- Missed-appointment reminders (content-free) and counsellor outreach tasks
+CREATE TABLE IF NOT EXISTS reminder (
+    id TEXT PRIMARY KEY,
+    case_id TEXT NOT NULL REFERENCES triage_case(id) ON DELETE CASCADE,
+    kind TEXT NOT NULL CHECK (kind IN ('gentle_reminder', 'counsellor_outreach')),
+    message TEXT NOT NULL,
+    created_at TEXT NOT NULL,
+    resolved BOOLEAN NOT NULL DEFAULT FALSE
+);

@@ -12,3 +12,4 @@ build/
 
 
 .trace_results/
+models/fastembed/

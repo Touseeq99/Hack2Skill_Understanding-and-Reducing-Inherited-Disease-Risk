@@ -25,7 +25,9 @@ class Encryptor:
                 except Exception:
                     master_key_bytes = env_key.encode("utf-8")
             else:
-                # Default 32-byte demo key
+                if os.environ.get("APP_ENV", "development").lower() == "production":
+                    raise RuntimeError("MASTER_ENCRYPTION_KEY must be set in production; the demo key is not allowed.")
+                # Default 32-byte demo key (development only)
                 master_key_bytes = b"01234567890123456789012345678901"
 
         if len(master_key_bytes) < 32:

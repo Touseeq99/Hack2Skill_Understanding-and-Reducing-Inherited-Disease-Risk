@@ -16,7 +16,7 @@
       --bg: #f8fafc;
       --card-bg: #ffffff;
       --text: #0f172a;
-      --muted: #64748b;
+      --muted: #475569;
       --danger: #ef4444;
       --warning: #f59e0b;
       --success: #10b981;
@@ -44,7 +44,7 @@
       justify-content: space-between;
       align-items: center;
       font-size: 0.85rem;
-      border-bottom: 2px solid #0d9488;
+      border-bottom: 2px solid #0f766e;
       z-index: 50;
       flex-shrink: 0;
     }
@@ -54,7 +54,7 @@
       gap: 0.75rem;
     }
     .doh-badge {
-      background: #0d9488;
+      background: #0f766e;
       color: white;
       padding: 0.2rem 0.6rem;
       border-radius: 6px;
@@ -111,7 +111,7 @@
       transition: all 0.2s;
     }
     .lang-btn.active {
-      background: #0d9488;
+      background: #0f766e;
       border-color: #99f6e4;
     }
 
@@ -268,13 +268,15 @@
     .step-item.active { background: #0f766e; color: white; border-color: #0f766e; }
     .step-item.completed { background: #dcfce7; color: #166534; border-color: #86efac; }
   </style>
+  <link rel="stylesheet" href="/assets/a11y.css">
+  <script src="/assets/a11y.js" defer></script>
 </head>
 <body>
 
   <!-- TOP PLATFORM NAVIGATION BAR -->
   <nav class="platform-nav">
     <div class="platform-nav-brand">
-      <span class="doh-badge">Abu Dhabi Health · DoH</span>
+      <span class="doh-badge">Prototype · synthetic data</span>
       <span style="font-weight: 700;" id="p-nav-title">Inherited Disease Risk Platform</span>
       <span style="opacity: 0.75; font-size: 0.75rem;">(Challenge 03)</span>
     </div>
@@ -311,10 +313,10 @@
       <div style="background: linear-gradient(135deg, #f0fdfa, #f8fafc); border: 1px solid #ccfbf1; border-radius: 12px; padding: 1rem 1.25rem; margin-bottom: 1.25rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem;">
         <div>
           <div style="font-size: 0.95rem; font-weight: 700; color: #0f766e;" id="p-banner-title">
-            🩺 Emirati National Genomics Service · Clinical Triage Portal
+            🩺 Counsellor Workspace · Clinical Triage (prototype)
           </div>
           <div style="font-size: 0.85rem; color: #475569; margin-top: 0.2rem;" id="p-banner-counsellor">
-            Active Counsellor: <strong>Dr. Layla Al Hashimi, MS, CGC</strong> (License: DOH-GEN-2024-88) · Managing Priority Triage Queue
+            Demo counsellor account (synthetic data) · Managing priority triage queue
           </div>
         </div>
         <div style="display: flex; gap: 0.5rem; align-items: center;">
@@ -381,9 +383,10 @@
       <div class="section-card">
         <div class="section-title" id="t-sec-teachback">📚 Patient Education & Teach-Back Engagement</div>
         <div class="info-row"><span class="info-label" id="lbl-quiz">Teach-Back Quiz Score:</span> <span class="info-val" style="color: var(--success);" id="val-quiz">100% (Passed attempt 1)</span></div>
-        <div class="info-row"><span class="info-label" id="lbl-explanations">Explanations Reviewed:</span> <span class="info-val" id="val-explanations">Summary, Residual Risk, Natural Frequencies 1-in-4</span></div>
-        <div class="info-row"><span class="info-label" id="lbl-question">Question Asked by Patient:</span> <span class="info-val" id="val-question">"Should we still get married?" (Non-directive handoff provided)</span></div>
-        <div class="info-row"><span class="info-label" id="lbl-notice">Family Notice Sent:</span> <span class="info-val" id="val-notice">Anonymous cascade invite sent for HBB (1 opened)</span></div>
+        <div class="info-row"><span class="info-label" id="lbl-explanations">Explanations Reviewed:</span> <span class="info-val" id="val-explanations">-</span></div>
+        <div class="info-row"><span class="info-label" id="lbl-question">Question Asked by Patient:</span> <span class="info-val" id="val-question">-</span></div>
+        <div class="info-row"><span class="info-label">Values Exercise (shared by patient):</span> <span class="info-val" id="val-values">-</span></div>
+        <div class="info-row"><span class="info-label" id="lbl-notice">Family Notice Sent:</span> <span class="info-val" id="val-notice">Not shown: family notices are anonymous by design</span></div>
       </div>
 
     </main>
@@ -430,12 +433,12 @@
           </div>
         </div>
 
-        <h4 style="color: #0284c7; font-weight: 700; margin: 1rem 0 0.5rem 0;" id="gm-s2-title">
+        <h4 style="color: #0369a1; font-weight: 700; margin: 1rem 0 0.5rem 0;" id="gm-s2-title">
           🧭 Navigation Between Platform Interfaces:
         </h4>
         <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 0.75rem 1rem; margin-bottom: 1.25rem;">
           <p style="margin-bottom: 0.5rem;"><a href="/app" style="color: #0f766e; font-weight: 700;" id="gm-nav-app-link">📱 Patient App</a>: What engaged couples see when reviewing carrier findings.</p>
-          <p style="margin-bottom: 0.5rem;"><a href="/portal" style="color: #0284c7; font-weight: 700;" id="gm-nav-portal-link">🩺 Counsellor Portal</a> (Current View): Clinical management workspace for licensed counsellors.</p>
+          <p style="margin-bottom: 0.5rem;"><a href="/portal" style="color: #0369a1; font-weight: 700;" id="gm-nav-portal-link">🩺 Counsellor Portal</a> (Current View): Clinical management workspace for licensed counsellors.</p>
           <p><a href="/dashboard" style="color: #7c3aed; font-weight: 700;" id="gm-nav-dash-link">📊 Executive Dashboard</a>: DoH health authority metrics and population outcomes.</p>
         </div>
 
@@ -464,8 +467,8 @@
         btnGuide: "💡 What is this Platform?",
         queueTitle: "Clinical Triage Queue",
         queueSub: "Live cases sorted by Priority Tier & SLA Due Date",
-        bannerTitle: "🩺 Emirati National Genomics Service · Clinical Triage Portal",
-        bannerCounsellor: "Active Counsellor: Dr. Layla Al Hashimi, MS, CGC (License: DOH-GEN-2024-88) · Managing Priority Triage Queue",
+        bannerTitle: "🩺 Counsellor Workspace · Clinical Triage (prototype)",
+        bannerCounsellor: "Demo counsellor account (synthetic data) · Managing priority triage queue",
         btnDownloadPdf: "📄 Download Case Packet PDF",
         secReferral: "Clinical Referral Pathway Tracking",
         btnAttended: "Mark Attended",
@@ -506,8 +509,8 @@
         btnGuide: "💡 ما هي هذه المنصة؟",
         queueTitle: "قائمة فرز الحالات السريرية",
         queueSub: "حالات حية مرتبة حسب درجة الأولوية ومؤقت الخدمة (SLA)",
-        bannerTitle: "🩺 البرنامج الوطني الإماراتي للجينوم · بوابة الفرز السريري",
-        bannerCounsellor: "المستشار المناوب: د. ليلى الهاشمي (ترخيص: DOH-GEN-2024-88) · إدارة قائمة الأولويات",
+        bannerTitle: "🩺 مساحة عمل المستشار · الفرز السريري (نموذج أولي)",
+        bannerCounsellor: "حساب مستشار تجريبي (بيانات افتراضية) · إدارة قائمة الأولويات",
         btnDownloadPdf: "📄 تحميل ملف الحالة الطبي (PDF)",
         secReferral: "متابعة مسار الإحالة السريرية",
         btnAttended: "تسجيل الحضور",
@@ -561,8 +564,8 @@
       document.getElementById('p-queue-sub').innerText = t.queueSub;
       document.getElementById('p-banner-title').innerText = t.bannerTitle;
       document.getElementById('p-banner-counsellor').innerHTML = (lang === 'ar')
-        ? "المستشار المناوب: <strong>د. ليلى الهاشمي</strong> (ترخيص: DOH-GEN-2024-88) · إدارة قائمة الأولويات"
-        : "Active Counsellor: <strong>Dr. Layla Al Hashimi, MS, CGC</strong> (License: DOH-GEN-2024-88) · Managing Priority Triage Queue";
+        ? "حساب مستشار تجريبي (بيانات افتراضية) · إدارة قائمة الأولويات"
+        : "Demo counsellor account (synthetic data) · Managing priority triage queue";
       document.getElementById('btn-download-pdf').innerText = t.btnDownloadPdf;
       document.getElementById('t-sec-referral').innerText = t.secReferral;
       document.getElementById('btn-mark-attended').innerText = t.btnAttended;
@@ -608,10 +611,32 @@
       document.getElementById('platform-guide-modal').classList.remove('open');
     }
 
+
+    /* Demo sign-in: obtains a signed bearer token (production: UAE Pass / OTP). */
+    const AUTH_TOKENS = {};
+    async function ensureLogin(userId) {
+      if (AUTH_TOKENS[userId]) return true;
+      try {
+        const r = await fetch('/api/auth/login', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ user_id: userId, otp: '123456' })
+        });
+        if (!r.ok) return false;
+        AUTH_TOKENS[userId] = (await r.json()).access_token;
+        return true;
+      } catch (e) { return false; }
+    }
+
+    function authHeaders(extra) {
+      const h = AUTH_TOKENS['counsellor_maryam'] ? { 'Authorization': 'Bearer ' + AUTH_TOKENS['counsellor_maryam'] } : {};
+      return Object.assign(h, extra || {});
+    }
+
     async function loadLiveQueue() {
+      await ensureLogin('counsellor_maryam');
       try {
         const res = await fetch('/api/portal/queue', {
-          headers: { 'X-User-Role': 'counsellor' }
+          headers: authHeaders()
         });
         if (res.ok) {
           queueData = await res.json();
@@ -646,7 +671,7 @@
             <span class="badge badge-${item.tier}">${item.tier}</span>
           </div>
           <div style="font-size: 0.8rem; color: #475569;">${item.condition}</div>
-          <div style="font-size: 0.75rem; color: #0284c7; margin-top: 0.4rem; font-weight: 600;">⏱ ${item.sla}</div>
+          <div style="font-size: 0.75rem; color: #0369a1; margin-top: 0.4rem; font-weight: 600;">⏱ ${item.sla}</div>
         `;
         q.appendChild(div);
       });
@@ -658,7 +683,7 @@
 
       try {
         const res = await fetch(`/api/portal/cases/${caseId}`, {
-          headers: { 'X-User-Role': 'counsellor' }
+          headers: authHeaders()
         });
         if (res.ok) {
           const data = await res.json();
@@ -697,6 +722,9 @@
       document.getElementById('val-consanguinity').innerText = d.consanguinity_status;
       document.getElementById('val-consent').innerText = d.consent_status;
       document.getElementById('val-quiz').innerText = d.quiz_score;
+      document.getElementById('val-explanations').innerText = (d.explanations_reviewed && d.explanations_reviewed.length) ? d.explanations_reviewed.join(' | ') : 'None recorded';
+      document.getElementById('val-question').innerText = (d.questions_asked && d.questions_asked.length) ? d.questions_asked.map(q => '"' + q + '"').join(', ') : 'None recorded';
+      document.getElementById('val-values').innerText = d.shared_values ? JSON.stringify(d.shared_values) : 'Not shared';
 
       updateStepper(d.state);
     }
@@ -734,7 +762,7 @@
       try {
         const res = await fetch(`/api/portal/cases/${activeCaseId}/transition`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'X-User-Role': 'counsellor' },
+          headers: authHeaders({ 'Content-Type': 'application/json' }),
           body: JSON.stringify({ target_state: nextState })
         });
         if (res.ok) {

@@ -1,0 +1,5 @@
+# Optional: embedding-based safety classifier (see docs/SAFETY_EVAL.md).
+# Without these the product runs on keyword rules only and always offers a human.
+fastembed>=0.4
+scikit-learn>=1.4   # only needed to retrain (python -m eval.train_safety)
+numpy>=1.26

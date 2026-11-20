@@ -1,0 +1,1 @@
+{"min_score": 0.68, "min_margin": 0.03, "tuned_on": "eval/faq_dev.py", "dev_correct": 17, "dev_wrong": 0, "dev_n": 36}

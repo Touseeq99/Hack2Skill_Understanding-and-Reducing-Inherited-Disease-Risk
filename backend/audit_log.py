@@ -55,10 +55,14 @@ class AuditLogService:
     ) -> AuditEventModel:
         """Record an append-only audit event chained to the previous event hash."""
         conn = self.db.get_connection()
+        if self.db.is_sqlite:
+            # Serialise writers: without this, two processes read the same head hash and fork the chain.
+            conn.isolation_level = None
+            conn.execute("BEGIN IMMEDIATE")
         cur = conn.cursor()
 
-        # Fetch last event hash
-        cur.execute("SELECT hash FROM audit_event ORDER BY at DESC, rowid DESC LIMIT 1")
+        # Fetch last event hash (insertion order, not timestamp order)
+        cur.execute("SELECT hash FROM audit_event ORDER BY rowid DESC LIMIT 1")
         last_row = cur.fetchone()
         prev_hash = last_row["hash"] if last_row else self.GENESIS_HASH
 
@@ -71,7 +75,10 @@ class AuditLogService:
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         """, (event_id, actor, action, target, grant_id, prev_hash, event_hash, timestamp))
 
-        conn.commit()
+        if self.db.is_sqlite:
+            conn.execute("COMMIT")
+        else:
+            conn.commit()
         conn.close()
 
         return AuditEventModel(
@@ -94,7 +101,7 @@ class AuditLogService:
         """
         conn = self.db.get_connection()
         cur = conn.cursor()
-        cur.execute("SELECT id, actor, action, target, grant_id, prev_hash, hash, at FROM audit_event ORDER BY at ASC, rowid ASC")
+        cur.execute("SELECT id, actor, action, target, grant_id, prev_hash, hash, at FROM audit_event ORDER BY rowid ASC")
         rows = cur.fetchall()
         conn.close()
 

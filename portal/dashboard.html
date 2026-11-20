@@ -11,13 +11,13 @@
     :root {
       --primary: #0f766e;
       --primary-light: #ccfbf1;
-      --secondary: #0284c7;
+      --secondary: #0369a1;
       --bg: #f8fafc;
       --card-bg: #ffffff;
       --border: #e2e8f0;
       --text: #0f172a;
-      --muted: #64748b;
-      --success: #10b981;
+      --muted: #475569;
+      --success: #047857;
       --warning: #f59e0b;
       --danger: #ef4444;
     }
@@ -40,7 +40,7 @@
       justify-content: space-between;
       align-items: center;
       font-size: 0.85rem;
-      border-bottom: 2px solid #0d9488;
+      border-bottom: 2px solid #0f766e;
       z-index: 50;
     }
     .platform-nav-brand {
@@ -49,7 +49,7 @@
       gap: 0.75rem;
     }
     .doh-badge {
-      background: #0d9488;
+      background: #0f766e;
       color: white;
       padding: 0.2rem 0.6rem;
       border-radius: 6px;
@@ -106,7 +106,7 @@
       transition: all 0.2s;
     }
     .lang-btn.active {
-      background: #0d9488;
+      background: #0f766e;
       border-color: #99f6e4;
     }
     body[dir="rtl"] {
@@ -236,13 +236,15 @@
     th { text-align: left; padding: 0.6rem; border-bottom: 2px solid var(--border); color: var(--muted); }
     td { padding: 0.6rem; border-bottom: 1px solid var(--border); }
   </style>
+  <link rel="stylesheet" href="/assets/a11y.css">
+  <script src="/assets/a11y.js" defer></script>
 </head>
 <body>
 
   <!-- TOP PLATFORM NAVIGATION BAR -->
   <nav class="platform-nav">
     <div class="platform-nav-brand">
-      <span class="doh-badge">Abu Dhabi Health · DoH</span>
+      <span class="doh-badge">Prototype · synthetic data</span>
       <span style="font-weight: 700;" id="d-nav-title">Inherited Disease Risk Platform</span>
       <span style="opacity: 0.75; font-size: 0.75rem;">(Challenge 03)</span>
     </div>
@@ -282,134 +284,61 @@
       </p>
     </div>
 
-    <!-- Top Stats -->
+    <div class="ethical-banner" id="provenance-banner" style="background:#fffbeb;border-color:#fde68a;">
+      <h3>&#9888;&#65039; Synthetic demonstration cohort</h3>
+      <p id="provenance-note">Loading&hellip;</p>
+    </div>
+
+    <!-- Top Stats (all values are filled from /api/analytics/metrics) -->
     <div class="stats-grid">
       <div class="stat-card">
         <div class="stat-title">Comprehension Uplift</div>
-        <div class="stat-val" id="stat-uplift">+42.2%</div>
-        <div class="stat-meta up">Baseline: 52% &rarr; Post-Explain: 94.2%</div>
+        <div class="stat-val" id="stat-uplift">&hellip;</div>
+        <div class="stat-meta up" id="stat-uplift-meta"></div>
       </div>
       <div class="stat-card">
         <div class="stat-title">Risk &ne; Diagnosis Understanding</div>
-        <div class="stat-val">98.5%</div>
-        <div class="stat-meta up">Correctly distinguish screening from diagnosis</div>
+        <div class="stat-val" id="stat-riskdx">&hellip;</div>
+        <div class="stat-meta up" id="stat-riskdx-meta"></div>
       </div>
       <div class="stat-card">
         <div class="stat-title">Counselling Uptake (T1/T2/T3)</div>
-        <div class="stat-val">88.2%</div>
-        <div class="stat-meta up">Cases scheduled with human counsellor</div>
+        <div class="stat-val" id="stat-uptake">&hellip;</div>
+        <div class="stat-meta up" id="stat-uptake-meta"></div>
       </div>
       <div class="stat-card">
-        <div class="stat-title">Privacy Breaches (Target 0)</div>
-        <div class="stat-val" style="color: var(--success);">0</div>
-        <div class="stat-meta up">100% mutual consent & audit chain verified</div>
+        <div class="stat-title">Revocations Honoured</div>
+        <div class="stat-val" id="stat-privacy" style="color: var(--success);">&hellip;</div>
+        <div class="stat-meta up" id="stat-privacy-meta"></div>
       </div>
     </div>
 
     <div class="section-grid">
-      <!-- SLA Adherence -->
       <div class="card">
-        <div class="card-title">⏱️ Time to Referral vs Clinical SLA</div>
-        <div class="progress-item">
-          <div class="progress-label">
-            <span>T3 Urgent Callback (SLA 24h)</span>
-            <span>Median: 4.5h (100% Met)</span>
-          </div>
-          <div class="progress-track"><div class="progress-fill fill-success" style="width: 100%;"></div></div>
-        </div>
-        <div class="progress-item">
-          <div class="progress-label">
-            <span>T2 Priority Same-Gene (SLA 3 working days)</span>
-            <span>Median: 1.6 days (97.4% Met)</span>
-          </div>
-          <div class="progress-track"><div class="progress-fill fill-primary" style="width: 97%;"></div></div>
-        </div>
-        <div class="progress-item">
-          <div class="progress-label">
-            <span>T1 Routine Carrier (SLA 10 working days)</span>
-            <span>Median: 4.2 days (98.8% Met)</span>
-          </div>
-          <div class="progress-track"><div class="progress-fill fill-secondary" style="width: 98%;"></div></div>
-        </div>
+        <div class="card-title">&#9201;&#65039; Time to Referral vs Clinical SLA</div>
+        <div id="sla-rows"></div>
+        <p style="font-size:0.75rem;color:var(--muted);margin-top:0.5rem;">Measured from referral "created" to "booked" timestamps. Demo timestamps are machine-generated, so waits are near zero.</p>
       </div>
 
-      <!-- Family Cascade Reach -->
       <div class="card">
-        <div class="card-title">👨‍👩‍👧‍👦 Anonymous Family Cascade Reach</div>
-        <div style="display: flex; justify-content: space-around; text-align: center; margin: 1.5rem 0;">
-          <div>
-            <div style="font-size: 1.75rem; font-weight: 800; color: #0f766e;">42</div>
-            <div style="font-size: 0.8rem; color: var(--muted);">Notices Sent</div>
-          </div>
-          <div>
-            <div style="font-size: 1.75rem; font-weight: 800; color: #0284c7;">31</div>
-            <div style="font-size: 0.8rem; color: var(--muted);">Opened (73.8%)</div>
-          </div>
-          <div>
-            <div style="font-size: 1.75rem; font-weight: 800; color: #10b981;">19</div>
-            <div style="font-size: 0.8rem; color: var(--muted);">Relatives Booked (45.2%)</div>
-          </div>
-        </div>
+        <div class="card-title">&#128106; Anonymous Family Cascade Reach</div>
+        <div id="family-block" style="display: flex; justify-content: space-around; text-align: center; margin: 1.5rem 0;"></div>
         <p style="font-size: 0.8rem; color: var(--muted); text-align: center;">
-          All notices sent anonymously with hashed sender identity; recipient sees generic clinical invitation only.
+          Notices are sent anonymously with a hashed sender identity; the recipient sees a generic invitation only.
         </p>
       </div>
     </div>
 
-    <!-- Equity Parity Breakdowns -->
     <div class="card" style="margin-bottom: 2rem;">
-      <div class="card-title">⚖️ Equity & Parity Breakdowns (Max Gap Threshold: 10 Points)</div>
-      <p style="font-size: 0.85rem; color: var(--muted); margin-bottom: 1rem;">
-        Measuring comprehension scores across demographics ensures no marginalized demographic is left behind. Current maximum equity gap across all splits is <strong>3.1 points</strong> (well within the strict 10-point threshold).
-      </p>
+      <div class="card-title">&#129309; Decision quality &amp; wellbeing</div>
+      <div id="wellbeing-block" style="font-size:0.9rem;line-height:1.7;"></div>
+      <p style="font-size:0.75rem;color:var(--muted);margin-top:0.5rem;">SURE: 4 items, a total below 4 flags decisional conflict. Anxiety: 2 items scored 0-3, a total of 3 or more is a positive screen. Both are screening aids, not diagnoses. These come only from real check-ins; nothing is simulated.</p>
+    </div>
 
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem;">
-        <div>
-          <h4 style="font-size: 0.9rem; margin-bottom: 0.5rem; color: #334155;">Language Equity</h4>
-          <table>
-            <thead><tr><th>Language</th><th>Comprehension</th><th>Cohort %</th></tr></thead>
-            <tbody>
-              <tr><td>Arabic (RTL)</td><td><strong>94.5%</strong></td><td>80%</td></tr>
-              <tr><td>English</td><td><strong>93.8%</strong></td><td>20%</td></tr>
-            </tbody>
-          </table>
-        </div>
-
-        <div>
-          <h4 style="font-size: 0.9rem; margin-bottom: 0.5rem; color: #334155;">Literacy Format Equity</h4>
-          <table>
-            <thead><tr><th>Format</th><th>Comprehension</th><th>Cohort %</th></tr></thead>
-            <tbody>
-              <tr><td>Standard Text</td><td><strong>95.1%</strong></td><td>60%</td></tr>
-              <tr><td>Simple Text</td><td><strong>93.4%</strong></td><td>25%</td></tr>
-              <tr><td>Audio Narration</td><td><strong>92.8%</strong></td><td>15%</td></tr>
-            </tbody>
-          </table>
-        </div>
-
-        <div>
-          <h4 style="font-size: 0.9rem; margin-bottom: 0.5rem; color: #334155;">Sex Parity</h4>
-          <table>
-            <thead><tr><th>Sex</th><th>Comprehension</th><th>Cohort %</th></tr></thead>
-            <tbody>
-              <tr><td>Female</td><td><strong>94.3%</strong></td><td>50%</td></tr>
-              <tr><td>Male</td><td><strong>94.0%</strong></td><td>50%</td></tr>
-            </tbody>
-          </table>
-        </div>
-
-        <div>
-          <h4 style="font-size: 0.9rem; margin-bottom: 0.5rem; color: #334155;">Age Band Equity</h4>
-          <table>
-            <thead><tr><th>Age Band</th><th>Comprehension</th><th>Cohort %</th></tr></thead>
-            <tbody>
-              <tr><td>&lt;18 (Minors - T3)</td><td><strong>92.0%</strong></td><td>3%</td></tr>
-              <tr><td>18 - 29 (Prime)</td><td><strong>94.6%</strong></td><td>67%</td></tr>
-              <tr><td>30+</td><td><strong>93.9%</strong></td><td>30%</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
+    <div class="card" style="margin-bottom: 2rem;">
+      <div class="card-title">&#9878;&#65039; Equity &amp; Parity Breakdowns (gap threshold: 10 points)</div>
+      <p style="font-size: 0.85rem; color: var(--muted); margin-bottom: 1rem;" id="equity-summary"></p>
+      <div id="equity-tables" class="section-grid"></div>
     </div>
 
   </div>
@@ -456,12 +385,12 @@
           </div>
         </div>
 
-        <h4 style="color: #0284c7; font-weight: 700; margin: 1rem 0 0.5rem 0;">
+        <h4 style="color: #0369a1; font-weight: 700; margin: 1rem 0 0.5rem 0;">
           🧭 Navigation Between Platform Interfaces:
         </h4>
         <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 0.75rem 1rem; margin-bottom: 1.25rem;">
           <p style="margin-bottom: 0.5rem;"><a href="/app" style="color: #0f766e; font-weight: 700;">📱 Patient App</a>: What engaged couples see when reviewing carrier findings.</p>
-          <p style="margin-bottom: 0.5rem;"><a href="/portal" style="color: #0284c7; font-weight: 700;">🩺 Counsellor Portal</a>: Clinical management workspace for licensed counsellors.</p>
+          <p style="margin-bottom: 0.5rem;"><a href="/portal" style="color: #0369a1; font-weight: 700;">🩺 Counsellor Portal</a>: Clinical management workspace for licensed counsellors.</p>
           <p><a href="/dashboard" style="color: #7c3aed; font-weight: 700;">📊 Executive Dashboard</a> (Current View): DoH health authority metrics and population outcomes.</p>
         </div>
 
@@ -526,15 +455,88 @@
       document.getElementById('platform-guide-modal').classList.remove('open');
     }
 
+    const NA = 'no data yet';
+    const fmt = (v, suffix = '') => (v === null || v === undefined) ? NA : `${v}${suffix}`;
+    const esc = (t) => String(t).replace(/[&<>"']/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]));
+    const setText = (id, text) => { const el = document.getElementById(id); if (el) el.innerText = text; };
+
+    function renderEquity(eq) {
+      const names = {by_language: 'Language', by_literacy_preference: 'Format / literacy', by_sex: 'Sex', by_age_band: 'Age band'};
+      const holder = document.getElementById('equity-tables');
+      holder.innerHTML = '';
+      Object.keys(names).forEach(key => {
+        const rows = Object.entries(eq[key] || {}).map(([g, v]) =>
+          `<tr><td>${esc(g)}</td><td><strong>${v.avg_score}%</strong></td><td>${fmt(v.cohort_pct, '%')} (n=${v.count})</td></tr>`).join('')
+          || `<tr><td colspan="3">${NA}</td></tr>`;
+        holder.insertAdjacentHTML('beforeend',
+          `<div class="card"><div class="card-title">${names[key]} - gap ${fmt(eq.gap_by_split_points[key], ' pts')}</div>
+           <table><thead><tr><th>Group</th><th>Comprehension</th><th>Cohort</th></tr></thead><tbody>${rows}</tbody></table></div>`);
+      });
+      const gap = eq.maximum_equity_gap_points;
+      setText('equity-summary', gap === null
+        ? 'Not enough groups to compute a gap yet.'
+        : `Largest gap across all splits is ${gap} points (threshold ${eq.gap_threshold_points}). Parity ${eq.equity_parity_achieved ? 'met' : 'NOT met'}. Small groups are noisy; read gaps alongside n.`);
+    }
+
+
+    /* Demo sign-in: obtains a signed bearer token (production: UAE Pass / OTP). */
+    const AUTH_TOKENS = {};
+    async function ensureLogin(userId) {
+      if (AUTH_TOKENS[userId]) return true;
+      try {
+        const r = await fetch('/api/auth/login', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ user_id: userId, otp: '123456' })
+        });
+        if (!r.ok) return false;
+        AUTH_TOKENS[userId] = (await r.json()).access_token;
+        return true;
+      } catch (e) { return false; }
+    }
+
     async function loadMetrics() {
       try {
-        const res = await fetch('/api/analytics/metrics');
-        if (res.ok) {
-          const data = await res.json();
-          document.getElementById('stat-uplift').innerText = `+${data.comprehension.uplift_percentage_points}%`;
-        }
+        await ensureLogin('admin_demo');
+        const res = await fetch('/api/analytics/metrics', { headers: { 'Authorization': 'Bearer ' + AUTH_TOKENS['admin_demo'] } });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const m = await res.json();
+        const c = m.comprehension, u = m.counselling_uptake, p = m.privacy_and_security;
+
+        setText('provenance-note', m.data_provenance.note);
+        setText('stat-uplift', c.uplift_percentage_points === null ? NA : `+${c.uplift_percentage_points} pts`);
+        setText('stat-uplift-meta', c.uplift_percentage_points === null ? '' : `Pre ${c.pre_explanation_baseline_score}% to post ${c.post_score_same_people}% (${c.paired_people} people, paired)`);
+        setText('stat-riskdx', fmt(c.risk_vs_diagnosis_understanding_pct, '%'));
+        setText('stat-riskdx-meta', `Teach-back item on screening vs diagnosis (n=${c.risk_vs_diagnosis_n})`);
+        setText('stat-uptake', fmt(u.uptake_percentage, '%'));
+        setText('stat-uptake-meta', `${u.booked_and_attended_count} of ${u.t1_t2_t3_cases_total} cases booked or beyond`);
+        setText('stat-privacy', p.revocations_honored_pct === null ? NA : `${p.revocations_honored_pct}%`);
+        setText('stat-privacy-meta', `${p.revocations_total} revocations, ${p.reads_after_revocation ?? 0} reads after revocation; ${p.unauthorized_attempts_blocked} blocked attempts; audit chain ${p.cryptographic_audit_chain_valid ? 'valid' : 'BROKEN'}`);
+
+        const labels = {T3: 'T3 Urgent (SLA 24h)', T2: 'T2 Priority (SLA 3 days)', T1: 'T1 Routine (SLA 10 days)'};
+        document.getElementById('sla-rows').innerHTML = Object.entries(m.time_to_referral_vs_sla).map(([tier, v]) => {
+          const pct = v.adherence_pct === null ? 0 : v.adherence_pct;
+          return `<div class="progress-item"><div class="progress-label"><span>${labels[tier]}</span>
+            <span>${v.n ? `Median ${v.median_hours}h, ${v.adherence_pct}% within SLA (n=${v.n})` : NA}</span></div>
+            <div class="progress-track"><div class="progress-fill fill-primary" style="width:${pct}%"></div></div></div>`;
+        }).join('');
+
+        const f = m.family_cascade_reach;
+        document.getElementById('family-block').innerHTML =
+          `<div><div style="font-size:1.75rem;font-weight:800;color:#0f766e;">${f.notices_sent}</div><div style="font-size:0.8rem;color:var(--muted);">Notices sent</div></div>
+           <div><div style="font-size:1.75rem;font-weight:800;color:#0369a1;">${f.notices_opened}</div><div style="font-size:0.8rem;color:var(--muted);">Opened (${fmt(f.open_rate_pct, '%')})</div></div>
+           <div><div style="font-size:1.75rem;font-weight:800;color:#047857;">${f.relatives_screened_or_booked}</div><div style="font-size:0.8rem;color:var(--muted);">Relatives booked (${fmt(f.booked_rate_pct, '%')})</div></div>`;
+
+        const w = m.wellbeing, sure = w.sure, anx = w.anxiety;
+        const line = (label, x, aLabel, bLabel) =>
+          `<div><strong>${label}</strong>: ${aLabel} ${fmt(x.flag_pct_a, '%')} (n=${x.n_a}) &rarr; ${bLabel} ${fmt(x.flag_pct_b, '%')} (n=${x.n_b}); paired people: ${x.paired}</div>`;
+        document.getElementById('wellbeing-block').innerHTML =
+          line('Decisional conflict (SURE &lt; 4)', sure, 'after explanation', 'after counselling') +
+          line('Positive anxiety screen', anx, 'before counselling', 'after counselling') +
+          `<div><strong>T3 escalation rate</strong>: ${fmt(m.escalation.t3_escalation_rate_pct, '%')} (${m.escalation.t3_cases} of ${m.escalation.total_cases} cases)</div>`;
+
+        renderEquity(m.equity_breakdowns);
       } catch (err) {
-        console.log("Using cached dashboard telemetry");
+        setText('provenance-note', 'Could not load metrics from the server: ' + err.message);
       }
     }
     window.addEventListener('DOMContentLoaded', () => {

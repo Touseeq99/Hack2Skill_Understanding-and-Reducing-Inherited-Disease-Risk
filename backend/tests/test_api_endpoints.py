@@ -91,7 +91,7 @@ def test_couple_mutual_consent_and_revocation(api_ctx):
 
 
 def test_audit_verify_endpoint(api_ctx):
-    res = main_mod.verify_audit_log()
+    res = main_mod.verify_audit_log({'user_id': 'admin_demo', 'role': 'admin'})
     assert res["valid"] is True
     assert "intact" in res["message"]
 
@@ -126,3 +126,30 @@ def test_quiz_and_app_endpoints(api_ctx):
     # Test /app endpoint
     app_resp = main_mod.serve_user_app()
     assert str(app_resp.path).endswith("index.html")
+
+
+def test_shareable_card_route_not_shadowed_by_token():
+    from fastapi.testclient import TestClient
+    client = TestClient(main_mod.app)
+    r = client.get("/api/family-notice/shareable-card?condition=Beta-thalassemia&language=en")
+    assert r.status_code == 200
+    body = r.json()
+    assert "token" not in str(body).lower()[:20]
+
+
+def test_unknown_case_returns_404_not_canned_demo_case():
+    from fastapi.testclient import TestClient
+    client = TestClient(main_mod.app)
+    assert client.get("/api/portal/cases/does_not_exist", headers={"X-User-Role": "counsellor"}).status_code == 404
+
+
+def test_case_packet_pdf_uses_real_case_data():
+    from fastapi.testclient import TestClient
+    client = TestClient(main_mod.app)
+    q = client.get("/api/portal/queue", headers={"X-User-Role": "admin"}).json()
+    assert q, "seeded queue should not be empty"
+    cid = q[0]["id"]
+    d = client.get(f"/api/portal/cases/{cid}", headers={"X-User-Role": "admin"}).json()
+    assert d["gene"] != "" and d["id"] == cid
+    r = client.get(f"/api/portal/cases/{cid}/pdf", headers={"X-User-Role": "admin"})
+    assert r.status_code == 200 and r.content[:4] == b"%PDF"

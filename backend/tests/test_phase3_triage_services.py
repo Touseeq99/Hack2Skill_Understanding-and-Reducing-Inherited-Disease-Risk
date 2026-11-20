@@ -86,7 +86,7 @@ def test_triage_router_rules_and_no_downgrade(p3_ctx):
     # 4. Decision question asked -> T2
     dec_dq = router.evaluate(TriageSignals(person_id="p_test", engine_category="carrier", user_message="Should we still marry?"))
     assert dec_dq.tier == "T2"
-    assert "TRI-T2-005" in dec_dq.fired_rules
+    assert any(r.startswith("TRI-T2-005") for r in dec_dq.fired_rules)
     assert dec_dq.directive_handoff_message is not None
 
     # 5. Minor under 18 -> T3
@@ -102,11 +102,17 @@ def test_triage_router_rules_and_no_downgrade(p3_ctx):
     # 7. Distress language in message -> T3
     dec_dist = router.evaluate(TriageSignals(person_id="p_test", user_message="I want to end my life"))
     assert dec_dist.tier == "T3"
-    assert "TRI-T3-003" in dec_dist.fired_rules
+    assert any(r.startswith("TRI-T3-003") for r in dec_dist.fired_rules)
 
     # 8. HARD RULE: Tiers never auto-downgrade!
     # If existing case was T2, an event that triggers T0 must remain T2!
-    dec_no_downgrade = router.evaluate(TriageSignals(person_id="p_test", engine_category="screen_negative", existing_case_tier="T2"))
+    # (p_test already holds a persisted T3 case from earlier steps, so use a fresh person
+    # to exercise the caller-supplied existing_case_tier path.)
+    conn = p3_ctx["db"].get_connection()
+    conn.execute("INSERT INTO person (id, auth_id, name, dob_year, sex) VALUES ('p_fresh', 'auth_fresh', 'Fresh', 1995, 'F')")
+    conn.commit()
+    conn.close()
+    dec_no_downgrade = router.evaluate(TriageSignals(person_id="p_fresh", engine_category="screen_negative", existing_case_tier="T2"))
     assert dec_no_downgrade.tier == "T2"
 
 
@@ -232,3 +238,24 @@ def test_anonymous_family_notice_flow(p3_ctx):
     assert opened["status"] == "valid"
     assert opened["condition_name"] == "Beta-thalassemia"
 
+
+
+def test_triage_never_downgrades_across_calls_and_upserts(p3_ctx):
+    """DB-persisted case tier survives later benign evaluations; no duplicate cases."""
+    router = p3_ctx["router"]
+    db = p3_ctx["db"]
+
+    high = router.evaluate(TriageSignals(person_id="p_test", engine_category="possible_affected", is_pregnant=True))
+    assert high.tier == "T3"
+
+    low = router.evaluate(TriageSignals(person_id="p_test", engine_category="screen_negative"))
+    assert low.tier == "T3"
+    assert low.case_id == high.case_id  # upsert, not a new case
+    assert "TRI-T3-001" in low.fired_rules  # prior rule IDs are preserved for audit
+
+    conn = db.get_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT COUNT(*) AS n, MAX(tier) AS t FROM triage_case WHERE person_id = 'p_test'")
+    row = cur.fetchone()
+    conn.close()
+    assert row["n"] == 1 and row["t"] == "T3"

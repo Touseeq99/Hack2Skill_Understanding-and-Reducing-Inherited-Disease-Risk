@@ -133,9 +133,9 @@ def generate_case_packet_pdf(case_data: Dict[str, Any]) -> bytes:
             Paragraph("<b>Deterministic Tier</b>", body_style)
         ],
         [
-            Paragraph(case_data.get("finding_type", "Autosomal Recessive Carrier (Pathogenic)"), body_style),
-            Paragraph(case_data.get("gene", "HBB"), body_style),
-            Paragraph(case_data.get("condition", "Beta-thalassemia"), body_style),
+            Paragraph(str(case_data.get("finding_type", "Not recorded")), body_style),
+            Paragraph(str(case_data.get("gene", "-")), body_style),
+            Paragraph(str(case_data.get("condition", "-")), body_style),
             Paragraph(case_data.get("tier", "T2"), body_style),
         ]
     ]
@@ -153,12 +153,12 @@ def generate_case_packet_pdf(case_data: Dict[str, Any]) -> bytes:
     story.append(Paragraph("Couple Compatibility Analysis", section_style))
     couple_info = [
         [
-            Paragraph("<b>Partner A Status:</b> " + case_data.get("partner_a_desc", "Carrier for HBB c.93-21G>A"), body_style),
-            Paragraph("<b>Partner B Status:</b> " + case_data.get("partner_b_desc", "Carrier for HBB c.118C>T"), body_style),
+            Paragraph("<b>Patient Variant:</b> " + str(case_data.get("gene", "-")) + " " + str(case_data.get("variant", "-")), body_style),
+            Paragraph("<b>Partner:</b> " + str(case_data.get("partner_finding", "No linked partner")), body_style),
         ],
         [
-            Paragraph("<b>Couple Outcome:</b> <font color='#c2410c'><b>SAME-GENE MATCH (HBB)</b></font>", body_style),
-            Paragraph("<b>Per-Pregnancy Risk:</b> 1 in 4 affected, 1 in 2 carrier, 1 in 4 neither", body_style),
+            Paragraph("<b>Couple Outcome:</b> <font color='#c2410c'><b>" + str(case_data.get("couple_outcome", "No couple link")) + "</b></font>", body_style),
+            Paragraph("<b>Per-Pregnancy Risk:</b> " + str(case_data.get("per_pregnancy_risk", "-")), body_style),
         ]
     ]
     t3 = Table(couple_info, colWidths=[270, 270])
@@ -174,9 +174,9 @@ def generate_case_packet_pdf(case_data: Dict[str, Any]) -> bytes:
     # 5. Patient Engagement & Comprehension
     story.append(Paragraph("Comprehension & Teach-Back Record", section_style))
     story.append(Paragraph(
-        "<b>Teach-Back Quiz Score:</b> " + str(case_data.get("quiz_score", 100.0)) + "% &bull; "
+        "<b>Teach-Back Quiz Score:</b> " + str(case_data.get("quiz_score", "No teach-back recorded yet")) + " &bull; "
         "<b>Explanations Viewed:</b> Layered Summary, Residual Risk, Natural Frequencies &bull; "
-        "<b>Language:</b> Arabic (Gulf)",
+        "<b>Language:</b> " + str(case_data.get("language", "Not recorded")),
         body_style
     ))
     story.append(Spacer(1, 10))

@@ -2,19 +2,12 @@ FROM python:3.12-slim
 
 WORKDIR /app
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    libpq-dev \
-    curl \
-    && rm -rf /var/lib/apt/lists/*
-
-COPY requirements.txt .
+COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-# Run DB seeding on startup if not already seeded, then start uvicorn
+# Seed the synthetic cohort on first start only (the database lives in the /data volume), then serve.
+# Optional ML layer (embedding safety classifier + FAQ answers): add `pip install -r requirements-ml.txt` and mount a model cache.
 EXPOSE 8000
-CMD ["sh", "-c", "python -m data.generate_seed && uvicorn backend.main:app --host 0.0.0.0 --port 8000"]
-
+CMD ["sh", "-c", "[ -f /data/inheritance_platform.db ] || (python -m data.generate_seed && python -m data.seed_outcomes && python -m data.seed_cases); uvicorn backend.main:app --host 0.0.0.0 --port 8000"]
